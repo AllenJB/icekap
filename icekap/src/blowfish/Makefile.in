@@ -368,9 +368,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile
+#>- 	  $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -380,9 +380,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/blowfish/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -664,9 +664,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/blowfish/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/blowfish/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/blowfish/Makefile.in
 
 

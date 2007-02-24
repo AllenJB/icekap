@@ -338,9 +338,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/scripts/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/scripts/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  icekap/scripts/Makefile
+#>- 	  $(AUTOMAKE) --gnu  icekap/scripts/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -350,9 +350,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/scripts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/scripts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/scripts/Makefile
+	  $(AUTOMAKE) --gnu  icekap/scripts/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/scripts/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -565,9 +565,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/scripts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/scripts/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/scripts/Makefile
+	  $(AUTOMAKE) --gnu  icekap/scripts/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/scripts/Makefile.in
 
 

@@ -49,7 +49,7 @@ INCLUDES= -Ilinkaddressbook -I$(srcdir)/linkaddressbook -Iblowfish -I$(srcdir)/b
 icekap_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 rcdir = $(kde_datadir)/icekap
-rc_DATA = konversationui.rc eventsrc
+rc_DATA = icekapui.rc eventsrc
 
 kdelnk_DATA = konvirc.protocol konvirc6.protocol
 kdelnkdir = $(kde_servicesdir)

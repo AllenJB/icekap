@@ -379,9 +379,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/config/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/config/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  icekap/src/config/Makefile
+#>- 	  $(AUTOMAKE) --gnu  icekap/src/config/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -391,9 +391,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/config/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/config/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/config/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/config/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/config/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -683,7 +683,7 @@ clean-metasources:
 	-rm -f  preferences.moc
 
 #>+ 2
-KDE_DIST=icekap.kcfg preferences_base.kcfgc Makefile.in preferences.h Makefile.am 
+KDE_DIST=Makefile.in icekap.kcfg preferences_base.kcfgc preferences_base.h preferences.h Makefile.am 
 
 #>+ 4
 clean-kcfg:
@@ -707,9 +707,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/config/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/config/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/config/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/config/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/config/Makefile.in
 
 
@@ -736,7 +736,7 @@ bcheck-am:
 
 
 #>+ 11
-libkonversationconfig_la.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/preferences.cpp preferences_base.cpp  preferences.moc
+libkonversationconfig_la.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/preferences.cpp $(srcdir)/preferences_base.cpp  preferences.moc
 	@echo 'creating libkonversationconfig_la.all_cpp.cpp ...'; \
 	rm -f libkonversationconfig_la.all_cpp.files libkonversationconfig_la.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> libkonversationconfig_la.all_cpp.final; \

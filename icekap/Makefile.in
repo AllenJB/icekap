@@ -341,9 +341,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/admin/Doxyfile.am $(
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  icekap/Makefile
+#>- 	  $(AUTOMAKE) --gnu  icekap/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -353,9 +353,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/admin/Doxyfile.am $(
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/Makefile
+	  $(AUTOMAKE) --gnu  icekap/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -781,9 +781,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/Makefile
+	  $(AUTOMAKE) --gnu  icekap/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/Makefile.in
 
 

@@ -157,7 +157,7 @@
     <configurations>
       <default>
         <envvars/>
-        <configargs>--without-arts</configargs>
+        <configargs>--without-arts --enable-debug=full --disable-rpath --disable-path-check</configargs>
         <builddir></builddir>
         <topsourcedir></topsourcedir>
         <cppflags></cppflags>
