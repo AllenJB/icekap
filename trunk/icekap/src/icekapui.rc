@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="konversation" version="42">
+<kpartgui name="icekap" version="42">
 
   <MenuBar>
     <Menu name="file">
@@ -11,7 +11,7 @@
       <Separator />
       <Action name="join_channel" />
       <Separator />
-      <Action name="toggle_away" /> 
+      <Action name="toggle_away" />
     </Menu>
     <Menu name="edit">
       <Action name="clear_window" />
@@ -71,7 +71,7 @@
     <Action name="move_tab_right" />
     <Action name="close_tab" />
     <Separator />
-    <ActionList name="server_actions" /> 
+    <ActionList name="server_actions" />
 </Menu>
 
 </kpartgui>

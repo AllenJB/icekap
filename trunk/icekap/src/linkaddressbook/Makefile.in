@@ -379,9 +379,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile
+#>- 	  $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -391,9 +391,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/linkaddressbook/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -689,7 +689,7 @@ clean-metasources:
 	-rm -f  linkaddressbookui.moc addressbook_base.moc addressbook.moc
 
 #>+ 2
-KDE_DIST=nicksonlinetooltip.h linkaddressbookui_base.ui addressbook_base.h addressbook.h Makefile.in nicklisttooltip.h addresseeitem.h Makefile.am 
+KDE_DIST=nicksonlinetooltip.h linkaddressbookui_base.ui addressbook_base.h linkaddressbookui_base.h Makefile.in nicklisttooltip.h addresseeitem.h addressbook.h kimiface.kidl Makefile.am 
 
 #>+ 4
 clean-idl:
@@ -718,9 +718,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  icekap/src/linkaddressbook/Makefile
+	  $(AUTOMAKE) --gnu  icekap/src/linkaddressbook/Makefile
 	cd $(top_srcdir) && perl admin/am_edit icekap/src/linkaddressbook/Makefile.in
 
 
@@ -747,7 +747,7 @@ bcheck-am:
 
 
 #>+ 11
-liblinkaddressbookui_la.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/linkaddressbookui.cpp $(srcdir)/addressbook_base.cpp $(srcdir)/addressbook.cpp $(srcdir)/nicklisttooltip.cpp $(srcdir)/nicksonlinetooltip.cpp $(srcdir)/addresseeitem.cpp kimiface_skel.cpp linkaddressbookui_base.cpp  linkaddressbookui.moc addressbook_base.moc linkaddressbookui_base.moc addressbook.moc
+liblinkaddressbookui_la.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/linkaddressbookui.cpp $(srcdir)/addressbook_base.cpp $(srcdir)/addressbook.cpp $(srcdir)/nicklisttooltip.cpp $(srcdir)/nicksonlinetooltip.cpp $(srcdir)/addresseeitem.cpp $(srcdir)/kimiface_skel.cpp $(srcdir)/linkaddressbookui_base.cpp  linkaddressbookui.moc addressbook_base.moc linkaddressbookui_base.moc addressbook.moc
 	@echo 'creating liblinkaddressbookui_la.all_cpp.cpp ...'; \
 	rm -f liblinkaddressbookui_la.all_cpp.files liblinkaddressbookui_la.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> liblinkaddressbookui_la.all_cpp.final; \

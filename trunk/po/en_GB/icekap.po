@@ -1,4 +1,4 @@
-# translation of konversation.po to British English
+# translation of icekap.po to British English
 # Copyright (C) 2003,2004, 2005 Free Software Foundation, Inc.
 # Malcolm Hunter <malcolm.hunter@gmx.co.uk>, 2003,2004.
 # Jonathan Riddell <kde-en-gb@jriddell.org>, 2003.
@@ -6,7 +6,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: konversation\n"
+"Project-Id-Version: icekap\n"
 "POT-Creation-Date: 2006-10-06 08:38+0200\n"
 "PO-Revision-Date: 2005-07-04 13:40+0100\n"
 "Last-Translator: Andrew Coles <andrew_coles@yahoo.co.uk>\n"
@@ -183,15 +183,15 @@ msgid ""
 "<qt>This shows all the people in the channel.  The nick for each person is "
 "shown."
 "<br>Usually an icon is shown showing the status of each person, but you do not "
-"seem to have any icon theme installed.  See the Konversation settings - <i>"
-"Configure Konversation</i> under the <i>Settings</i> "
+"seem to have any icon theme installed.  See the Icekap settings - <i>"
+"Configure Icekap</i> under the <i>Settings</i> "
 "menu.  Then view the page for <i>Themes</i> under <i>Appearence</i>.</qt>"
 msgstr ""
 "<qt>This shows all the people in the channel.  The nick for each person is "
 "shown."
 "<br>Usually an icon is shown showing the status of each person, but you do not "
-"seem to have any icon theme installed.  See the Konversation settings - <i>"
-"Configure Konversation</i> under the <i>Settings</i> "
+"seem to have any icon theme installed.  See the Icekap settings - <i>"
+"Configure Icekap</i> under the <i>Settings</i> "
 "menu.  Then view the page for <i>Themes</i> under <i>Appearence</i>.</qt>"
 
 #: src/nicklistview.cpp:154
@@ -224,7 +224,7 @@ msgid ""
 "<td>This indicates that this person is currently away.</td></tr></table>"
 "<p>The meaning of admin, owner and halfop varies between different IRC servers."
 "<p>Hovering over any nick shows their current status, as well as any "
-"information in the addressbook for this person.  See the Konversation Handbook "
+"information in the addressbook for this person.  See the Icekap Handbook "
 "for more information.</qt>"
 msgstr ""
 "<qt>This shows all the people in the channel.  The nick for each person is "
@@ -255,7 +255,7 @@ msgstr ""
 "<td>This indicates that this person is currently away.</td></tr></table>"
 "<p>The meaning of admin, owner and halfop varies between different IRC servers."
 "<p>Hovering over any nick shows their current status, as well as any "
-"information in the addressbook for this person.  See the Konversation Handbook "
+"information in the addressbook for this person.  See the Icekap Handbook "
 "for more information.</qt>"
 
 #: src/nicklistview.cpp:278
@@ -508,15 +508,15 @@ msgstr "Click here to connect to the selected IRC network and channel."
 msgid ""
 "This shows the listof configured IRC networks. An IRC network is a collection "
 "of cooperating servers. You need only connect to one of the servers in the "
-"network to be connected to the entire IRC network. Once connected, Konversation "
-"will automatically join the channels shown. When Konversation is started for "
+"network to be connected to the entire IRC network. Once connected, Icekap "
+"will automatically join the channels shown. When Icekap is started for "
 "the first time, the Freenode network and the <i>#kde</i> "
 "channel are already entered for you."
 msgstr ""
 "The list of configured IRC Networks are listed here. An IRC network is a "
 "collection of cooperating servers. You need only connect to one of the servers "
 "in the network to be connected to the entire IRC network. Once connected, "
-"Konversation will automatically join the Channels shown. When Konversation is "
+"Icekap will automatically join the Channels shown. When Icekap is "
 "started for the first time, the Freenode network and <i>#kde</i> "
 "channel are already entered for you. Click on a network to select it."
 
@@ -590,11 +590,11 @@ msgstr "Show last:"
 #: src/logfilereader.cpp:52
 msgid ""
 "Use this box to set the maximum size of the log file. This setting does not "
-"take effect until you restart Konversation. Each log file may have a separate "
+"take effect until you restart Icekap. Each log file may have a separate "
 "setting."
 msgstr ""
 "Use this box to set the maximum size of the log file. This setting does not "
-"take effect until you restart Konversation. Each log file may have a separate "
+"take effect until you restart Icekap. Each log file may have a separate "
 "setting."
 
 #: src/logfilereader.cpp:54
@@ -691,7 +691,7 @@ msgid ""
 "Since nicknames must be unique across an entire IRC network, your desired name "
 "may be rejected by the server because someone else is already using that "
 "nickname. Enter alternate nicknames for yourself. If your first choice is "
-"rejected by the server, Konversation will try the alternate nicknames."
+"rejected by the server, Icekap will try the alternate nicknames."
 msgstr ""
 "This is your list of nicknames. A nickname is the name that other users will "
 "know you by. You may use any name you desire. The first character must be a "
@@ -700,7 +700,7 @@ msgstr ""
 "Since nicknames must be unique across an entire IRC network, your desired name "
 "may be rejected by the server because someone else is already using that "
 "nickname. Enter alternate nicknames for yourself. If your first choice is "
-"rejected by the server, Konversation will try the alternate nicknames."
+"rejected by the server, Icekap will try the alternate nicknames."
 
 #. i18n: file ./src/servergroupdialogui.ui line 138
 #: rc.cpp:104 rc.cpp:116 src/identitydialog.cpp:95
@@ -762,18 +762,18 @@ msgstr "Away nickname:"
 #: src/identitydialog.cpp:159
 msgid ""
 "Enter a nickname that indicates you are away. Whenever you perform an <b>"
-"/away msg</b> command in any channel joined with this Identity, Konversation "
+"/away msg</b> command in any channel joined with this Identity, Icekap "
 "will automatically change your nickname to the Away nickname. Other users will "
 "be able to tell you are away from your computer. Whenever you perform an <b>"
-"/away</b> command in any channel in which you are away, Konversation will "
+"/away</b> command in any channel in which you are away, Icekap will "
 "automatically change your nickname back to the original. If you do not wish to "
 "automatically change your nickname when going away, leave blank."
 msgstr ""
 "Enter a nickname that indicates you are away. Whenever you perform an <b>"
-"/away msg</b> command in any channel joined with this Identity, Konversation "
+"/away msg</b> command in any channel joined with this Identity, Icekap "
 "will automatically change your nickname to the Away nickname. Other users will "
 "be able to tell you are away from your computer. Whenever you perform an <b>"
-"/away</b> command in any channel in which you are away, Konversation will "
+"/away</b> command in any channel in which you are away, Icekap will "
 "automatically change your nickname back to the original. If you do not wish to "
 "automatically change your nickname when going away, leave blank."
 
@@ -788,12 +788,12 @@ msgstr "Show a&way messages"
 #: src/identitydialog.cpp:169
 #, c-format
 msgid ""
-"If you check this box, Konversation will automatically send the Away message to "
+"If you check this box, Icekap will automatically send the Away message to "
 "all channels joined with this Identity. <b>%s</b> is replaced with <b>msg</b>"
 ". Whenever you perform an <b>/away</b> command, the Return message will be "
 "displayed in all channels joined with this Identity."
 msgstr ""
-"If you check this box, Konversation will automatically send the Away message to "
+"If you check this box, Icekap will automatically send the Away message to "
 "all channels joined with this Identity. <b>%s</b> is replaced with <b>msg</b>"
 ". Whenever you perform an <b>/away</b> command, the Return message will be "
 "displayed in all channels joined with this Identity."
@@ -832,11 +832,11 @@ msgstr "I&dent:"
 msgid ""
 "When you connect, many servers query your computer for an IDENT response. If "
 "you computer is not running an IDENT server, this response is sent by "
-"Konversation. No spaces are allowed."
+"Icekap. No spaces are allowed."
 msgstr ""
 "When you connect, many servers query your computer for an IDENT response. If "
 "you computer is not running an IDENT server, this response is sent by "
-"Konversation. No spaces are allowed."
+"Icekap. No spaces are allowed."
 
 #: src/identitydialog.cpp:219
 msgid "&Encoding:"
@@ -846,13 +846,13 @@ msgstr "&Encoding:"
 msgid ""
 "This setting affects how characters you type are encoded for sending to the "
 "server. It also affects how messages are displayed. When you first open "
-"Konversation, it automatically retrieves this setting from the operating "
+"Icekap, it automatically retrieves this setting from the operating "
 "system. If you seem to be having trouble seeing other user's messages "
 "correctly, try changing this setting."
 msgstr ""
 "This setting affects how characters you type are encoded for sending to the "
 "server. It also affects how messages are displayed. When you first open "
-"Konversation, it automatically retrieves this setting from the operating "
+"Icekap, it automatically retrieves this setting from the operating "
 "system. If you seem to be having trouble seeing other user's messages "
 "correctly, try changing this setting."
 
@@ -976,8 +976,8 @@ msgid "Insert a character"
 msgstr "Insert a character"
 
 #: src/konvibookmarkhandler.cpp:67
-msgid "Konversation Bookmarks Editor"
-msgstr "Konversation Bookmarks Editor"
+msgid "Bookmarks Editor"
+msgstr "Bookmarks Editor"
 
 #: src/konversationapplication.cpp:254 src/server.cpp:1416 src/server.cpp:2999
 #: src/server.cpp:3004
@@ -1309,11 +1309,11 @@ msgstr ""
 #: src/konversationmainwindow.cpp:357
 #, fuzzy
 msgid ""
-"<p>Closing the main window will keep Konversation running in the system tray. "
-"Use <b>Quit</b> from the <b>Konversation</b> menu to quit the application.</p>"
+"<p>Closing the main window will keep Icekap running in the system tray. "
+"Use <b>Quit</b> from the <b>Icekap</b> menu to quit the application.</p>"
 msgstr ""
-"<p>Closing the main window will keep Konversation running in the system tray. "
-"Use <b>Quit</b> from the <b>Konversation</b> menu to quit the application.</p>"
+"<p>Closing the main window will keep Icekap running in the system tray. "
+"Use <b>Quit</b> from the <b>Icekap</b> menu to quit the application.</p>"
 "<p>"
 "<center><img source=\"systray_shot\"></center></p>"
 
@@ -1663,7 +1663,7 @@ msgid ""
 "<th>/whois <i>nickname</i></th>"
 "<td>shows information about this person, including what channels they are "
 "in.</td></tr></table>"
-"<p>For more commands, see the Konversation Handbook."
+"<p>For more commands, see the Icekap Handbook."
 "<p>A message can be a maximum of 512 letters long, and cannot contain multiple "
 "lines.</qt>"
 msgstr ""
@@ -1682,7 +1682,7 @@ msgstr ""
 "<th>/whois <i>nickname</i></th>"
 "<td>shows information about this person, including what channels they are "
 "in.</td></tr></table>"
-"<p>For more commands, see the Konversation Handbook."
+"<p>For more commands, see the Icekap Handbook."
 "<p>A message can be a maximum of 512 letters long, and cannot contain multiple "
 "lines.</qt>"
 
@@ -1730,21 +1730,21 @@ msgid "Use SSL for connection"
 msgstr "Use SSL for connection"
 
 #: src/main.cpp:51
-msgid "Konversation"
-msgstr "Konversation"
+msgid "Icekap"
+msgstr "Icekap"
 
 #: src/main.cpp:55
 #, fuzzy
-msgid "(C) 2002-2006 by the Konversation team"
-msgstr "(C) 2002-2005 by the Konversation team"
+msgid "(C) 2007 by the Icekap team"
+msgstr "(C) 2007 by the Icekap team"
 
 #: src/main.cpp:56
 msgid ""
-"Konversation is a client for the Internet Relay Chat (IRC) protocol.\n"
+"Icekap is a client for the Internet Relay Chat (IRC) protocol.\n"
 "Meet friends on the net, make new acquaintances and lose yourself in\n"
 "talk about your favorite subject."
 msgstr ""
-"Konversation is a client for the Internet Relay Chat (IRC) protocol.\n"
+"Icekap is a client for the Internet Relay Chat (IRC) protocol.\n"
 "Meet friends on the net, make new acquaintances and lose yourself in\n"
 "talk about your favourite subject."
 
@@ -2507,11 +2507,11 @@ msgstr "Delete Confirmation"
 #: src/sslsocket.cpp:124
 msgid ""
 "The functionality to connect to servers using encrypted SSL communications is "
-"not available to Konversation because OpenSSL support was not enabled at "
+"not available to Icekap because OpenSSL support was not enabled at "
 "compile time.  You will need to get new version of KDE that has SSL support."
 msgstr ""
 "The functionality to connect to servers using encrypted SSL communications is "
-"not available to Konversation because OpenSSL support was not enabled at "
+"not available to Icekap because OpenSSL support was not enabled at "
 "compile time.  You will need to get new version of KDE that has SSL support."
 
 #: src/sslsocket.cpp:167
@@ -3341,8 +3341,8 @@ msgstr "Warning on pasting large portions of text"
 
 #: src/warnings_preferences.cpp:113
 #, fuzzy
-msgid "Warning on quitting Konversation"
-msgstr "Warning on pasting large portions of text"
+msgid "Warning on quitting Icekap"
+msgstr "Warning on quitting Icekap"
 
 #: src/dccpanel.cpp:41 src/viewcontainer.cpp:1943 src/viewcontainer.cpp:1953
 msgid "DCC Status"
@@ -3541,7 +3541,7 @@ msgstr ""
 #: src/channellistpanel.cpp:101
 msgid ""
 "The filtered list of channels is displayed here. Notice that if you do not use "
-"regular expressions, Konversation lists any channel whose name contains the "
+"regular expressions, Icekap lists any channel whose name contains the "
 "filter string you entered. The channel name does not have to start with the "
 "string you entered.\n"
 "\n"
@@ -3549,7 +3549,7 @@ msgid ""
 "to get a list of all web addresses mentioned in the channel's topic."
 msgstr ""
 "The filtered list of channels is displayed here. Notice that if you do not use "
-"regular expressions, Konversation lists any channel whose name contains the "
+"regular expressions, Icekap lists any channel whose name contains the "
 "filter string you entered. The channel name does not have to start with the "
 "string you entered.\n"
 "\n"
@@ -3582,10 +3582,10 @@ msgstr "Save Channel List"
 
 #: src/channellistpanel.cpp:219
 msgid ""
-"Konversation Channel List: %1 - %2\n"
+"Channel List: %1 - %2\n"
 "\n"
 msgstr ""
-"Konversation Channel List: %1 - %2\n"
+"Channel List: %1 - %2\n"
 "\n"
 
 #: src/channellistpanel.cpp:477
@@ -3617,63 +3617,63 @@ msgstr "Online"
 #: src/linkaddressbook/addressbook.cpp:238
 #: src/linkaddressbook/addressbook.cpp:253
 msgid ""
-"Another KDE application tried to use Konversation for instant messaging, but "
+"Another KDE application tried to use Icekap for instant messaging, but "
 "did not specify any contact to send the message to.  This is probably a bug in "
 "the other application."
 msgstr ""
-"Another KDE application tried to use Konversation for instant messaging, but "
+"Another KDE application tried to use Icekap for instant messaging, but "
 "did not specify any contact to send the message to.  This is probably a bug in "
 "the other application."
 
 #: src/linkaddressbook/addressbook.cpp:216
 msgid ""
-"Another KDE application tried to use Konversation for instant messaging, but "
-"Konversation could not find the specified contact in the KDE address book."
+"Another KDE application tried to use Icekap for instant messaging, but "
+"Icekap could not find the specified contact in the KDE address book."
 msgstr ""
-"Another KDE application tried to use Konversation for instant messaging, but "
-"Konversation could not find the specified contact in the KDE address book."
+"Another KDE application tried to use Icekap for instant messaging, but "
+"Icekap could not find the specified contact in the KDE address book."
 
 #: src/linkaddressbook/addressbook.cpp:224
 msgid ""
-"Another KDE application tried to use Konversation for instant messaging, but "
+"Another KDE application tried to use Icekap for instant messaging, but "
 "the requested user%1 is not online."
 msgstr ""
-"Another KDE application tried to use Konversation for instant messaging, but "
+"Another KDE application tried to use Icekap for instant messaging, but "
 "the requested user%1 is not online."
 
 #: src/linkaddressbook/addressbook.cpp:270
 msgid ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
+"Another KDE application tried to use Icekap to send a file to a contact, "
 "but did not specify any contact to send the file to.  This is probably a bug in "
 "the other application."
 msgstr ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
+"Another KDE application tried to use Icekap to send a file to a contact, "
 "but did not specify any contact to send the file to.  This is probably a bug in "
 "the other application."
 
 #: src/linkaddressbook/addressbook.cpp:276
 msgid ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
-"but Konversation could not find the specified contact in the KDE address book."
+"Another KDE application tried to use Icekap to send a file to a contact, "
+"but Icekap could not find the specified contact in the KDE address book."
 msgstr ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
-"but Konversation could not find the specified contact in the KDE address book."
+"Another KDE application tried to use Icekap to send a file to a contact, "
+"but Icekap could not find the specified contact in the KDE address book."
 
 #: src/linkaddressbook/addressbook.cpp:284
 msgid ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
+"Another KDE application tried to use Icekap to send a file to a contact, "
 "but the requested user%1 is not currently online."
 msgstr ""
-"Another KDE application tried to use Konversation to send a file to a contact, "
+"Another KDE application tried to use Icekap to send a file to a contact, "
 "but the requested user%1 is not currently online."
 
 #: src/linkaddressbook/addressbook.cpp:303
 msgid ""
-"Another KDE application tried to use Konversation to add a contact.  "
-"Konversation does support this."
+"Another KDE application tried to use Icekap to add a contact.  "
+"Icekap does support this."
 msgstr ""
-"Another KDE application tried to use Konversation to add a contact.  "
-"Konversation does support this."
+"Another KDE application tried to use Icekap to add a contact.  "
+"Icekap does support this."
 
 #: src/linkaddressbook/addressbook_base.cpp:393
 msgid ""
@@ -3853,10 +3853,10 @@ msgstr "URL"
 
 #: src/urlcatcher.cpp:49
 msgid ""
-"List of Uniform Resource Locators mentioned in any of the Konversation windows "
+"List of Uniform Resource Locators mentioned in any of the Icekap windows "
 "during this session."
 msgstr ""
-"List of Uniform Resource Locators mentioned in any of the Konversation windows "
+"List of Uniform Resource Locators mentioned in any of the Icekap windows "
 "during this session."
 
 #: src/urlcatcher.cpp:56
@@ -4037,32 +4037,32 @@ msgstr ""
 
 #: src/servergroupdialog.cpp:72
 msgid ""
-"Check here if you want Konversation to automatically connect to this network "
-"whenever you open Konversation."
+"Check here if you want Icekap to automatically connect to this network "
+"whenever you open Icekap."
 msgstr ""
-"Check here if you want Konversation to automatically connect to this network "
-"whenever you open Konversation."
+"Check here if you want Icekap to automatically connect to this network "
+"whenever you open Icekap."
 
 #: src/servergroupdialog.cpp:74
 msgid ""
 "This is a list of IRC Servers in the network. When connecting to the network, "
-"Konversation will attempt to connect to the top server first. If this fails, it "
+"Icekap will attempt to connect to the top server first. If this fails, it "
 "will attempt the second server. If this fails, it will attempt the third, and "
 "so on. At least one server must be specified. Click a server to highlight it."
 msgstr ""
 "This is a list of IRC Servers in the network. When connecting to the network, "
-"Konversation will attempt to connect to the top server first. If this fails, it "
+"Icekap will attempt to connect to the top server first. If this fails, it "
 "will attempt the second server. If this fails, it will attempt the third, and "
 "so on. At least one server must be specified. Click a server to highlight it."
 
 #: src/servergroupdialog.cpp:87
 msgid ""
 "Optional. This is a list of the channels that will be automatically joined once "
-"Konversation has connected to a server. You may leave this blank if you wish to "
+"Icekap has connected to a server. You may leave this blank if you wish to "
 "not automatically join any channels."
 msgstr ""
 "Optional. This is a list of the channels that will be automatically joined once "
-"Konversation has connected to a server. You may leave this blank if you wish to "
+"Icekap has connected to a server. You may leave this blank if you wish to "
 "not automatically join any channels."
 
 #: src/servergroupdialog.cpp:100
@@ -4095,8 +4095,8 @@ msgid "You need to add at least one server to the network."
 msgstr "You need to add at least one server to the network."
 
 #: src/theme_preferences.cpp:168
-msgid "*.tar.gz *.tar.bz2 *.tar *.zip|Konversation Themes"
-msgstr "*.tar.gz *.tar.bz2 *.tar *.zip|Konversation Themes"
+msgid "*.tar.gz *.tar.bz2 *.tar *.zip|Icekap Themes"
+msgstr "*.tar.gz *.tar.bz2 *.tar *.zip|Icekap Themes"
 
 #: src/theme_preferences.cpp:170
 msgid "Select Theme Package"
@@ -4123,8 +4123,8 @@ msgid "Remove Theme"
 msgstr "Remove Theme"
 
 #: src/trayicon.cpp:41
-msgid "Konversation - IRC Client"
-msgstr "Konversation - IRC Client"
+msgid "Icekap - IRC Client"
+msgstr "Icekap - IRC Client"
 
 #: src/dccrecipientdialog.cpp:26
 msgid "Select Recipient"
@@ -4217,14 +4217,14 @@ msgid ""
 "<qt>Some details of the person you are talking to in this query is shown in "
 "this bar.  The full name and hostmask is shown, along with any image or logo "
 "this person has associated with them in the KDE Addressbook."
-"<p>See the <i>Konversation Handbook</i> for information on associating a nick "
+"<p>See the <i>Icekap Handbook</i> for information on associating a nick "
 "with a contact in the Addressbook, and for an explanation of what the hostmask "
 "is.</qt>"
 msgstr ""
 "<qt>Some details of the person you are talking to in this query is shown in "
 "this bar.  The full name and hostmask is shown, along with any image or logo "
 "this person has associated with them in the KDE Addressbook."
-"<p>See the <i>Konversation Handbook</i> for information on associating a nick "
+"<p>See the <i>Icekap Handbook</i> for information on associating a nick "
 "with a contact in the Addressbook, and for an explanation of what the hostmask "
 "is.</qt>"
 
@@ -5651,10 +5651,10 @@ msgstr "Update &interval:"
 #: rc.cpp:280 rc.cpp:286
 #, no-c-format
 msgid ""
-"Konversation will check the status of the nicknames listed below at this "
+"Icekap will check the status of the nicknames listed below at this "
 "interval."
 msgstr ""
-"Konversation will check the status of the nicknames listed below at this "
+"Icekap will check the status of the nicknames listed below at this "
 "interval."
 
 #. i18n: file ./src/watchednicknames_preferencesui.ui line 124
@@ -5674,10 +5674,10 @@ msgstr "&Show watched nicks online tab on application startup"
 #, no-c-format
 msgid ""
 "<qt>When checked, the <b>Nicks Online</b> window will be automatically opened "
-"when starting Konversation.</qt>"
+"when starting Icekap.</qt>"
 msgstr ""
 "<qt>When checked, the <b>Nicks Online</b> window will be automatically opened "
-"when starting Konversation.</qt>"
+"when starting Icekap.</qt>"
 
 #. i18n: file ./src/watchednicknames_preferencesui.ui line 155
 #: rc.cpp:295
@@ -5911,45 +5911,45 @@ msgstr "Use custom Web &browser:"
 msgid "Automatically &join channel on invite"
 msgstr "Automatically &join channel on invite"
 
-#. i18n: file ./src/config/konversation.kcfg line 21
+#. i18n: file ./src/config/icekap.kcfg line 21
 #: rc.cpp:427
 #, no-c-format
 msgid "Limit the size of the tab labels to fit all on screen"
 msgstr ""
 
-#. i18n: file ./src/config/konversation.kcfg line 232
+#. i18n: file ./src/config/icekap.kcfg line 232
 #: rc.cpp:498
 #, no-c-format
 msgid ""
 "Enable if you want all the IRC input lines to check your spelling as you type"
 msgstr ""
 
-#. i18n: file ./src/config/konversation.kcfg line 241
+#. i18n: file ./src/config/icekap.kcfg line 241
 #: rc.cpp:501
 #, no-c-format
 msgid ""
 "Enabling this will cause the input box to grow vertically when it fills up."
 msgstr ""
 
-#. i18n: file ./src/config/konversation.kcfg line 320
+#. i18n: file ./src/config/icekap.kcfg line 320
 #: rc.cpp:534 rc.cpp:1113
 #, no-c-format
 msgid "&Show real names next to nicknames"
 msgstr "&Show real names next to nicknames"
 
-#. i18n: file ./src/config/konversation.kcfg line 513
+#. i18n: file ./src/config/icekap.kcfg line 513
 #: rc.cpp:610
 #, fuzzy, no-c-format
 msgid "Open Watched Nicks tab at application startup"
 msgstr "&Show watched nicks online tab on application startup"
 
-#. i18n: file ./src/config/konversation.kcfg line 786
+#. i18n: file ./src/config/icekap.kcfg line 786
 #: rc.cpp:707
 #, no-c-format
 msgid "Enable emoticons"
 msgstr "Enable emoticons"
 
-#. i18n: file ./src/config/konversation.kcfg line 790
+#. i18n: file ./src/config/icekap.kcfg line 790
 #: rc.cpp:710
 #, no-c-format
 msgid "Emoticons theme"
@@ -6671,7 +6671,7 @@ msgstr "OSD font:"
 msgid "&Enable On Screen Display"
 msgstr "&Enable On Screen Display"
 
-#. i18n: file ./src/konversationui.rc line 35
+#. i18n: file ./src/icekapui.rc line 35
 #: rc.cpp:1175
 #, no-c-format
 msgid "&Window"
@@ -7535,7 +7535,7 @@ msgstr "Server:"
 #, fuzzy
 #~ msgid "Konversation::ChannelOptionsUI"
 #~ msgstr ""
-#~ "Konversation Channel List: %1 - %2\n"
+#~ "Channel List: %1 - %2\n"
 #~ "\n"
 
 #, fuzzy

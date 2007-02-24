@@ -348,9 +348,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 #>- 	      exit 1;; \
 #>- 	  esac; \
 #>- 	done; \
-#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  po/en_GB/Makefile'; \
+#>- 	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  po/en_GB/Makefile'; \
 #>- 	cd $(top_srcdir) && \
-#>- 	  $(AUTOMAKE) --foreign  po/en_GB/Makefile
+#>- 	  $(AUTOMAKE) --gnu  po/en_GB/Makefile
 #>+ 12
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -360,9 +360,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  po/en_GB/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  po/en_GB/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  po/en_GB/Makefile
+	  $(AUTOMAKE) --gnu  po/en_GB/Makefile
 	cd $(top_srcdir) && perl admin/am_edit po/en_GB/Makefile.in
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -725,9 +725,9 @@ force-reedit:
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  po/en_GB/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  po/en_GB/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  po/en_GB/Makefile
+	  $(AUTOMAKE) --gnu  po/en_GB/Makefile
 	cd $(top_srcdir) && perl admin/am_edit po/en_GB/Makefile.in
 
 
