@@ -1,0 +1,12 @@
+KDE_CHECK_HEADER(knotifyclient.h,
+	[
+        AC_DEFINE(USE_KNOTIFY, 1, [Define if you have KNotify] )
+        ])
+
+
+KDE_CHECK_HEADER(kimiface.h,
+	[
+	AC_DEFINE(HAVE_KIMIFACE, 1, [Define if you have Kimiface headers] )
+	LIB_KIMIFACE="-lkimproxy"
+	AC_SUBST(LIB_KIMIFACE)
+	])

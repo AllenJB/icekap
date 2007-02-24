@@ -1,0 +1,750 @@
+Changes from 1.0 to 1.0.1
+We are pleased to announce the immediate availability of Konversation 1.0.1,
+a maintenance release featuring notable improvements for users of right-to-
+left languages (including new Arabic and Hebrew translations), further re-
+finement of the user interface and application functionality, and fixes for
+minor defects found in the previous release.
+
+* A bug that caused left-to-right text contained in lines determined to be
+  right-to-left text to appear reversed has been fixed.
+* Whether a line is treated as right-to-left vs. left-to-right text is now
+  determined by the amount of each type of character in the line, improving
+  the user experience in chats involving bi-directional text considerably.
+* The "Edit Network" dialog has been refined for clarity and ease of use.
+* A warning dialog to prevent accidentally quitting Konversation has been
+  added.
+* The Auto Replace list can now be sorted.
+* The '/media' script command now sports improved player recognition, enhan-
+  ced and easier configurability, the ability to distinguish between audio
+  and video media as well as newly added support for kdetv. New '/audio' and
+  '/video' command aliases have been added to expose these new abilities.
+* The lower boundary of the default DCC port range has been raised from 1025
+  to 1026 to avoid conflicts with the commonly blocked Windows RPC port 1025.
+* Dismissing an OSD notification by clicking on it will now also cancel the
+  systray notification flash.
+* A new configuration file option [OSD]OSDCheckDesktopLock has been added,
+  allowing to manually disable the screensaver check in non-KDE environments
+  that do not support it, causing the OSD not to be displayed.
+* A bug that could lead to the "Switch to" sub-menu in the context menus of
+  tabs not to be updated properly upon switching tabs has been fixed.
+* A bug that caused the 'irc setBack' DCOP call not to function has been
+  fixed.
+* A bug that caused ampersands in the names of tabs not to be displayed and
+  an immediately following character to be used as keyboard accelerator has
+  been fixed.
+* A bug that caused ignoring nicknames with '[' or ']' characters in them to
+  fail has been fixed.
+* Command aliases containing regular expression syntax can no longer cause
+  built-in commands not to function.
+* A bug that caused the Konversation irc:// protocol handler not to function
+  has been fixed. Its compatibility with systems that do not use the GNU bash
+  shell as default shell has been improved.
+* A notable number of code quality improvements suggested by KDEs automated
+  quality control service EBN have been implemented.
+
+-------------------------------------------------------------------------------
+
+Changes from 0.19 to 1.0
+We are extremely pleased to announce the immediate availability of Konversation
+1.0, a significant milestone in the lifetime of the Konversation project. This
+release includes major new functionality as well as a large amount of
+improvements to existing functionality, with an emphasis on user interface
+polish and overall reliability. Notable new features include a vertical treelist
+of tabs as an alternative to the traditional tab bar, auto-replacement of words
+in incoming and outgoing messages, an improved Channel Settings dialog now
+featuring a ban list, an optional expanding input box and many improvements to
+both DCC file transfers and DCC chats. Enjoy!
+
+
+User Interface
+* It is now possible to place the tabs on the left side of the application window.
+  This has been implemented as a treelist of tabs. The treelist supports all of
+  the cosmetic and interactive properties of the original horizontal tab bar,
+  including colored notifications, LED icons, (hover) close buttons with delayed
+  activation, reordering, drag'n'drop and mouse wheel cruising. And a few tricks
+  of its own.
+* Connection status tabs now feature specific context menu entries to disconnect
+  and reconnect, as well as to join a channel on that connection.
+* The automatic resizing of tabs in the tab bar first implemented in version
+  0.19 is now optional.
+* The grouping behavior of Channel List and Raw Log tabs in the tab bar has been
+  improved.
+* Disabling notification for a tab will now unset the active notification.
+* The enabled/disabled state of the notifications for connection status tabs will
+  now be remembered across sessions for configured networks.
+* The speed of switching tabs in quick succession with the auto-spellchecking
+  preference enabled has been improved.
+* Using custom fonts in the user interface is now optional. The font used by the
+  tab bar is now configurable.
+* Events in the connection status tabs are now logged into separate logfiles.
+* The Channel Settings dialog now includes a Ban List tab that allows viewing,
+  adding and removing bans in a channel. The dialog can now be opened from the
+  menu bar and chat window context menu in addition to the button in the topic
+  area.
+* Mode and topic handling in the Channel Settings dialog and the channel mode
+  buttons have been overhauled to make them more robust and reliable.
+* The number of Quick Buttons to show below the nickname list in channel tabs is
+  now configurable. Additional buttons may be added or existing buttons removed.
+* Konversation now supports auto-replacing words in incoming and outgoing
+  messages. Regular expressions are supported. The auto-replace configuration can
+  be found in the preferences dialog. The static Wiki link feature found in older
+  versions has been retired in favor of an auto-replace rule.
+* The search bar has been redesigned to provide a better user experience.
+* The "Find Next" action will now open the search bar when there is no active
+  search, matching the behavior of Konqueror and other KDE applications.
+* The sorting of the nick completion list has been improved to put the last
+  active user for a given completion prefix at the beginning of the list.
+* The tab completion of the user's own nickname has been reenabled.
+* The nick completion feature has been significantly cleaned up and made more
+  reliable. A bug that could lead to an application crash during nick completion
+  has been fixed.
+* An option to expand the vertical size of the input box automatically when the
+  text entered grows beyond the length of a single line has been added.
+* The behavior of the input box on pasting text including leading or trailing
+  newline characters has been improved never to cause lines being sent without
+  user acknowledgement.
+* The input box of connection status, channel and query tabs will now be disabled
+  and the nickname list of channel tabs cleared when the respective server
+  connection is closed.
+* Konversation can now optionally insert a remember line whenever a tab is hidden,
+  either by switching to a different tab or minimizing the window.
+* Multiple consecutive remember lines will no longer be inserted.
+* Remember lines can now also be inserted into the chat windows of connection
+  status and DCC Chat tabs.
+* The Colored Nicknames feature will now always assign the same color to the same
+   nickname.
+* The number of backlog lines to show in the chat window is now configurable.
+* The recognition of URLs in the chat window has been improved to cope better
+  with URLs containing or being surrounded by parenthesis and to exclude trailing
+  dots and commas.
+* Channel links following mode characters or surrounded by interpunctuation are
+  now properly recognized in the chat window.
+* The context menus for URLs and channel links in the topic area now match the
+  context menus in the chat window.
+* Multiple ignore or unignore actions ordered at the same time will no longer be
+  shown on separate lines in the chat window.
+* The nickname context menus in the chat window, topic are and the nickname list
+  will now show "Ignore", "Unignore" and "Add to Watched Nicknames" entries as
+  applicable.
+* A bug that could lead to the chat window nickname context menu actions ceasing
+  to function after the targeted user left the channel has been fixed.
+* The Server List dialog now allows connecting to a specific server in a network
+  even when a connection to that network has been previously established. If that
+  connection is active, a dialog box will verify whether to disconnect from the
+  current server and connect to the chosen one instead, otherwise the connection
+  will simply be reestablished using the newly chosen server.
+* The Quick Connect feature will now properly warn when the identity to be used
+  in the connection attempt is not set up properly.
+* The appearance and behavior of the warning about an incorrectly set-up identity
+  have been improved. A prior connection attempt will now be automatically resumed
+  after the identity settings have been corrected.
+* Many of the pages in the Konversation preferences dialog have been redesigned
+  and rewritten for improved consistency, reliability and clarity. The general
+  layout of the dialog has been improved as well.
+* The naming of certain actions in the Configure Shortcuts dialog has been
+  improved to make them easier to recognize outside of their normal context in
+  the application interface.
+* Numerous improvements to keyboard navigation have been made.
+* The nickname list now longer allows drag'n'drop of channel or user links from
+  the chat window onto list entries, as a DCC transfer of those data sources
+  cannot succeed.
+* The preference to show or hide the real names of users in the nickname list will
+  now be applied immediately.
+* The columns of the nickname list will no longer resize erratically when the
+  preferences to show or hide real names and hostmasks are changed at runtime.
+* A bug that could lead to nicknames being sent as messages when double-clicking
+  a selection of multiple nicknames in the nickname list has been fixed.
+* The placement of actions in the application menus has been improved.
+* The shown/hidden state of the application menubar will now be remembered across
+  sessions. When the menubar is hidden, a menu action to show it again will now be
+  added to the chat window context menu.
+* The "Close All Open Queries" menu action is now be disabled properly when there
+  are no open queries.
+* A bug that could lead to the "Close All Open Queries" menu action failing to
+  properly close all open queries has been fixed.
+* A bug that could lead to an application crash when closing the tab after choosing
+  to ignore someone in a query has been fixed.
+* The "Hide Nicklist" menu action will now be disabled properly when the tab shown
+  does not have a nickname list has been fixed.
+* The actions in the "Insert" menu will now be disabled properly when the current
+  tab does not support them.
+* The default double-click action in the "Watched Nicks Online" tab is now to open
+  a query to the respective contact.
+* The sorting in the Watched Nicks Online tab has been improved: Offline users are
+  now always sorted at the bottom.
+* Several bugs in the "Watched Nicknames Online" tab that could lead to application
+  crashes have been fixed.
+* Several errors in the chat window status messages produced by the Watched Nicks
+  Online system have been corrected.
+* A bug that could lead the the columns in the "Watched Nicks Online" list resizing
+  erratically has been fixed.
+* A bug that could lead to the status bar not being cleared properly when the last
+  tab was closed or the application window lost focus after a link was
+  launched from the chat window has been fixed.
+* The display of temporary and static info texts in the status bar has been
+  improved not to interfere with each other and provide more useful information.
+  Also, the status bar lag info section is now updated more consistently to avoid
+  jumping around of the other status bar sections.
+* A bug that could lead to a wrong nickname count being shown in the status bar
+  of channel tabs has been fixed.
+* Repeated triggering of the "Open URL Catcher" menu action will now properly
+  show and hide the URL Catcher tab.
+* The warning about pasting text with multiple lines can now be properly disabled
+  and reenabled from the Warning Dialogs preferences page.
+* A bug that could lead to IRC bookmarks showing up as actions in the Configure
+  Shortcuts dialog has been fixed.
+* A bug that could lead to changes of the global KDE icon set not being applied
+  to the tab bar close buttons immediately has been fixed.
+* A bug that caused the application window to change its horizontal size after
+  opening a Query to a user with a very long hostmask has been fixed. The DCC
+  Chat and query tabs now use the same heading style as channel tabs.
+* A bug that could lead to the topic and nickname list areas not keeping their
+  size properly across tab switches has been fixed.
+* A bug that could lead to certain types of KNotify event notifications not
+  being executed properly when the system tray icon was enabled has been fixed.
+* A bug that could lead to ampersands in network names being shown as
+  underscores in the menu under certain circumstances has been fixed.
+* A bug that could lead to an application crash when trying to access
+  non-existing tabs via the Alt+number keyboard shortcuts has been fixed.
+* A bug that could lead to the toolbar being hidden after it was edited has been
+  fixed.
+* A bug that could lead to the chat window context menu not being cancelled
+  properly when clicking outside of it has been fixed.
+* A bug that could lead to heavy disk seeking when the splitters separating
+  the topic area and the nickname list from the chat window were moved has been
+  fixed.
+* The option to only show the application in the system tray at all times has
+  been retired in favor of the standard KDE mechanic of minimizing into the
+  system tray.
+
+Commands
+* The 'Now Playing' script invoked via the /media command alias now features
+  support for XMMS and KSCD as well as improved support for untagged media files
+  playing in Amarok. Support for non-ASCII encodings in file names and meta tags
+  has been improved as well.
+* New "/hop" and "/dehop" commands to grant or remove half-op status from a user
+  have been added.
+* A new "/devoice" command has been added.
+* A new "/kickban" command to ban and immediately kick a user has been added. It
+  supports the same parameters as the "/ban" command plus an additional "kickban
+  reason" parameter.
+* Commands to grant or remove status for users will now be applied to the user's
+  own nickname when no nickname parameter is given.
+* The "/unignore" command now supports the same simple nickname-only format as
+  the "/ignore" command.
+* If given no parameter, the "/away" command will now set the away state with
+  the default away message. The "/back" and "/unaway" commands can be used to
+  unset the away state.
+* You may now use "%nick" as a placeholder for your own nickname in the auto-
+  connect commands for a network.
+* A bug that could lead to the auto-connect commands for a network not being
+  executed correctly has been fixed.
+
+DCC
+* DCC file transfers now support file names containing spaces on send, receive
+  and resume. The automatic replacement of spaces with underscores in file names
+  can now be optionally disabled in the DCC preferences.
+* File names are no longer being needlessly lower-cased during DCC transfers.
+* The DCC file transfer and DCC Chat info messages shown in the chat window have
+  been significantly improved to provide more useful information while being less
+  excessively verbose.
+* DCC Chats will now be logged properly.
+* It is now possible to select multiple files in the DCC Status tab.
+* The default size of the buffer used in DCC transfers has been increased to
+  8192kb for improved DCC performance.
+* The DCC Status tab will no longer show a speed of '?' for completed, failed or
+  aborted transfers.
+* Bugs that could lead to the IP used for DCC transfers not being retrieved from
+  the server correctly upon reconnect or in general on certain servers have been
+  fixed.
+* A bug that could lead to the progress bar of a transfer in the DCC Status tab
+  being rendered at a wrong position has been fixed.
+* A bug that could lead to Konversation's CPU usage spiking to 100% after a DCC
+  Chat was closed from the remote side has been fixed.
+* Several bugs that could lead to application crashes in DCC Chat tabs after the
+  server connection from which the DCC Chat originated was closed have been fixed.
+
+Technology
+* Konversation will now properly split up very long lines into multiple messages
+  by calculating the length of the message preamble and the number of bytes of the
+  text payload. Encodings that use multiple or variable numbers of bytes per
+  character are accounted for.
+* The Disconnect and Reconnect menu actions and the respective input box commands
+  have been rewritten for increased reliability. Their state will now be updated
+  properly, and they will quit the IRC server in the correct manner.
+* A previous away state will now be recreated upon reconnection to a server.
+* The Quick Connect feature will now no longer join the auto-join channels of
+  the configured network that the quick connect server was recognized as being a
+  part of.
+* The "Konversation" and "KonvDCOPIdentity" DCOP objects have been renamed to
+  "irc" and "identity", respectively. Several bugs in the DCOP API have been
+  fixed, and deprecated interfaces removed.
+* Processing of the user lists of newly joined channels has been rewritten to
+  fix several bugs, including improved compatibility with the Bip IRC proxy and
+  other servers.
+* The lag calculation and timeout handling code has been rewritten for improved
+  reliability and performance.
+* Recognition of the half-op user status has been improved.
+* The detection of text being typed into the input box to prevent focussing new
+  tabs at inconvenient times has been improved to work correctly with non-ASCII
+  characters.
+* The handling of channel user limits in the Channel Settings dialog is now more
+  reliable.
+* Support for mode flags encountered on UnrealIRCD servers has been improved.
+* Support for RPL_DATASTR on UnrealIRCD servers has been improved.
+* A bug that could lead to the mode flags displayed for users not being updated
+  properly after they were kicked from a channel has been fixed.
+* A bug that could lead to iterating over a configured network's servers failing
+  after a connection failure has been fixed.
+* A bug that could lead to Konversation connecting to the wrong server in a
+  network when choosing to connect to a specific server from the Server List dialog
+  has been fixed.
+* A dialog will now ask the user for an additional nickname when all nicknames
+  configured in the identity where tried unsuccessfully during a connection
+  attempt. This replaces the previous behavior of repeatedly appending underscores
+  to the last nickname, which eventually ran into the nickname length limit on the
+  server.
+* A bug that could lead to unnecessary nick changes immediately after connecting
+  to a server has been fixed.
+* A bug that could lead to Konversation trying to auto-identify multiple times
+  upon connect on certain servers has been fixed.
+* A bug that could lead to Konversation not picking up on users leaving a
+  channel without providing a part or quit message on UnrealIRCD servers has been
+  fixed.
+* Changes to the list of auto-join channels for a network will now be applied
+  immediately.
+* The auto-reconnect preference will now be properly applied at runtime.
+* Konversation will no longer enable IDENTIFY-MSG mode on servers that support it,
+  but continues to be able to process messages with IDENTIFY-MSG prefixes in case
+  an involved IRC proxy chose to enable IDENTIFY-MSG mode.
+* The broken default for the Custom Web Browser preference has been fixed.
+* Konversation will no longer allow Konsole tabs to be opened in KDE
+  environments in which the use of terminals is prohibited by the KIOSK framework.
+* A bug that could lead to an application crash when a Konsole tab was closed
+  from the Konsole component's context menu has been fixed.
+* A bug that could lead to an application crash when a channel was joined while
+  the application window was hidden has been fixed.
+
+-------------------------------------------------------------------------------
+
+Changes from 0.18 to 0.19
+We are extremely pleased to announce the immediate release of Konversation 0.19. The focus
+of this release is on extending and improving upon established functionality. Most notable
+in this regard are significantly improved management of IRC networks and servers all across
+the application, a redesigned tab bar and better support for common IRC commands. A long
+list of further additions and improvements has us confident of this being the best version
+of Konversation yet. Enjoy!
+
+
+User Interface
+* The Server List dialog has been rewritten to allow direct manipulation of a network's
+  servers and features more intelligent sorting behavior. Reordering networks via drag
+  and drop is now possible. A behavioral audit of all actions in the dialog resulted in
+  numerous improvements.
+* A redesigned tab bar sports highly configurable text- and LED icon-based notifications
+  as well as more intelligent scaling behavior under space-critical conditions.
+* Tabs are now intelligently grouped around their respective connection status tab.
+* Status tab labels now display the user-configured network name where appropriate.
+* The Find Text dialog has been replaced by a search bar that no longer interrupts your
+  workflow.
+* Channel links in the chat area now feature a context menu for quick access to common
+  actions.
+* Usage of the status bar has been extended to show context-relevant information as the
+  cursor passes over various interface elements. The lag information segment is now
+  only shown where appropriate.
+* A channel's topic can now be cleared by setting an empty text in the Channel Options
+  dialog.
+* The Channel Options dialog has been redesigned to allow editing the current topic
+  while browsing a channel's topic history.
+* The Watched Nicknames interface has been fully integrated with network management.
+* Pressing the Arrow Down key in the input line now preserves any input entered by
+  adding it to the history.
+* Commands may now be sent as regular messages by typing Ctrl+Enter.
+* The multi-line paste editor window now highlights whitespace characters and prepends
+  the existing content of the input line.
+* The Colored Nicknames feature has been improved to better handle nickname changes and
+  immediately apply any changes to the color palette.
+* Some previously not configurable notification events have been made configurable.
+* Users leaving a server will now be announced in any query you have open with them.
+* Query tab labels will now update when a user you have a query open with changes
+  his/her name.
+* The DCC file transfer dialogs have seen a number of cosmetic improvements. Among other
+  things, in the event of a file being renamed on save, the local file name is now shown
+  across the application.
+* Various status and error messages have been rewritten for improved consistency and
+  clarity.
+* The KDE standard text font will now be correctly set as initial default chat font.
+* It is now possible to skip displaying a server's MOTD on connect.
+* If the application is set to display a server's MOTD in a fixed-width font and the
+  previously configured default chat font is already a fixed-width font, the chat font
+  will now be used rather than the global KDE default fixed-width font.
+* The state of the automatic spell checking functionality is now remembered across
+  sessions and set for all tabs.
+* Networks no longer lose their channel history when their settings are changed.
+* The Server List dialog will no longer close when a connection attempt fails due to
+  the identity not being set up correctly.
+* After changing your nickname using the optional drop-down menu to the left of the
+  input line, focus will now be returned to the input line.
+* The configuration dialog has been rewritten to correctly update the button state of
+  its primary actions and improve consistency with the KDE style guide.
+* The vertical and horizontal splitters in channel tabs now behave better when the
+  application window is resized and correctly retain their positions across sessions.
+* The OSD preview in the OSD settings page is now always shown correctly.
+* The OSD will no longer be shown when the desktop is locked.
+* A bug that prevented copying text from the chat area under certain circumstances has
+  been fixed.
+* Keyboard search in the channel nickname list has been fixed.
+* A number of issues affecting nickname context menus in the chat area have been fixed.
+* A bug leading to a wrong operator count in the status bar has been fixed.
+* It is no longer possible to add nameless networks or hostless servers in the respon-
+  sible management dialogs.
+* Bugs that led to parts of the interface not reacting to KDE color scheme changes have
+  been fixed.
+* The status bar now correctly reacts to KDE font size changes.
+* A bug that led to the application window resizing on overly long status bar contents
+  has been fixed.
+* A bug that led to multiple remember lines being inserted into the frontmost tab when
+  away mode was activated has been fixed.
+* A bug that led to wrong link addresses being opened from the chat area has been fixed.
+* Bugs that led to wrong URLs being produced by dragging a link from the chat area to
+  the input line have been fixed.
+* Channel names are now better recognized as such by the chat area.
+
+
+Bookmarking
+* Bookmark titles now default to the channel name.
+* Bookmarks now store the network name rather than the server address where available.
+* Bookmarks now support IPv6 addresses.
+
+
+Commands
+* The '/server' command now recognizes a greater variety of address notations including
+  network names.
+* The '/names' command now always succeeds in returning the user list of a channel.
+* The '/topic' command now always succeeds in returning the topic of a channel.
+* A '/dns' command has been added that facilitates resolving the host name of a user on
+  the server as well as generic host names. Reverse resolve is supported on KDE 3.5.1+.
+* An '/unignore' command has been added.
+* A '/disconnect' command has been added.
+* A '/reconnect' command has been added that disconnects and then reconnects the respec-
+  tive server.
+* A '/setkey' command has been added to set the Blowfish encryption/decryption key for
+  the respective context.
+* The '/list' command now correctly opens the Channel List tab.
+* A bug in parsing the arguments of the '/join' command has been fixed.
+* Usage information and error reporting for various commands has been rewritten for
+  improved consistency and clarity.
+* A bug that led to a 'clear' command being sent to the server when using the '/clear'
+  command to clear the contents of a query tab has been fixed.
+
+
+Miscellaneous
+* The 'media' script has been rewritten and now features improved compatibility with
+  common character sets, greatly enhanced support for the Kaffeine media player and
+  newly added support for the Yammi media player.
+* The 'sysinfo' script has been rewritten to produce more concise output and better
+  handle a variety of storage scenarios.
+* The convenience feature expanding [[term]] into a Wikipedia link is now localizable
+  and generates a link that performs an intelligent lookup for the term in the Wiki-
+  pedia rather than assume a correct direct link.
+
+
+Technology
+* Konversation now depends on KDE 3.4+.
+* The preferences storage system has been rewritten to facilitate easier maintenance
+  and faster development in future release cycles.
+* Localized support for a long list of IRC protocol primitives has been added.
+* The application will now correctly iterate over a network's servers on successive
+  failed connection attempts.
+* When the '/server' command or the Quick Connect dialog is used to connect to a
+  server that has previously been added to a network in the Server List dialog, it
+  will be recognized as being part of the network and the respective identity
+  settings will be applied.
+* The automated reply to a highlight event can now reference the groups of the matched
+  pattern by the identifiers %1-%9 and the entire match by the identifier %0.
+* The CABAP IDENTIFY-MSG technology is now supported.
+* Compatibility with the Unreal IRC server has been improved.
+* Initial support for Blowfish encryption (compatible with mIRCryption and FiSH) has
+  been added. Note that Diffie-Hellman key exchange (DHX) is not yet supported.
+* The Watched Nicknames reporting has been made more reliable.
+* Socket handling in the DCC file transfer feature has been improved.
+* Alpha-blending of icons in the channel nickname list has been fixed.
+* Support for the iso-2022-jp encoding has been enhanced.
+* The custom web browser feature will now automatically append the URL as a parameter
+  to the specified command when the %u identifier is missing.
+* Channel modes are now correctly cleared and updated in the internal representation
+  on rejoin.
+* A bug that led to an infinite loop during a connection attempt when all nicknames
+  configured in the identity were in use has been fixed.
+* A bug that could lead to a crash when opening the log file for a closed connection has
+  been fixed.
+
+-------------------------------------------------------------------------------
+
+Changes from 0.17 to 0.18
+- All nicks were blue when colored nicks are disabled with some setups
+- /cycle now works as expected
+- /gauge script was not working correctly when given a bigger than 100 argument
+- /mail script has been added
+- Button to invoke Regular Expression Editor (if installed) in Settings -> Highlight.
+- Complete command line argument system for connection
+- An option to disable clickable nicks . Add ClickableNicks=false to konversationrc to disable it.
+- Fixed a big memory leak in message processing
+- Nicklist slider now correctly resizes in all channels when its resized and correctly restores on startup
+- [[foo]] is now a link to http://en.wikipedia.org/wiki/foo . We will expand this to local wikipedia's in a later release [Update: Now fixed in 0.19]
+
+
+Changes from 0.16 to 0.17
+- Add an option to hide realnames in nicklist
+- Show away users as disabled ala Xchat
+- Remove sort by away status
+- Fix whois replies for normal users on safe channels ( IRCNet alike )
+- Fix whois replies from ircd-hybrid ( Efnet alike )
+- Better handling of quiet bans ( especially Freenode )
+- KDE color scheme is now honered in topic widget
+- Enable clickable nicks even if colored nicks are off
+- Per identity pre-shell command support with a GUI
+- Bookmarking support
+- Detect Japanese encoding correctly while trying to auto-detect Unicode
+
+Changes from 0.15 to 0.16
+- Dropping URLs onto nick on nicklist or onto query initiates DCC send
+- You can now do SSL connections from Quick Connect Dialog
+- Nicklist Icon Themes
+- New topic widget
+- Added a channel dialog
+- Made the nickname box optional
+- Fix DCC resume when its set to auto-accept
+- Calculate DCC CPS more accurately
+- Colored nicks support
+- Added dcop functions to set away and added alt+a shortcut to toggle away
+- Clicking nicks in channel text will now open a query and similarly,
+  clicking #foo will now join channel #foo
+- Nicks in channel view now have a context menu as in nicklistview
+- Tab at begining of line inserts last completed nick
+- A media script added to replace amarok,juk,noatun,kaffeine scripts.
+  Use /media instead of using /amarok,/juk etc.
+- Links can now be dragged & dropped from channels
+- Midde clicking urls now opens them in new tab in konqueror ( if konqueror is used for links )
+- Improved unicode detection
+- Fix unicode detection for strings containing color markup
+- /omsg,/onotice support
+- Added an option to use an IPv4 interface for IPv6 dcc sends
+- A new /google script added to search Google using Google SOAP api
+- Redesigned settings page
+- A new application icon
+- Lots of optimizations all around
+
+Changes from 0.14 to 0.15
+- Ported socket code to KNetwork. Weird connection problems should be gone now
+- Get default username/ident information from system
+- Support for bouncer prefixes in nick completion
+- Dcc port range support
+- Scripts now works with /script or /exec script
+- Improved bidi support.
+- Cleaned up settings dialog
+- Added an option how to get own IP for DCC send/chat
+- "Open Watched Nicks Online panel on startup" option
+- Support encoding settings per channel
+- SSL Support
+- KIO-fied local I/O on DCC send/receive
+- OSD Positioning Support
+- New network based server settings
+- Added an option to stay in systray all the time
+- Full irc:/ url support (channel name & password now supported in url)
+- /charset support
+- auto /WHO support
+- display away status of nicks in nick list
+
+Changes from 0.13 to 0.14
+- Added irc "pseudo" command /prefs for changing settings without settings dialog.
+- Measure away time and make it available via placeholder (%t)
+- (Very much) Improved OSD.
+- New application icons by luciash d' being <luci@sh.ground.cz>. Thanks!
+- Added /server command for connecting to a server.
+- After the connection is lost and the old nickname is still in use,
+  the nickbutton in the channelwindows is updated to the new nick.
+- Now you can read utf8 encoded messages even if your locale is not unicode
+- "Do not show this dialog again" preferences now works correctly
+- Added an "Insert Remember Line" feature.
+  The user can mark the position in the channel where he stopped
+  reading(because he is away for a short time).
+  When he comes back, he can scroll back to this mark and read
+  what he missed.
+- Added the possibility to execute commands on server connection(for
+  authentication and such things). Can be configured in the "Edit Server"
+  dialog.
+- Added further timestamps for am/pm (BR 79612)
+- Added QuickConnect dialog by Michael Goettsche. (Thanks once again)
+- Properly receive a logout/shutdown request and terminate konversation,
+  instead of minimizing to the systray.
+- Make OSD switchable on/off via DCOP. Thanks to Michael Goettsche! (BR 75870)
+- Dates can now be shown, next to the timestamp. Patch by Michael Goettsche
+  (BR 82785) (thanks!)
+- Added DCC auto-resume feature by Michael Goettsche (BR 81740) (thanks!)
+- Added systray notification
+- Added shell like nick completion mode (aka uga mode)
+- Implemented a cleaner way of handling tab shortcuts
+- Implemented DCC Chat
+- Hilight mailto: links
+- Topic line can now be hidden
+- Added an away nickname
+- Added /aaway, /ame and /amsg
+- Added "Open URL" context menu to channel list entries
+- Implemented slower / faster blinking of tabs for more / less important events
+- Less important events like Join, Part and Nickchanges can now be hidden
+- Custom CTCP Version Reply Support
+- Added a shortcut to close all open queries
+- Added a patch by Thomas Nagy to cycle tabs with mouse scroll wheel (thanks!)
+- Added logfile reader
+- Added patch by Gary Cramblitt to enhance DCC panel (thanks!)
+- Added patch by Gary Cramblitt to select custom web browser command (thanks!)
+- When the server goes offline, now all associated tabs get crossed out
+- Added a multi line pasting editor
+- Nicks Online is now a tabbed panel, rather than separate window.
+- Added sound support to the highlight list
+- Added regular expression support to the highlight list^
+- Follow the style guide when the tray icon is enabled by minimizing to tray when
+  the close button is clicked.
+- Auto text feature on highlight events
+- DCC resume offers to rename a transfer now
+- Added patch by Ruud Nabben to enable hiding of IRC colors (thanks!)
+- Various small fixes and additions
+
+Changes from 0.12 to 0.13
+- Added an option to hide hostmasks in channel nick lists
+- Autojoin on invite with user interaction implemented
+- Added URL catcher interface
+- Added user interface for "don't show again" dialogs
+- Added slovenian translation by Barko (thanks!)
+- Added korean translation by Hye-Shik Chang (thanks!)
+- Added option to place tabs on top
+- Color configuration is now in preferences dialog
+- Quick buttons configuration is now in preferences dialog
+- Notify list is now in preferences dialog
+- Option for a background image added
+- Added /quote command for raw server messages
+- Added Copy URL into clipboard for URL catcher
+- Added option for reconnect on too long lag
+- Added "Server list" menu entry to "File" menu
+- Applied a patch by Peter Simonsson (thanks!)
+- Patch added Color picker, IRC colors and KNotify events
+- Added support for command aliases
+- Encodings are now on per-identity basis
+- Added indicator to show own away state
+- Added system tray icon patch by Frauke Oster (thanks!)
+- Channel list update is now more CPU friendly
+- Tell the user why the channel list could not be opened
+- Channel list now sorts correctly when number column is clicked
+- Applied a patch by Christian Muehlhaeuser to enable bigger mode changes (thanks)
+- Applied a patch by Christian Muehlhaeuser to right-align close widgets (thanks)
+- Info button on dcc panel now works
+- Added /unban command
+- Applied a patch by Christian Muehlhaeuser for OSD functions (thanks)
+- Applied a patch by Sascha Cunz for extended user modes beyond @ and + (thanks)
+- Applied a patch by Steve Wollkind to close visible tab via shortcut (thanks)
+
+Changes from 0.11 to 0.12
+- Now handles multi server mode in one single window
+- Fixed the wrong Ops counter
+- Added /notify command and respective dcop calls
+- Added support for /oper command
+- Implemented /ban command and menu items
+- Added shortcut (F3) for search dialog
+- History does not get cleared on cursor up/down anymore
+- Added context menu to copy URLs immediately
+- Added paragraph spacing
+- Added hostmask column to nick list
+- Implemented background hostmask scanning
+- Recognises now who set the first topic
+- Added nickname sorting options
+- Sorting now has up/down arrows
+- Added channel list panel
+- Added russian translation by Stanislav Karchebny (thanks!)
+- Applied some patches by Stanislav Karchebny
+- Added PgUp/PgDown support to Channels, Queries and Status views
+- Added rename button to identity page to overcome QComboBox limitations
+- Tabs now blink in the last highlight color to indicate important text
+- Tabs don't get to front anymore while the user is typing in an input line
+- Added shortcut editor dialog
+- Added konsole panel (thanks to Mickael Marchand)
+
+Changes from 0.10 to 0.11
+- Added a patch by Bart Verwilst to provide automatic service registration (thanks!)
+- Added "Hide Menu" function
+- Improved server connection code to stop konversation freezes at startup
+- Server lag calculation after reconnect fixed
+- Implemented own async lookup class to throw out broken QDns
+- Added prelimnary application icons
+- Send File in dcc panel now works
+- Added Send File context menu item in text views
+- Added dialog for Resume / Overwrite DCC Get files
+- Added large paste warning dialog
+- Close Buttons on tabs are now an option
+- Added context menu on tabs with close item
+- Added ALT+1 - ALT+9 for switching tabs
+- Applied a big patch by Alex Zepeda. Thanks!
+- First working DCOP implementation
+- Implemented a simple search dialog
+- Added a raw log pane
+
+Changes from 0.9 to 0.10
+- Font encodings are now set via KCharsets
+- Implemented different identities
+- Added double click actions to nick list and notify list
+- Added support for ASCII-BEL
+- Added custom spacing and margin
+- Added close buttons for the tabs
+- Redesign of the color configuration dialog
+- Switched to kapp->config() to properly remember dialog status
+- Color code parsing now works with QRegExp
+- CTCP-Ping now works
+- Removed files that are no longer needed
+- Updated German translation
+
+Changes from 0.8 to 0.9
+- Added strikeout support (untested yet)
+- Added Swedish translation, done by Karolina Lindqvist (thanks!)
+- Added optional timestamps to chat windows
+- Quick Buttons and Channel Mode Buttons can now be hidden
+- Added support for multi channel joins
+- Added #include "sourcefile.moc" to all Q_OBJECTS to speed up compiles
+- Added support for autoconnect to server
+- Inserted a QSplitter between channel text and nick list
+- Added support for background colors
+- Reduced flickering on blinking tabs
+- Added experimental support for foreign language characters
+- Added ignore list functionality
+- Added away / unaway messages
+- DCC folder can now be selected vial GUI
+- Applied a patch by Barak Bloch to fix foreign character set behaviour (thanks!)
+- Updated German translation
+
+Changes from 0.7 to 0.8:
+- DCCs can now be opened (started) using the 'open' button
+- DCCs can now be aborted using the 'abort' button
+- Added support for /users reply
+- Added support for /invite and 341 reply
+- Added support for 401 error reply
+- Added /smsg for "silent messages"
+- Text and Nicklist-Fonts can now be selected via GUI
+- Changed server ping response again to make dalnet ircd happy
+- Fixed nicklist sorting in channels
+- Switched to kdevelop 2.1.4 to hopefully fix some compile problems
+- Made Notices appear a bit different
+- DCC recipient list now gets sorted
+- Made text widget not scroll when scroll bar isn't completely down
+- Parsed WHOIS messages into human readable form
+- Pasting multiline text into input lines now behaves as expected
+- Hilights now honor the sending nick, too (patch by Suran. Thanks!)
+- You can now hilight all your own lines independently
+- Fixed the problem in the appearance dialog with font names
+- Added DCC error dialogs
+- Quit/Nickchange/Kicks are now only reported in channels where the nick actually is in
+- Fixed bug with lockups on defective logfiles
+- Added support for EUR currency symbol
+- Added keyboard handling to navigate between pages
+- Code cleanup in nick list
+- Added first support for custom colors in nick list
+- Added application dsescription for the 'About' dialog
+- Major restructuring of the server status panel
