@@ -1,0 +1,23 @@
+[Desktop Entry]
+Categories=Qt;KDE;Network;X-SuSE-IRCClient;
+Comment=
+Comment[en_GB]=
+DocPath=icekap/index.html
+Encoding=UTF-8
+Exec=icekap -caption "%c" %i %m
+GenericName=IRC Client
+GenericName[en_GB]=IRC Client
+Icon=icekap
+MimeType=
+Name=Icekap
+Name[en_GB]=Icekap
+Path=
+ServiceTypes=DCOP/InstantMessenger;DCOP/Unique
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DCOP-ServiceName=icekap
+X-DCOP-ServiceType=unique
+X-KDE-SubstituteUID=false
+X-KDE-Username=
