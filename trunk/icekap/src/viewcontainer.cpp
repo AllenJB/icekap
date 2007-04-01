@@ -394,7 +394,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("reconnect_server");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (server && !server->isConnected())
                 action->setEnabled(true);
@@ -405,7 +405,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("disconnect_server");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (server && server->isConnected())
                 action->setEnabled(true);
@@ -416,7 +416,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("join_channel");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (!server || (server && !server->isConnected()))
                 action->setEnabled(false);
@@ -618,7 +618,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("reconnect_server");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (server && !server->isConnected())
                 action->setEnabled(true);
@@ -629,7 +629,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("disconnect_server");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (server && server->isConnected())
                 action->setEnabled(true);
@@ -640,7 +640,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("join_channel");
         if (action)
         {
-            GenericServer* server = view->getServer();
+            IcecapServer* server = view->getServer();
 
             if (!server || (server && !server->isConnected()))
                 action->setEnabled(false);
@@ -1837,7 +1837,7 @@ void ViewContainer::insertRememberLine()
     }
 }
 
-void ViewContainer::insertRememberLine(Server* server)
+void ViewContainer::insertRememberLine(IcecapServer* server)
 {
     for (int i = 0; i <  m_tabWidget->count(); ++i)
     {
@@ -2005,7 +2005,7 @@ void ViewContainer::addDccChat(const QString& myNick,const QString& nick,const Q
     }
 }
 
-StatusPanel* ViewContainer::addStatusView(GenericServer* server)
+StatusPanel* ViewContainer::addStatusView(IcecapServer* server)
 {
     StatusPanel* statusView=new StatusPanel(m_tabWidget);
 
@@ -2020,7 +2020,7 @@ StatusPanel* ViewContainer::addStatusView(GenericServer* server)
     statusView->setName(label);
 
     QObject::connect(server, SIGNAL(sslInitFailure()), this, SIGNAL(removeStatusBarSSLLabel()));
-    QObject::connect(server, SIGNAL(sslConnected(Server*)), this, SIGNAL(updateStatusBarSSLLabel(Server*)));
+    QObject::connect(server, SIGNAL(sslConnected(IcecapServer*)), this, SIGNAL(updateStatusBarSSLLabel(IcecapServer*)));
 
     // ... then put it into the tab widget, otherwise we'd have a race with server member
     addView(statusView,label);
@@ -2037,7 +2037,7 @@ StatusPanel* ViewContainer::addStatusView(GenericServer* server)
     return statusView;
 }
 
-RawLog* ViewContainer::addRawLog(GenericServer* server)
+RawLog* ViewContainer::addRawLog(IcecapServer* server)
 {
     RawLog* rawLog=new RawLog(m_tabWidget);
     rawLog->setServer(server);
@@ -2050,7 +2050,7 @@ RawLog* ViewContainer::addRawLog(GenericServer* server)
     return rawLog;
 }
 
-void ViewContainer::serverQuit(GenericServer* server)
+void ViewContainer::serverQuit(IcecapServer* server)
 {
     if (server == m_frontServer)
         m_frontServer = 0;
@@ -2066,7 +2066,7 @@ void ViewContainer::serverQuit(GenericServer* server)
 
 void ViewContainer::reconnectFrontServer()
 {
-    GenericServer* server = 0;
+    IcecapServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2079,7 +2079,7 @@ void ViewContainer::reconnectFrontServer()
 
 void ViewContainer::disconnectFrontServer()
 {
-    GenericServer* server = 0;
+    IcecapServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2092,7 +2092,7 @@ void ViewContainer::disconnectFrontServer()
 
 void ViewContainer::showJoinChannelDialog()
 {
-    GenericServer* server = 0;
+    IcecapServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2108,9 +2108,9 @@ void ViewContainer::showJoinChannelDialog()
         server->sendJoinCommand(dlg.channel(), dlg.password());
 }
 
-void ViewContainer::serverStateChanged(Server* server, Server::State state)
+void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State state)
 {
-    GenericServer* updateServer = 0;
+    IcecapServer* updateServer = 0;
 
     if (m_contextServer)
         updateServer = m_contextServer;
@@ -2122,7 +2122,7 @@ void ViewContainer::serverStateChanged(Server* server, Server::State state)
         KAction* action = actionCollection()->action("disconnect_server");
         if (action)
         {
-            if (state == Server::SSConnected)
+            if (state == IcecapServer::SSConnected)
                 action->setEnabled(true);
             else
                 action->setEnabled(false);
@@ -2131,7 +2131,7 @@ void ViewContainer::serverStateChanged(Server* server, Server::State state)
         action = actionCollection()->action("reconnect_server");
         if (action)
         {
-            if (state != Server::SSDisconnected)
+            if (state != IcecapServer::SSDisconnected)
                 action->setEnabled(false);
             else
                 action->setEnabled(true);
@@ -2140,7 +2140,7 @@ void ViewContainer::serverStateChanged(Server* server, Server::State state)
         action = actionCollection()->action("join_channel");
         if (action)
         {
-            if (state != Server::SSConnected)
+            if (state != IcecapServer::SSConnected)
                 action->setEnabled(false);
             else
                 action->setEnabled(true);
@@ -2148,7 +2148,7 @@ void ViewContainer::serverStateChanged(Server* server, Server::State state)
     }
 }
 
-Channel* ViewContainer::addChannel(Server* server, const QString& name)
+Channel* ViewContainer::addChannel(IcecapServer* server, const QString& name)
 {
     Channel* channel=new Channel(m_tabWidget);
     channel->setServer(server);
@@ -2191,7 +2191,7 @@ void ViewContainer::toggleChannelNicklists()
     emit updateChannelAppearance();
 }
 
-Query* ViewContainer::addQuery(Server* server, const NickInfoPtr& nickInfo, bool weinitiated)
+Query* ViewContainer::addQuery(IcecapServer* server, const NickInfoPtr& nickInfo, bool weinitiated)
 {
     QString name = nickInfo->getNickname();
     Query* query=new Query(m_tabWidget);
@@ -2252,7 +2252,7 @@ void ViewContainer::closeQueries()
     }
 }
 
-ChannelListPanel* ViewContainer::addChannelListPanel(Server* server)
+ChannelListPanel* ViewContainer::addChannelListPanel(IcecapServer* server)
 {
     ChannelListPanel* channelListPanel=new ChannelListPanel(m_tabWidget);
     channelListPanel->setServer(server);
@@ -2320,7 +2320,7 @@ void ViewContainer::openNicksOnlinePanel()
         connect(m_nicksOnlinePanel, SIGNAL(editClicked()), m_window, SLOT(openNotify()));
         connect(m_nicksOnlinePanel, SIGNAL(doubleClicked(const QString&,const QString&)), m_window, SLOT(notifyAction(const QString&,const QString&)));
         connect(m_nicksOnlinePanel, SIGNAL(showView(ChatWindow*)), this, SLOT(showView(ChatWindow*)));
-        connect(m_window, SIGNAL(nicksNowOnline(Server*)), m_nicksOnlinePanel, SLOT(updateServerOnlineList(Server*)));
+        connect(m_window, SIGNAL(nicksNowOnline(IcecapServer*)), m_nicksOnlinePanel, SLOT(updateServerOnlineList(IcecapServer*)));
         (dynamic_cast<KToggleAction*>(actionCollection()->action("open_nicksonline_window")))->setChecked(true);
     }
     else

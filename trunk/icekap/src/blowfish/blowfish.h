@@ -12,16 +12,12 @@
 #ifndef BLOWFISH_H
 #define BLOWFISH_H
 
-class Server;
 class IcecapServer;
 
 namespace Konversation
 {
 
     int findOccurrence(const QCString& input, const QCString& separator, int nth);
-    void decrypt(const QString& recipient, QCString& cipher, Server* server);
-    void decryptTopic(const QString& recipient, QCString& cipher, Server* server);
-    void encrypt(const QString& recipient, QString& cipher, Server* server);
     void decrypt(const QString& recipient, QCString& cipher, IcecapServer* server);
     void decryptTopic(const QString& recipient, QCString& cipher, IcecapServer* server);
     void encrypt(const QString& recipient, QString& cipher, IcecapServer* server);

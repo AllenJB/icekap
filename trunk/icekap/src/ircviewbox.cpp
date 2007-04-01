@@ -24,7 +24,7 @@ static QPixmap getIcon(const QString& name)
     return iconLoader->loadIcon(name, KIcon::Toolbar, 16);
 }
 
-IRCViewBox::IRCViewBox(QWidget* parent, GenericServer* newServer)
+IRCViewBox::IRCViewBox(QWidget* parent, IcecapServer* newServer)
 : QVBox(parent)
 {
     m_ircView = new IRCView(this, newServer);

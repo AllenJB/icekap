@@ -19,14 +19,14 @@
   @author Dario Abatianni
 */
 
-class Server;
+class IcecapServer;
 
 class ScriptLauncher : public QObject
 {
     Q_OBJECT
 
     public:
-        explicit ScriptLauncher(Server* server);
+        explicit ScriptLauncher(IcecapServer* server);
         ~ScriptLauncher();
 
         signals:
@@ -37,6 +37,6 @@ class ScriptLauncher : public QObject
         void launchScript(const QString& target, const QString& parameter);
 
     protected:
-        Server* m_server;
+        IcecapServer* m_server;
 };
 #endif

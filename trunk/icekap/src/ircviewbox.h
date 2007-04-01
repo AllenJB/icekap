@@ -16,8 +16,7 @@
 
 class IRCView;
 class SearchBar;
-class GenericServer;
-//class Server;
+class IcecapServer;
 
 class IRCViewBox : public QVBox
 {
@@ -25,7 +24,7 @@ class IRCViewBox : public QVBox
 
         public:
 
-        IRCViewBox(QWidget* parent, GenericServer* newServer);
+        IRCViewBox(QWidget* parent, IcecapServer* newServer);
         ~IRCViewBox();
 
         IRCView*   ircView() const;

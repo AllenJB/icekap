@@ -23,7 +23,7 @@
 #include "konversationmainwindow.h"
 #include "viewcontainer.h"
 #include "trayicon.h"
-#include "server.h"
+#include "icecapserver.h"
 
 namespace Konversation
 {

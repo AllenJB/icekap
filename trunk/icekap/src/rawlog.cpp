@@ -19,7 +19,6 @@
 #include "channel.h"
 #include "ircview.h"
 #include "ircviewbox.h"
-#include "server.h"
 #include "icecapserver.h"
 #include "konversationapplication.h"
 

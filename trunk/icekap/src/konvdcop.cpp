@@ -23,7 +23,7 @@
 #include "channel.h"
 #include "konvdcop.h"
 #include "identity.h"
-#include "server.h"
+#include "icecapserver.h"
 
 KonvDCOP::KonvDCOP()
 : DCOPObject("irc"),
@@ -41,8 +41,8 @@ void KonvDCOP::raw(const QString& server,const QString& command)
 QStringList KonvDCOP::listServers()
 {
     QStringList serverlist;
-    QPtrList<Server>servers = static_cast<KonversationApplication *>(kapp)->getServerList();
-    Server *server;
+    QPtrList<IcecapServer>servers = static_cast<KonversationApplication *>(kapp)->getServerList();
+    IcecapServer *server;
     for ( server = servers.first(); server; server = servers.next() )
         serverlist.append(server->getServerName());
     return serverlist;
@@ -51,8 +51,8 @@ QStringList KonvDCOP::listServers()
 QStringList KonvDCOP::listConnectedServers()
 {
     QStringList serverlist;
-    QPtrList<Server>servers = static_cast<KonversationApplication *>(kapp)->getServerList();
-    Server *server;
+    QPtrList<IcecapServer>servers = static_cast<KonversationApplication *>(kapp)->getServerList();
+    IcecapServer *server;
     for ( server = servers.first(); server; server = servers.next() )
         if(server->connected())
             serverlist.append(server->getServerName());
@@ -126,7 +126,7 @@ void KonvDCOP::connectToServer(const QString& url, int port, const QString& chan
 
 QString KonvDCOP::getNickname (const QString &serverName)
 {
-    Server* server = static_cast<KonversationApplication *>(kapp)->getServerByName(serverName);
+    IcecapServer* server = static_cast<KonversationApplication *>(kapp)->getServerByName(serverName);
     if ( !server )
     {
         error( i18n( "getNickname: Server %1 is not found." ).arg( serverName ) );
@@ -137,8 +137,8 @@ QString KonvDCOP::getNickname (const QString &serverName)
 
 QString KonvDCOP::getAnyNickname ()
 {
-    const QPtrList<Server>serverlist = static_cast<KonversationApplication *>(kapp)->getServerList();
-    Server *server = serverlist.getFirst();
+    const QPtrList<IcecapServer>serverlist = static_cast<KonversationApplication *>(kapp)->getServerList();
+    IcecapServer *server = serverlist.getFirst();
     return server->getNickname();
 }
 

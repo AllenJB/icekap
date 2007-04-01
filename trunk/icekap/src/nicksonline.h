@@ -92,7 +92,7 @@ class NicksOnline : public ChatWindow
          * Refresh the nicklistview for a single server.
          * @param server            The server to be refreshed.
          */
-        void updateServerOnlineList(Server* server);
+        void updateServerOnlineList(IcecapServer* server);
 
     protected slots:
         /**
@@ -127,7 +127,7 @@ class NicksOnline : public ChatWindow
         /**
          * Received from server when a NickInfo changes its information.
          */
-        void slotNickInfoChanged(Server* server, const NickInfoPtr nickInfo);
+        void slotNickInfoChanged(IcecapServer* server, const NickInfoPtr nickInfo);
         /**
          * Received from popup menu when user chooses something.
          */

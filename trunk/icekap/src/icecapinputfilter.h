@@ -18,14 +18,12 @@
 #include <qstringlist.h>
 
 #include "ignore.h"
-#include "genericinputfilter.h"
 
 /*
   @author Dario Abatianni
 */
 
 class IcecapServer;
-//class GenericServer;
 class QWidget;
 class Query;
 

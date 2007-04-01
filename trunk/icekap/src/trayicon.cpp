@@ -23,7 +23,7 @@
 #include <klocale.h>
 
 #include "channel.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "chatwindow.h"
 
 namespace Konversation

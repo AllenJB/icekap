@@ -20,7 +20,7 @@ class QLabel;
 class KonversationMainWindow;
 class KSqueezedTextLabel;
 class SSLLabel;
-class Server;
+class IcecapServer;
 
 class KonversationStatusBar : public QObject
 {
@@ -45,11 +45,11 @@ class KonversationStatusBar : public QObject
         void clearInfoLabel();
 
         void setLagLabelShown(bool shown);
-        void updateLagLabel(Server* lagServer, int msec);
+        void updateLagLabel(IcecapServer* lagServer, int msec);
         void resetLagLabel();
-        void setTooLongLag(Server* lagServer, int msec);
+        void setTooLongLag(IcecapServer* lagServer, int msec);
 
-        void updateSSLLabel(Server* server);
+        void updateSSLLabel(IcecapServer* server);
         void removeSSLLabel();
 
     private:

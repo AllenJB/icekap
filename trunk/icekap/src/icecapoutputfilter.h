@@ -22,20 +22,17 @@
 #include <kio/global.h>
 
 #include "identity.h"
-#include "genericoutputfilter.h"
 
 /*
   @author Dario Abatianni
 */
 
-// class Server;
 class IcecapServer;
-// class GenericServer;
 class ChatWindow;
 
 namespace Konversation
 {
-/*
+
     typedef enum MessageType
     {
         Message,
@@ -54,7 +51,7 @@ namespace Konversation
         QString typeString;
         MessageType type;
     };
-*/
+
 
     class IcecapOutputFilter : public QObject
 //    class IcecapOutputFilter : public GenericOutputFilter, public QObject
@@ -63,7 +60,7 @@ namespace Konversation
         Q_OBJECT
 
         public:
-            explicit IcecapOutputFilter(GenericServer* server);
+            explicit IcecapOutputFilter(IcecapServer* server);
             ~IcecapOutputFilter();
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
@@ -168,7 +165,7 @@ namespace Konversation
             QString destination;
             QString commandChar;
 
-            GenericServer* m_server;
+            IcecapServer* m_server;
     };
 }
 #endif

@@ -18,14 +18,14 @@
 #include <klineedit.h>
 
 #include "joinchannelui.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "channel.h"
 #include "servergroupsettings.h"
 
 namespace Konversation
 {
 
-    JoinChannelDialog::JoinChannelDialog(GenericServer* server, QWidget *parent, const char *name)
+    JoinChannelDialog::JoinChannelDialog(IcecapServer* server, QWidget *parent, const char *name)
         : KDialogBase(parent, name, true, i18n("Join Channel on %1").arg(server->getServerGroup()), Ok|Cancel, Ok)
     {
         m_server = server;

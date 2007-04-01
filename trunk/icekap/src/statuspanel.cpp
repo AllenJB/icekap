@@ -29,7 +29,7 @@
 #include "ircinput.h"
 #include "ircview.h"
 #include "ircviewbox.h"
-#include "server.h"
+#include "icecapserver.h"
 
 StatusPanel::StatusPanel(QWidget* parent) : ChatWindow(parent)
 {

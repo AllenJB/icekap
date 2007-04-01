@@ -28,7 +28,7 @@
 #include <kbookmarkmanager.h>
 
 #include "konversationapplication.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "common.h"
 #include "channel.h"
 
@@ -72,7 +72,7 @@ namespace Konversation
         return QSize(0, minHeight);
     }
 
-    void TopicLabel::setServer(Server* server)
+    void TopicLabel::setServer(IcecapServer* server)
     {
         m_server = server;
     }

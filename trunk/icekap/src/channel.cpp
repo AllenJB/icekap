@@ -47,7 +47,7 @@
 
 #include "konversationapplication.h"
 #include "channel.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "nick.h"
 #include "nicklistview.h"
 #include "nicklistviewitem.h"
@@ -307,7 +307,7 @@ Channel::Channel(QWidget* parent)
     //  connect( Konversation::Addressbook::self(), SIGNAL(addresseesChanged()), this, SLOT(slotLoadAddressees()));
 }
 
-void Channel::setServer(Server *server)
+void Channel::setServer(IcecapServer *server)
 {
     ChatWindow::setServer(server);
     topicLine->setServer(server);

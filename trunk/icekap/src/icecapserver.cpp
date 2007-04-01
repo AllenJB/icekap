@@ -254,8 +254,8 @@ void IcecapServer::connectSignals()
 //    connect(this, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
 //    connect(this, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
 //        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
-    connect(this, SIGNAL(serverLag(GenericServer*, int)), getViewContainer(), SIGNAL(updateStatusBarLagLabel(GenericServer*, int)));
-    connect(this, SIGNAL(tooLongLag(GenericServer*, int)), getViewContainer(), SIGNAL(setStatusBarLagLabelTooLongLag(GenericServer*, int)));
+    connect(this, SIGNAL(serverLag(IcecapServer*, int)), getViewContainer(), SIGNAL(updateStatusBarLagLabel(IcecapServer*, int)));
+    connect(this, SIGNAL(tooLongLag(IcecapServer*, int)), getViewContainer(), SIGNAL(setStatusBarLagLabelTooLongLag(IcecapServer*, int)));
     connect(this, SIGNAL(resetLag()), getViewContainer(), SIGNAL(resetStatusBarLagLabel()));
     connect(outputFilter, SIGNAL(showView(ChatWindow*)), getViewContainer(), SLOT(showView(ChatWindow*)));
     connect(outputFilter, SIGNAL(openKonsolePanel()), getViewContainer(), SLOT(addKonsolePanel()));
@@ -568,7 +568,7 @@ void IcecapServer::ircServerConnectionSuccess()
     Konversation::ServerSettings serverSettings = m_serverGroup->serverByIndex(m_currentServerIndex);
 
     connect(this, SIGNAL(nicknameChanged(const QString&)), statusView, SLOT(setNickname(const QString&)));
-    statusView->appendServerMessage(i18n("Info"),i18n("Connected; logging in..."));
+    statusView->appendServerMessage(i18n("Info"),i18n("Connected"));
 
 /*
     QString connectString = "USER " +

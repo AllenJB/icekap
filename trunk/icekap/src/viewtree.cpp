@@ -26,7 +26,7 @@
 #include "viewtreeitem.h"
 #include "preferences.h"
 #include "chatwindow.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "channel.h"
 #include "ircview.h"
 
@@ -845,7 +845,7 @@ ViewTreeItem* ViewTree::getItemForView(ChatWindow* view)
 
 ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 {
-    GenericServer* server = view->getServer();
+    IcecapServer* server = view->getServer();
 
     ViewTreeItem* item = static_cast<ViewTreeItem*>(firstChild());
 
@@ -868,7 +868,7 @@ ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 ViewTreeItem* ViewTree::getLastChild(QListViewItem* parent)
 {
     ViewTreeItem* item = static_cast<ViewTreeItem*>(parent);
-    GenericServer* server = item->getView()->getServer();
+    IcecapServer* server = item->getView()->getServer();
     ViewTreeItem* lastChild = 0;
 
     while (item->getView() && item->getView()->getServer() == server)

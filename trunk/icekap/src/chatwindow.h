@@ -26,8 +26,7 @@
 */
 
 class IRCView;
-//class Server;
-class GenericServer;
+class IcecapServer;
 class KonversationMainWindow;
 class ViewContainer;
 
@@ -60,7 +59,7 @@ class ChatWindow : public QVBox
          *  as possibly after ChatWindow is created.
          *  @param newServer The server to set it to.
          */
-        virtual void setServer(GenericServer* newServer);
+        virtual void setServer(IcecapServer* newServer);
         /** This should be called if setServer is not called - e.g.
          *  in the case of konsolepanel.  This should be set as soon
          *  as possible after creation.
@@ -69,7 +68,7 @@ class ChatWindow : public QVBox
         /** Get the server this is linked to.
          *  @return The server it is associated with, or null if none.
          */
-        GenericServer* getServer();
+        IcecapServer* getServer();
         virtual void setIdentity(const Identity *newIdentity);
         void setTextView(IRCView* newView);
         IRCView* getTextView() const;
@@ -202,7 +201,7 @@ class ChatWindow : public QVBox
         /** A pointer to the server this chatwindow is part of.
          *  Not always non-null - e.g. for konsolepanel
          */
-        GenericServer* m_server;
+        IcecapServer* m_server;
         Identity identity;
         QFile logfile;
         WindowType type;

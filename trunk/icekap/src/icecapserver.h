@@ -27,15 +27,12 @@
 #include <kstreamsocket.h>
 
 #include "channelnick.h"
-// #include "inputfilter.h"
-// #include "outputfilter.h"
 #include "icecapinputfilter.h"
 #include "icecapoutputfilter.h"
 #include "nickinfo.h"
 #include "sslsocket.h"
 #include "serversettings.h"
 #include "servergroupsettings.h"
-#include "genericserver.h"
 
 class Channel;
 class DccTransfer;
@@ -52,8 +49,7 @@ class ViewContainer;
 
 using namespace KNetwork;
 
-//class IcecapServer : public QObject, public GenericServer
-class IcecapServer : public GenericServer
+class IcecapServer : public QObject
 {
     Q_OBJECT
 

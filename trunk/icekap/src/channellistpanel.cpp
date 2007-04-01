@@ -37,7 +37,7 @@
 #include "channel.h"
 #include "channellistpanel.h"
 #include "channellistviewitem.h"
-#include "server.h"
+#include "icecapserver.h"
 
 ChannelListPanel::ChannelListPanel(QWidget* parent) : ChatWindow(parent)
 {

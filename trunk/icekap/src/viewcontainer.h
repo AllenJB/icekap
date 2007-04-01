@@ -19,8 +19,6 @@
 #include "konversationmainwindow.h"
 #include "common.h"
 #include "icecapserver.h"
-// #include "server.h"
-#include "genericserver.h"
 
 class QSplitter;
 
@@ -30,8 +28,7 @@ class KActionCollection;
 class KonversationMainWindow;
 class ViewTree;
 class ChatWindow;
-//class Server;
-class GenericServer;
+class IcecapServer;
 class Images;
 class UrlCatcher;
 class DccPanel;
@@ -55,11 +52,11 @@ class ViewContainer : public QObject
         KActionCollection* actionCollection() { return m_window->actionCollection(); }
 
         QGuardedPtr<ChatWindow> getFrontView() { return m_frontView; }
-        GenericServer* getFrontServer() { return m_frontServer; }
+        IcecapServer* getFrontServer() { return m_frontServer; }
 
         void silenceViews();
 
-        void serverQuit(GenericServer* server);
+        void serverQuit(IcecapServer* server);
 
         QString currentViewTitle();
         QString currentViewURL(bool passNetwork);
@@ -107,7 +104,7 @@ class ViewContainer : public QObject
         void insertChar(const QChar& chr);
         void insertIRCColor();
         void insertRememberLine();
-        void insertRememberLine(Server* server);
+        void insertRememberLine(IcecapServer* server);
 
         void openLogFile();
         void openLogFile(const QString& caption, const QString& file);
@@ -126,22 +123,22 @@ class ViewContainer : public QObject
 
         void addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen);
 
-        StatusPanel* addStatusView(GenericServer* server);
-        RawLog* addRawLog(GenericServer* server);
+        StatusPanel* addStatusView(IcecapServer* server);
+        RawLog* addRawLog(IcecapServer* server);
         void disconnectFrontServer();
         void reconnectFrontServer();
         void showJoinChannelDialog();
-        void serverStateChanged(Server* server, Server::State state);
+        void serverStateChanged(IcecapServer* server, IcecapServer::State state);
 
-        Channel* addChannel(Server* server, const QString& name);
+        Channel* addChannel(IcecapServer* server, const QString& name);
         void openChannelSettings();
         void toggleChannelNicklists();
 
-        Query* addQuery(Server* server,const NickInfoPtr & name, bool weinitiated=true);
+        Query* addQuery(IcecapServer* server,const NickInfoPtr & name, bool weinitiated=true);
         void updateQueryChrome(ChatWindow* view, const QString& name);
         void closeQueries();
 
-        ChannelListPanel* addChannelListPanel(Server* server);
+        ChannelListPanel* addChannelListPanel(IcecapServer* server);
         void openChannelList(const QString& filter = QString::null, bool getList = false);
 
         void openNicksOnlinePanel();
@@ -159,10 +156,10 @@ class ViewContainer : public QObject
         void setStatusBarInfoLabel(const QString& text);
         void clearStatusBarInfoLabel();
         void setStatusBarLagLabelShown(bool shown);
-        void updateStatusBarLagLabel(GenericServer* server, int msec);
+        void updateStatusBarLagLabel(IcecapServer* server, int msec);
         void resetStatusBarLagLabel();
-        void setStatusBarLagLabelTooLongLag(Server* server, int msec);
-        void updateStatusBarSSLLabel(GenericServer* server);
+        void setStatusBarLagLabelTooLongLag(IcecapServer* server, int msec);
+        void updateStatusBarSSLLabel(IcecapServer* server);
         void removeStatusBarSSLLabel();
 
     private:
@@ -188,8 +185,8 @@ class ViewContainer : public QObject
 
         Images* images;
 
-        GenericServer* m_frontServer;
-        GenericServer* m_contextServer;
+        IcecapServer* m_frontServer;
+        IcecapServer* m_contextServer;
         QGuardedPtr<ChatWindow> m_frontView;
         QGuardedPtr<ChatWindow> m_previousFrontView;
         ChatWindow* m_searchView;

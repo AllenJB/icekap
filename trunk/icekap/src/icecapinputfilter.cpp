@@ -25,7 +25,6 @@
 
 #include "icecapinputfilter.h"
 #include "icecapserver.h"
-//#include "genericserver.h"
 #include "replycodes.h"
 #include "konversationapplication.h"
 #include "commit.h"

@@ -28,7 +28,7 @@
 #include "channel.h"
 #include "chatwindow.h"
 #include "ircview.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "konversationapplication.h"
 #include "logfilereader.h"
 
@@ -83,7 +83,7 @@ ChatWindow::WindowType ChatWindow::getType()
     return type;
 }
 
-void ChatWindow::setServer(GenericServer* newServer)
+void ChatWindow::setServer(IcecapServer* newServer)
 {
     if (!newServer)
     {
@@ -105,7 +105,7 @@ void ChatWindow::setServer(GenericServer* newServer)
     }
 }
 
-GenericServer* ChatWindow::getServer()
+IcecapServer* ChatWindow::getServer()
 {
     return m_server;
 }
