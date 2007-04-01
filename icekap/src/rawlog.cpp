@@ -20,6 +20,7 @@
 #include "ircview.h"
 #include "ircviewbox.h"
 #include "server.h"
+#include "icecapserver.h"
 #include "konversationapplication.h"
 
 RawLog::RawLog(QWidget* parent) : ChatWindow(parent)

@@ -13,11 +13,11 @@
   Copyright (C) 2005 Eike Hein <sho@eikehein.com>
 */
 
-#ifndef OUTPUTFILTER_H
-#define OUTPUTFILTER_H
+#ifndef ICECAPOUTPUTFILTER_H
+#define ICECAPOUTPUTFILTER_H
 
 #include <qobject.h>
-// #include <qstring.h>
+#include <qstring.h>
 #include <kurl.h>
 #include <kio/global.h>
 
@@ -28,7 +28,8 @@
   @author Dario Abatianni
 */
 
-class Server;
+// class Server;
+class IcecapServer;
 // class GenericServer;
 class ChatWindow;
 
@@ -55,16 +56,15 @@ namespace Konversation
     };
 */
 
-//    class OutputFilter : public GenericOutputFilter, public QObject
-//    class OutputFilter : public QObject, public GenericOutputFilter
-//    class OutputFilter : public GenericOutputFilter
-	class OutputFilter : public QObject
+    class IcecapOutputFilter : public QObject
+//    class IcecapOutputFilter : public GenericOutputFilter, public QObject
+//    class IcecapOutputFilter : public GenericOutputFilter
     {
         Q_OBJECT
 
         public:
-            explicit OutputFilter(Server* server);
-            ~OutputFilter();
+            explicit IcecapOutputFilter(GenericServer* server);
+            ~IcecapOutputFilter();
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
             OutputFilterResult parse(const QString& myNick,const QString& line,const QString& name);
@@ -168,7 +168,7 @@ namespace Konversation
             QString destination;
             QString commandChar;
 
-            Server* m_server;
+            GenericServer* m_server;
     };
 }
 #endif

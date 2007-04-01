@@ -32,12 +32,13 @@
 #include <kresolver.h>
 #include <kreverseresolver.h>
 
-#include "outputfilter.h"
+#include "icecapoutputfilter.h"
 #include "konversationapplication.h"
 #include "konversationmainwindow.h"
 #include "ignore.h"
-#include "server.h"
-// #include "genericserver.h"
+// #include "server.h"
+#include "icecapserver.h"
+#include "genericserver.h"
 #include "irccharsets.h"
 #include "linkaddressbook/addressbook.h"
 #include "konviiphelper.h"
@@ -46,18 +47,18 @@
 
 namespace Konversation
 {
-    OutputFilter::OutputFilter(Server* server)
+    IcecapOutputFilter::IcecapOutputFilter(GenericServer* server)
         : QObject(server)
     {
         m_server = server;
     }
 
-    OutputFilter::~OutputFilter()
+    IcecapOutputFilter::~IcecapOutputFilter()
     {
     }
 
     // replace all aliases in the string and return true if anything got replaced at all
-    bool OutputFilter::replaceAliases(QString& line)
+    bool IcecapOutputFilter::replaceAliases(QString& line)
     {
         QStringList aliasList=Preferences::aliasList();
         QString cc(Preferences::commandChar());
@@ -98,7 +99,7 @@ namespace Konversation
         return false;
     }
 
-    QStringList OutputFilter::splitForEncoding(const QString& inputLine, int MAX)
+    QStringList IcecapOutputFilter::splitForEncoding(const QString& inputLine, int MAX)
     {
         QString channelCodecName=Preferences::channelEncoding(m_server->getServerGroup(), destination);
 
@@ -201,7 +202,7 @@ namespace Konversation
         return finals;
     }
 
-    OutputFilterResult OutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
+    OutputFilterResult IcecapOutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
     {
         setCommandChar();
 
@@ -361,37 +362,37 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseOp(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseOp(const QString &parameter)
     {
         return changeMode(parameter,'o','+');
     }
 
-    OutputFilterResult OutputFilter::parseDeop(const QString &ownNick, const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseDeop(const QString &ownNick, const QString &parameter)
     {
         return changeMode(addNickToEmptyNickList(ownNick,parameter),'o','-');
     }
 
-    OutputFilterResult OutputFilter::parseHop(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseHop(const QString &parameter)
     {
         return changeMode(parameter, 'h', '+');
     }
 
-    OutputFilterResult OutputFilter::parseDehop(const QString &ownNick, const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseDehop(const QString &ownNick, const QString &parameter)
     {
         return changeMode(addNickToEmptyNickList(ownNick,parameter), 'h', '-');
     }
 
-    OutputFilterResult OutputFilter::parseVoice(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseVoice(const QString &parameter)
     {
         return changeMode(parameter,'v','+');
     }
 
-    OutputFilterResult OutputFilter::parseUnvoice(const QString &ownNick, const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseUnvoice(const QString &ownNick, const QString &parameter)
     {
         return changeMode(addNickToEmptyNickList(ownNick,parameter),'v','-');
     }
 
-    OutputFilterResult OutputFilter::parseJoin(QString& channelName)
+    OutputFilterResult IcecapOutputFilter::parseJoin(QString& channelName)
     {
         OutputFilterResult result;
 
@@ -414,7 +415,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseKick(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseKick(const QString &parameter)
     {
         OutputFilterResult result;
 
@@ -449,7 +450,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parsePart(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parsePart(const QString &parameter)
     {
         OutputFilterResult result;
 
@@ -501,7 +502,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseTopic(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseTopic(const QString &parameter)
     {
         OutputFilterResult result;
 
@@ -565,7 +566,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseAway(QString &reason)
+    OutputFilterResult IcecapOutputFilter::parseAway(QString &reason)
     {
         OutputFilterResult result;
 
@@ -584,14 +585,14 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseBack()
+    OutputFilterResult IcecapOutputFilter::parseBack()
     {
         OutputFilterResult result;
         result.toServer = "AWAY";
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseNames(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseNames(const QString &parameter)
     {
         OutputFilterResult result;
         result.toServer = "NAMES ";
@@ -606,7 +607,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseQuit(const QString &reason)
+    OutputFilterResult IcecapOutputFilter::parseQuit(const QString &reason)
     {
         OutputFilterResult result;
 
@@ -620,7 +621,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseNotice(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseNotice(const QString &parameter)
     {
         OutputFilterResult result;
         QString recipient = parameter.left(parameter.find(" "));
@@ -641,7 +642,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseMsg(const QString &myNick, const QString &parameter, bool isQuery)
+    OutputFilterResult IcecapOutputFilter::parseMsg(const QString &myNick, const QString &parameter, bool isQuery)
     {
         OutputFilterResult result;
         QString recipient = parameter.section(" ", 0, 0, QString::SectionSkipEmpty);
@@ -708,7 +709,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseSMsg(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseSMsg(const QString &parameter)
     {
         OutputFilterResult result;
         QString recipient = parameter.left(parameter.find(" "));
@@ -726,7 +727,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseCtcp(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseCtcp(const QString &parameter)
     {
         OutputFilterResult result;
                                                   // who is the recipient?
@@ -753,7 +754,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::changeMode(const QString &parameter,char mode,char giveTake)
+    OutputFilterResult IcecapOutputFilter::changeMode(const QString &parameter,char mode,char giveTake)
     {
         OutputFilterResult result;
         // TODO: Make sure this works with +l <limit> and +k <password> also!
@@ -806,7 +807,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseDcc(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseDcc(const QString &parameter)
     {
         OutputFilterResult result;
 
@@ -879,7 +880,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::sendRequest(const QString &recipient,const QString &fileName,const QString &address,const QString &port,unsigned long size)
+    OutputFilterResult IcecapOutputFilter::sendRequest(const QString &recipient,const QString &fileName,const QString &address,const QString &port,unsigned long size)
     {
         OutputFilterResult result;
         QString niftyFileName(fileName);
@@ -898,7 +899,7 @@ namespace Konversation
     }
 
     // Accepting Resume Request
-    OutputFilterResult OutputFilter::acceptRequest(const QString &recipient,const QString &fileName,const QString &port,int startAt)
+    OutputFilterResult IcecapOutputFilter::acceptRequest(const QString &recipient,const QString &fileName,const QString &port,int startAt)
     {
         QString niftyFileName(fileName);
 
@@ -913,7 +914,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::resumeRequest(const QString &sender,const QString &fileName,const QString &port,KIO::filesize_t startAt)
+    OutputFilterResult IcecapOutputFilter::resumeRequest(const QString &sender,const QString &fileName,const QString &port,KIO::filesize_t startAt)
     {
         QString niftyFileName(fileName);
 
@@ -930,7 +931,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseInvite(const QString &parameter)
+    OutputFilterResult IcecapOutputFilter::parseInvite(const QString &parameter)
     {
         OutputFilterResult result;
 
@@ -971,7 +972,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseExec(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseExec(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -996,7 +997,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseRaw(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseRaw(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1016,7 +1017,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseNotify(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseNotify(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1035,7 +1036,7 @@ namespace Konversation
                     // If remove failed, try to add it instead
                     if(!Preferences::addNotify(serverGroupId, list[index]))
                     {
-                        kdDebug() << "OutputFilter::parseNotify(): Adding failed!" << endl;
+                        kdDebug() << "IcecapOutputFilter::parseNotify(): Adding failed!" << endl;
                     }
                 }
             }                                     // endfor
@@ -1055,7 +1056,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseOper(const QString& myNick,const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseOper(const QString& myNick,const QString& parameter)
     {
         OutputFilterResult result;
         QStringList parameterList = QStringList::split(' ', parameter);
@@ -1089,7 +1090,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseBan(const QString& parameter, bool kick)
+    OutputFilterResult IcecapOutputFilter::parseBan(const QString& parameter, bool kick)
     {
         OutputFilterResult result;
         // assume incorrect syntax first
@@ -1173,14 +1174,14 @@ namespace Konversation
     }
 
     // finally set the ban
-    OutputFilterResult OutputFilter::execBan(const QString& mask,const QString& channel)
+    OutputFilterResult IcecapOutputFilter::execBan(const QString& mask,const QString& channel)
     {
         OutputFilterResult result;
         result.toServer = "MODE " + channel + " +b " + mask;
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseUnban(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseUnban(const QString& parameter)
     {
         OutputFilterResult result;
         // assume incorrect syntax first
@@ -1227,14 +1228,14 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::execUnban(const QString& mask,const QString& channel)
+    OutputFilterResult IcecapOutputFilter::execUnban(const QString& mask,const QString& channel)
     {
         OutputFilterResult result;
         result.toServer = "MODE " + channel + " -b " + mask;
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseIgnore(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseIgnore(const QString& parameter)
     {
         OutputFilterResult result;
         // assume incorrect syntax first
@@ -1286,7 +1287,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseUnignore(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseUnignore(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1361,7 +1362,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseQuote(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseQuote(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1377,7 +1378,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseSay(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseSay(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1394,25 +1395,25 @@ namespace Konversation
         return result;
     }
 
-    void OutputFilter::parseKonsole()
+    void IcecapOutputFilter::parseKonsole()
     {
         emit openKonsolePanel();
     }
 
     // Accessors
 
-    void OutputFilter::setCommandChar() { commandChar=Preferences::commandChar(); }
+    void IcecapOutputFilter::setCommandChar() { commandChar=Preferences::commandChar(); }
 
     // # & + and ! are *often*, but not necessarily, channel identifiers. + and ! are non-RFC, so if a server doesn't offer 005 and
     // supports + and ! channels, I think thats broken behaviour on their part - not ours.
-    bool OutputFilter::isAChannel(const QString &check)
+    bool IcecapOutputFilter::isAChannel(const QString &check)
     {
         Q_ASSERT(m_server);
                                                   // XXX if we ever see the assert, we need the ternary
         return m_server? m_server->isAChannel(check) : QString("#&").contains(check.at(0));
     }
 
-    OutputFilterResult OutputFilter::usage(const QString& string)
+    OutputFilterResult IcecapOutputFilter::usage(const QString& string)
     {
         OutputFilterResult result;
         result.typeString = i18n("Usage");
@@ -1421,7 +1422,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::info(const QString& string)
+    OutputFilterResult IcecapOutputFilter::info(const QString& string)
     {
         OutputFilterResult result;
         result.typeString = i18n("Info");
@@ -1430,7 +1431,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::error(const QString& string)
+    OutputFilterResult IcecapOutputFilter::error(const QString& string)
     {
         OutputFilterResult result;
         result.typeString = i18n("Error");
@@ -1439,12 +1440,12 @@ namespace Konversation
         return result;
     }
 
-    void OutputFilter::parseAaway(const QString& parameter)
+    void IcecapOutputFilter::parseAaway(const QString& parameter)
     {
         emit multiServerCommand("away", parameter);
     }
 
-    OutputFilterResult OutputFilter::parseAme(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseAme(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1457,7 +1458,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseAmsg(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseAmsg(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1470,7 +1471,7 @@ namespace Konversation
         return result;
     }
 
-    void OutputFilter::parseServer(const QString& parameter)
+    void IcecapOutputFilter::parseServer(const QString& parameter)
     {
         if(parameter.isEmpty())
         {
@@ -1531,7 +1532,7 @@ namespace Konversation
         }
     }
 
-    OutputFilterResult OutputFilter::parsePrefs(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parsePrefs(const QString& parameter)
     {
         OutputFilterResult result;
         bool showUsage = false;
@@ -1642,7 +1643,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseOmsg(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseOmsg(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1658,7 +1659,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseOnotice(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseOnotice(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1674,14 +1675,14 @@ namespace Konversation
         return result;
     }
 
-    void OutputFilter::parseCharset(const QString& charset)
+    void IcecapOutputFilter::parseCharset(const QString& charset)
     {
         QString shortName = Konversation::IRCCharsets::self()->ambiguousNameToShortName(charset);
         if(!shortName.isEmpty())
             m_server->getIdentity()->setCodecName(shortName);
     }
 
-    OutputFilterResult OutputFilter::parseSetKey(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseSetKey(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1699,7 +1700,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseDelKey(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseDelKey(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1716,7 +1717,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseList(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseList(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1725,7 +1726,7 @@ namespace Konversation
         return result;
     }
 
-    OutputFilterResult OutputFilter::parseDNS(const QString& parameter)
+    OutputFilterResult IcecapOutputFilter::parseDNS(const QString& parameter)
     {
         OutputFilterResult result;
 
@@ -1796,7 +1797,7 @@ namespace Konversation
     }
 
 
-    QString OutputFilter::addNickToEmptyNickList(const QString& nick, const QString& parameter)
+    QString IcecapOutputFilter::addNickToEmptyNickList(const QString& nick, const QString& parameter)
     {
         QStringList nickList = QStringList::split(' ', parameter);
         QString newNickList;
@@ -1820,7 +1821,7 @@ namespace Konversation
     }
 
 }
-#include "outputfilter.moc"
+#include "icecapoutputfilter.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
 // vim: set et sw=4 ts=4 cino=l1,cs,U1:

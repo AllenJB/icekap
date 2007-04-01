@@ -13,6 +13,7 @@
 #define BLOWFISH_H
 
 class Server;
+class IcecapServer;
 
 namespace Konversation
 {
@@ -21,5 +22,8 @@ namespace Konversation
     void decrypt(const QString& recipient, QCString& cipher, Server* server);
     void decryptTopic(const QString& recipient, QCString& cipher, Server* server);
     void encrypt(const QString& recipient, QString& cipher, Server* server);
+    void decrypt(const QString& recipient, QCString& cipher, IcecapServer* server);
+    void decryptTopic(const QString& recipient, QCString& cipher, IcecapServer* server);
+    void encrypt(const QString& recipient, QString& cipher, IcecapServer* server);
 }
 #endif

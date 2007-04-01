@@ -24,7 +24,7 @@ static QPixmap getIcon(const QString& name)
     return iconLoader->loadIcon(name, KIcon::Toolbar, 16);
 }
 
-IRCViewBox::IRCViewBox(QWidget* parent, Server* newServer)
+IRCViewBox::IRCViewBox(QWidget* parent, GenericServer* newServer)
 : QVBox(parent)
 {
     m_ircView = new IRCView(this, newServer);
@@ -61,7 +61,7 @@ void IRCViewBox::slotSearch()
         m_searchBar->hide();
         return;
     }
-    
+
     m_searchBar->show();
     m_searchBar->setFocus();
 }

@@ -58,13 +58,14 @@
 #include "viewcontainer.h"
 #include "ircview.h"
 #include "highlight.h"
-#include "server.h"
+//#include "server.h"
+#include "genericserver.h"
 #include "konversationsound.h"
 #include "common.h"
 #include "emoticon.h"
 #include "notificationhandler.h"
 
-IRCView::IRCView(QWidget* parent, Server* newServer) : KTextBrowser(parent)
+IRCView::IRCView(QWidget* parent, GenericServer* newServer) : KTextBrowser(parent)
 {
     m_copyUrlMenu = false;
     m_resetScrollbar = true;
@@ -162,7 +163,7 @@ void IRCView::setViewBackground(const QColor& backgroundColor, const QString& pi
     }
 }
 
-void IRCView::setServer(Server* newServer)
+void IRCView::setServer(GenericServer* newServer)
 {
     m_server = newServer;
 
@@ -206,7 +207,7 @@ void IRCView::highlightedSlot(const QString& _link)
 
     if (link.isEmpty())
     {
-        if (!m_lastStatusText.isEmpty()) 
+        if (!m_lastStatusText.isEmpty())
         {
             emit clearStatusBarTempText();
             m_lastStatusText = QString();
@@ -309,7 +310,7 @@ void IRCView::openLink(const QString& url, bool newTab)
         m_server->sendJoinCommand(channel);
     }
     //FIXME: Don't do user links in DCC Chats to begin with since they don't have a server.
-    else if (url.startsWith("#") && m_server && m_server->isConnected()) 
+    else if (url.startsWith("#") && m_server && m_server->isConnected())
     {
         QString recipient(url);
         recipient.remove("#");

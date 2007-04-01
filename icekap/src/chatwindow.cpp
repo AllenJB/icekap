@@ -83,7 +83,7 @@ ChatWindow::WindowType ChatWindow::getType()
     return type;
 }
 
-void ChatWindow::setServer(Server* newServer)
+void ChatWindow::setServer(GenericServer* newServer)
 {
     if (!newServer)
     {
@@ -105,7 +105,7 @@ void ChatWindow::setServer(Server* newServer)
     }
 }
 
-Server* ChatWindow::getServer()
+GenericServer* ChatWindow::getServer()
 {
     return m_server;
 }
@@ -381,30 +381,30 @@ int ChatWindow::margin()
 }
 
 // Accessors
-IRCView* ChatWindow::getTextView() const 
-{ 
-  return textView; 
+IRCView* ChatWindow::getTextView() const
+{
+  return textView;
 }
 
-void ChatWindow::setLog(bool activate) 
-{ 
-  log=activate; 
+void ChatWindow::setLog(bool activate)
+{
+  log=activate;
 }
 
 // reimplement this in all panels that have user input
-QString ChatWindow::getTextInLine()    
-{ 
-  return QString(); 
+QString ChatWindow::getTextInLine()
+{
+  return QString();
 }
 
-bool ChatWindow::canBeFrontView()           
-{ 
-  return false; 
+bool ChatWindow::canBeFrontView()
+{
+  return false;
 }
 
-bool ChatWindow::searchView()          
-{ 
-  return false; 
+bool ChatWindow::searchView()
+{
+  return false;
 }
 
 // reimplement this in all panels that have user input

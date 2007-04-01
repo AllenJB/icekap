@@ -845,7 +845,7 @@ ViewTreeItem* ViewTree::getItemForView(ChatWindow* view)
 
 ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 {
-    Server* server = view->getServer();
+    GenericServer* server = view->getServer();
 
     ViewTreeItem* item = static_cast<ViewTreeItem*>(firstChild());
 
@@ -868,7 +868,7 @@ ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 ViewTreeItem* ViewTree::getLastChild(QListViewItem* parent)
 {
     ViewTreeItem* item = static_cast<ViewTreeItem*>(parent);
-    Server* server = item->getView()->getServer();
+    GenericServer* server = item->getView()->getServer();
     ViewTreeItem* lastChild = 0;
 
     while (item->getView() && item->getView()->getServer() == server)

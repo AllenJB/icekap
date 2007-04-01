@@ -97,10 +97,10 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
     connect(m_viewContainer, SIGNAL(setStatusBarInfoLabel(const QString&)), m_statusBar, SLOT(updateInfoLabel(const QString&)));
     connect(m_viewContainer, SIGNAL(clearStatusBarInfoLabel()), m_statusBar, SLOT(clearInfoLabel()));
     connect(m_viewContainer, SIGNAL(setStatusBarLagLabelShown(bool)), m_statusBar, SLOT(setLagLabelShown(bool)));
-    connect(m_viewContainer, SIGNAL(updateStatusBarLagLabel(Server*, int)), m_statusBar, SLOT(updateLagLabel(Server*, int)));
+    connect(m_viewContainer, SIGNAL(updateStatusBarLagLabel(GenericServer*, int)), m_statusBar, SLOT(updateLagLabel(GenericServer*, int)));
     connect(m_viewContainer, SIGNAL(resetStatusBarLagLabel()), m_statusBar, SLOT(resetLagLabel()));
-    connect(m_viewContainer, SIGNAL(setStatusBarLagLabelTooLongLag(Server*, int)), m_statusBar, SLOT(setTooLongLag(Server*, int)));
-    connect(m_viewContainer, SIGNAL(updateStatusBarSSLLabel(Server*)), m_statusBar, SLOT(updateSSLLabel(Server*)));
+    connect(m_viewContainer, SIGNAL(setStatusBarLagLabelTooLongLag(GenericServer*, int)), m_statusBar, SLOT(setTooLongLag(GenericServer*, int)));
+    connect(m_viewContainer, SIGNAL(updateStatusBarSSLLabel(GenericServer*)), m_statusBar, SLOT(updateSSLLabel(GenericServer*)));
     connect(m_viewContainer, SIGNAL(removeStatusBarSSLLabel()), m_statusBar, SLOT(removeSSLLabel()));
 
 
@@ -120,6 +120,9 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
 #endif
 
     KAction* action;
+
+    (new KAction(i18n("&Icecap Quick Connect..."), "connect_creating", 0, this, SLOT(openIcecapQuickConnectDialog()),
+        actionCollection(), "icecap_quick_connect_dialog"))->setToolTip(i18n("Type in the address of a new Icecap server to connect to"));
 
     (new KAction(i18n("&Server List..."), "server", KShortcut("F2"), this, SLOT(openServerList()),
         actionCollection(), "open_server_list"))->setToolTip(i18n("Manage networks and servers"));
@@ -535,6 +538,11 @@ void KonversationMainWindow::openServerList()
 void KonversationMainWindow::openQuickConnectDialog()
 {
     emit showQuickConnectDialog();
+}
+
+void KonversationMainWindow::openIcecapQuickConnectDialog()
+{
+    emit showIcecapQuickConnectDialog();
 }
 
 // open the preferences dialog and show the watched nicknames page

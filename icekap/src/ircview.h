@@ -30,7 +30,8 @@ class QEvent;
 
 class KPopupMenu;
 
-class Server;
+//class Server;
+class GenericServer;
 class ChatWindow;
 class SearchBar;
 
@@ -39,12 +40,12 @@ class IRCView : public KTextBrowser
     Q_OBJECT
 
         public:
-        IRCView(QWidget* parent,Server* newServer);
+        IRCView(QWidget* parent, GenericServer* newServer);
         ~IRCView();
 
         void clear();
         void setViewBackground(const QColor& backgroundColor, const QString& pixmapName);
-        void setServer(Server* server);
+        void setServer(GenericServer* server);
 
         // Returns the current nick under context menu.
         const QString& getContextNick() const;
@@ -167,7 +168,7 @@ class IRCView : public KTextBrowser
         QString m_urlToCopy;
 
         QString m_buffer;
-        Server* m_server;
+        GenericServer* m_server;
         QPopupMenu* m_popup;
         int toggleMenuBarSeparator;
         KPopupMenu* m_nickPopup;

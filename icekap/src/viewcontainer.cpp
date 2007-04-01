@@ -394,7 +394,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("reconnect_server");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (server && !server->isConnected())
                 action->setEnabled(true);
@@ -405,7 +405,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("disconnect_server");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (server && server->isConnected())
                 action->setEnabled(true);
@@ -416,7 +416,7 @@ void ViewContainer::updateViewActions(int index)
         action = actionCollection()->action("join_channel");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (!server || (server && !server->isConnected()))
                 action->setEnabled(false);
@@ -618,7 +618,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("reconnect_server");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (server && !server->isConnected())
                 action->setEnabled(true);
@@ -629,7 +629,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("disconnect_server");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (server && server->isConnected())
                 action->setEnabled(true);
@@ -640,7 +640,7 @@ void ViewContainer::updateFrontView()
         action = actionCollection()->action("join_channel");
         if (action)
         {
-            Server* server = view->getServer();
+            GenericServer* server = view->getServer();
 
             if (!server || (server && !server->isConnected()))
                 action->setEnabled(false);
@@ -2005,7 +2005,7 @@ void ViewContainer::addDccChat(const QString& myNick,const QString& nick,const Q
     }
 }
 
-StatusPanel* ViewContainer::addStatusView(Server* server)
+StatusPanel* ViewContainer::addStatusView(GenericServer* server)
 {
     StatusPanel* statusView=new StatusPanel(m_tabWidget);
 
@@ -2037,7 +2037,7 @@ StatusPanel* ViewContainer::addStatusView(Server* server)
     return statusView;
 }
 
-RawLog* ViewContainer::addRawLog(Server* server)
+RawLog* ViewContainer::addRawLog(GenericServer* server)
 {
     RawLog* rawLog=new RawLog(m_tabWidget);
     rawLog->setServer(server);
@@ -2050,7 +2050,7 @@ RawLog* ViewContainer::addRawLog(Server* server)
     return rawLog;
 }
 
-void ViewContainer::serverQuit(Server* server)
+void ViewContainer::serverQuit(GenericServer* server)
 {
     if (server == m_frontServer)
         m_frontServer = 0;
@@ -2066,7 +2066,7 @@ void ViewContainer::serverQuit(Server* server)
 
 void ViewContainer::reconnectFrontServer()
 {
-    Server* server = 0;
+    GenericServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2079,7 +2079,7 @@ void ViewContainer::reconnectFrontServer()
 
 void ViewContainer::disconnectFrontServer()
 {
-    Server* server = 0;
+    GenericServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2092,7 +2092,7 @@ void ViewContainer::disconnectFrontServer()
 
 void ViewContainer::showJoinChannelDialog()
 {
-    Server* server = 0;
+    GenericServer* server = 0;
 
     if (m_contextServer)
         server = m_contextServer;
@@ -2110,7 +2110,7 @@ void ViewContainer::showJoinChannelDialog()
 
 void ViewContainer::serverStateChanged(Server* server, Server::State state)
 {
-    Server* updateServer = 0;
+    GenericServer* updateServer = 0;
 
     if (m_contextServer)
         updateServer = m_contextServer;

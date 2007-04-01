@@ -25,7 +25,8 @@
 
 #include <kabc/addressbook.h>
 
-class Server;
+//class Server;
+class GenericServer;
 class QTimer;
 
 /**
@@ -41,7 +42,7 @@ class NickInfo : public QObject, public KShared
     Q_OBJECT
 
         public:
-        NickInfo(const QString& nick, Server* server);
+        NickInfo(const QString& nick, GenericServer* server);
         ~NickInfo();
 
         // Get properties of NickInfo object.
@@ -72,7 +73,7 @@ class NickInfo : public QObject, public KShared
          */
         QString getPrettyOnlineSince() const;
         /// Return the Server object that owns this NickInfo object.
-        Server* getServer() const;
+        GenericServer* getServer() const;
 
         /// Return the kabc (kaddressbook) contact for this nick
         KABC::Addressee getAddressee() const;
@@ -142,7 +143,7 @@ class NickInfo : public QObject, public KShared
         void startNickInfoChangedTimer();
         QString m_nickname;
         QString m_loweredNickname;
-        Server* m_owningServer;
+        GenericServer* m_owningServer;
         QString m_hostmask;
         bool m_away;
         QString m_awayMessage;
