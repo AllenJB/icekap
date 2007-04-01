@@ -18,7 +18,9 @@
 
 #include "konversationmainwindow.h"
 #include "common.h"
-#include "server.h"
+#include "icecapserver.h"
+// #include "server.h"
+#include "genericserver.h"
 
 class QSplitter;
 
@@ -28,7 +30,8 @@ class KActionCollection;
 class KonversationMainWindow;
 class ViewTree;
 class ChatWindow;
-class Server;
+//class Server;
+class GenericServer;
 class Images;
 class UrlCatcher;
 class DccPanel;
@@ -52,11 +55,11 @@ class ViewContainer : public QObject
         KActionCollection* actionCollection() { return m_window->actionCollection(); }
 
         QGuardedPtr<ChatWindow> getFrontView() { return m_frontView; }
-        Server* getFrontServer() { return m_frontServer; }
+        GenericServer* getFrontServer() { return m_frontServer; }
 
         void silenceViews();
 
-        void serverQuit(Server* server);
+        void serverQuit(GenericServer* server);
 
         QString currentViewTitle();
         QString currentViewURL(bool passNetwork);
@@ -123,8 +126,8 @@ class ViewContainer : public QObject
 
         void addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen);
 
-        StatusPanel* addStatusView(Server* server);
-        RawLog* addRawLog(Server* server);
+        StatusPanel* addStatusView(GenericServer* server);
+        RawLog* addRawLog(GenericServer* server);
         void disconnectFrontServer();
         void reconnectFrontServer();
         void showJoinChannelDialog();
@@ -156,10 +159,10 @@ class ViewContainer : public QObject
         void setStatusBarInfoLabel(const QString& text);
         void clearStatusBarInfoLabel();
         void setStatusBarLagLabelShown(bool shown);
-        void updateStatusBarLagLabel(Server* server, int msec);
+        void updateStatusBarLagLabel(GenericServer* server, int msec);
         void resetStatusBarLagLabel();
         void setStatusBarLagLabelTooLongLag(Server* server, int msec);
-        void updateStatusBarSSLLabel(Server* server);
+        void updateStatusBarSSLLabel(GenericServer* server);
         void removeStatusBarSSLLabel();
 
     private:
@@ -185,8 +188,8 @@ class ViewContainer : public QObject
 
         Images* images;
 
-        Server* m_frontServer;
-        Server* m_contextServer;
+        GenericServer* m_frontServer;
+        GenericServer* m_contextServer;
         QGuardedPtr<ChatWindow> m_frontView;
         QGuardedPtr<ChatWindow> m_previousFrontView;
         ChatWindow* m_searchView;

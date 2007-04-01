@@ -1,5 +1,3 @@
-// -*- mode: c++; c-file-style: "bsd"; c-basic-offset: 4; tabs-width: 4; indent-tabs-mode: nil -*-
-
 /*
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,7 +30,7 @@
 #include <kdeversion.h>
 #include <kwin.h>
 
-#include "server.h"
+#include "icecapserver.h"
 #include "query.h"
 #include "channel.h"
 #include "konversationapplication.h"
@@ -47,32 +45,17 @@
 #include "statuspanel.h"
 #include "rawlog.h"
 #include "channellistpanel.h"
-#include "scriptlauncher.h"
+// #include "scriptlauncher.h"
 #include "servergroupsettings.h"
 #include "addressbook.h"
-#include "serverison.h"
+// #include "serverison.h"
 #include "common.h"
 #include "notificationhandler.h"
 #include "blowfish.h"
 
 #include <config.h>
 
-Server::Server(ViewContainer* viewContainer, int serverGroupId, bool clearQuickServerList)
-{
-    quickConnect = false;
-
-    m_serverGroup = Preferences::serverGroupById(serverGroupId);
-
-    if (clearQuickServerList)
-        m_serverGroup->clearQuickServerList(); // In case we already did a quick connect to this network
-
-    bot = getIdentity()->getBot();
-    botPassword = getIdentity()->getPassword();
-
-    init(viewContainer, getIdentity()->getNickname(0), "");
-}
-
-Server::Server(ViewContainer* viewContainer,const QString& hostName,const QString& port,
+IcecapServer::IcecapServer(ViewContainer* viewContainer,const QString& hostName,const QString& port,
 const QString& channel,const QString& _nick, const QString& password,const bool& useSSL)
 {
     quickConnect = true;
@@ -84,22 +67,10 @@ const QString& channel,const QString& _nick, const QString& password,const bool&
     m_quickServer.setPassword(password);
     m_quickServer.setSSLEnabled(useSSL);
 
-    Konversation::ServerGroupSettingsPtr serverGroupOfServer;
-
-    // If server is in an existing group, use that group (first group if server is in multiple groups)
-    if (serverGroupOfServer = Preferences::serverGroupByServer(hostName))
-    {
-        m_serverGroup = serverGroupOfServer;
-        m_serverGroup->clearQuickServerList();
-        m_serverGroup->setQuickServerList(m_quickServer);
-    }
-    else
-    {
-        m_serverGroup = new Konversation::ServerGroupSettings;
-        m_serverGroup->setIdentityId(Preferences::identityByName("Default")->id());
-        m_serverGroup->setName(hostName);
-        m_serverGroup->addServer(m_quickServer);
-    }
+    m_serverGroup = new Konversation::ServerGroupSettings;
+    m_serverGroup->setIdentityId(Preferences::identityByName("Default")->id());
+    m_serverGroup->setName(hostName);
+    m_serverGroup->addServer(m_quickServer);
 
     // Happens when we are invoked from an irc:/ url
     if (nick.isEmpty())
@@ -108,7 +79,7 @@ const QString& channel,const QString& _nick, const QString& password,const bool&
     init (viewContainer, nick, channel);
 }
 
-void Server::doPreShellCommand()
+void IcecapServer::doPreShellCommand()
 {
 
     QString command = getIdentity()->getShellCommand();
@@ -129,16 +100,16 @@ void Server::doPreShellCommand()
     }
 }
 
-Server::~Server()
+IcecapServer::~IcecapServer()
 {
     //send queued messages
-    kdDebug() << "Server::~Server(" << getServerName() << ")" << endl;
+    kdDebug() << "IcecapServer::~IcecapServer(" << getServerName() << ")" << endl;
     // Send out the last messages (usually the /QUIT)
     send();
 
     // Delete helper object.
-    delete m_serverISON;
-    m_serverISON = 0;
+//    delete m_serverISON;
+//    m_serverISON = 0;
     // clear nicks online
     emit nicksNowOnline(this,QStringList(),true);
     // Make sure no signals get sent to a soon to be dying Server Window
@@ -175,7 +146,7 @@ Server::~Server()
     emit deleted(this);
 }
 
-void Server::init(ViewContainer* viewContainer, const QString& nick, const QString& channel)
+void IcecapServer::init(ViewContainer* viewContainer, const QString& nick, const QString& channel)
 {
     m_processingIncoming = false;
     m_identifyMsg = false;
@@ -190,7 +161,7 @@ void Server::init(ViewContainer* viewContainer, const QString& nick, const QStri
     alreadyConnected = false;
     rejoinChannels = false;
     connecting = false;
-    m_serverISON = 0;
+//    m_serverISON = 0;
     m_isAway = false;
     m_socket = 0;
     m_autoIdentifyLock = false;
@@ -209,14 +180,15 @@ void Server::init(ViewContainer* viewContainer, const QString& nick, const QStri
     statusView = getViewContainer()->addStatusView(this);
     statusView->setNotificationsEnabled(m_serverGroup->enableNotifications());
     setNickname(nick);
-    obtainNickInfo(getNickname());
+//    obtainNickInfo(getNickname());
 
-    if(Preferences::rawLog())
-        addRawLog(false);
+//    if(Preferences::rawLog())
+//        addRawLog(false);
+    addRawLog(true);
 
     inputFilter.setServer(this);
-    outputFilter = new Konversation::OutputFilter(this);
-    m_scriptLauncher = new ScriptLauncher(this);
+    outputFilter = new Konversation::IcecapOutputFilter(this);
+//    m_scriptLauncher = new ScriptLauncher(this);
 
     // don't delete items when they are removed
     channelList.setAutoDelete(false);
@@ -239,14 +211,14 @@ void Server::init(ViewContainer* viewContainer, const QString& nick, const QStri
     emit connectionChangedState(this, SSDisconnected);
 }
 
-void Server::initTimers()
+void IcecapServer::initTimers()
 {
     notifyTimer.setName("notify_timer");
     incomingTimer.setName("incoming_timer");
     outgoingTimer.setName("outgoing_timer");
 }
 
-void Server::connectSignals()
+void IcecapServer::connectSignals()
 {
 
     // Timers
@@ -257,51 +229,51 @@ void Server::connectSignals()
     connect(&m_pingResponseTimer, SIGNAL(timeout()), this, SLOT(updateLongPongLag()));
 
     // OutputFilter
-    connect(outputFilter, SIGNAL(requestDccSend()), this,SLOT(requestDccSend()));
-    connect(outputFilter, SIGNAL(requestDccSend(const QString&)), this, SLOT(requestDccSend(const QString&)));
+//    connect(outputFilter, SIGNAL(requestDccSend()), this,SLOT(requestDccSend()));
+//    connect(outputFilter, SIGNAL(requestDccSend(const QString&)), this, SLOT(requestDccSend(const QString&)));
     connect(outputFilter, SIGNAL(multiServerCommand(const QString&, const QString&)),
         this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
     connect(outputFilter, SIGNAL(reconnectServer()), this, SLOT(reconnect()));
     connect(outputFilter, SIGNAL(disconnectServer()), this, SLOT(disconnect()));
-    connect(outputFilter, SIGNAL(openDccSend(const QString &, KURL)), this, SLOT(addDccSend(const QString &, KURL)));
-    connect(outputFilter, SIGNAL(requestDccChat(const QString &)), this, SLOT(requestDccChat(const QString &)));
+//    connect(outputFilter, SIGNAL(openDccSend(const QString &, KURL)), this, SLOT(addDccSend(const QString &, KURL)));
+//    connect(outputFilter, SIGNAL(requestDccChat(const QString &)), this, SLOT(requestDccChat(const QString &)));
     connect(outputFilter, SIGNAL(connectToServer(const QString&, const QString&, const QString&)),
         this, SLOT(connectToNewServer(const QString&, const QString&, const QString&)));
     connect(outputFilter, SIGNAL(connectToServerGroup(const QString&)),
         this, SLOT(connectToServerGroup(const QString&)));
     connect(outputFilter, SIGNAL(sendToAllChannels(const QString&)), this, SLOT(sendToAllChannels(const QString&)));
-    connect(outputFilter, SIGNAL(banUsers(const QStringList&,const QString&,const QString&)),
-        this, SLOT(requestBan(const QStringList&,const QString&,const QString&)));
-    connect(outputFilter, SIGNAL(unbanUsers(const QString&,const QString&)),
-        this, SLOT(requestUnban(const QString&,const QString&)));
+//    connect(outputFilter, SIGNAL(banUsers(const QStringList&,const QString&,const QString&)),
+//        this, SLOT(requestBan(const QStringList&,const QString&,const QString&)));
+//    connect(outputFilter, SIGNAL(unbanUsers(const QString&,const QString&)),
+//        this, SLOT(requestUnban(const QString&,const QString&)));
     connect(outputFilter, SIGNAL(openRawLog(bool)), this, SLOT(addRawLog(bool)));
     connect(outputFilter, SIGNAL(closeRawLog()), this, SLOT(closeRawLog()));
 
    // ViewContainer
     connect(this, SIGNAL(showView(ChatWindow*)), getViewContainer(), SLOT(showView(ChatWindow*)));
-    connect(this, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
-    connect(this, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
-        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
+//    connect(this, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
+//    connect(this, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
+//        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
     connect(this, SIGNAL(serverLag(GenericServer*, int)), getViewContainer(), SIGNAL(updateStatusBarLagLabel(GenericServer*, int)));
     connect(this, SIGNAL(tooLongLag(GenericServer*, int)), getViewContainer(), SIGNAL(setStatusBarLagLabelTooLongLag(GenericServer*, int)));
     connect(this, SIGNAL(resetLag()), getViewContainer(), SIGNAL(resetStatusBarLagLabel()));
     connect(outputFilter, SIGNAL(showView(ChatWindow*)), getViewContainer(), SLOT(showView(ChatWindow*)));
     connect(outputFilter, SIGNAL(openKonsolePanel()), getViewContainer(), SLOT(addKonsolePanel()));
     connect(outputFilter, SIGNAL(openChannelList(const QString&, bool)), getViewContainer(), SLOT(openChannelList(const QString&, bool)));
-    connect(outputFilter, SIGNAL(closeDccPanel()), getViewContainer(), SLOT(closeDccPanel()));
-    connect(outputFilter, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
-    connect(&inputFilter, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
-        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
+//    connect(outputFilter, SIGNAL(closeDccPanel()), getViewContainer(), SLOT(closeDccPanel()));
+//    connect(outputFilter, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
+//    connect(&inputFilter, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
+//        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
 
     // Inputfilter
     connect(&inputFilter, SIGNAL(welcome(const QString&)), this, SLOT(connectionEstablished(const QString&)));
     connect(&inputFilter, SIGNAL(notifyResponse(const QString&)), this, SLOT(notifyResponse(const QString&)));
-    connect(&inputFilter, SIGNAL(addDccGet(const QString&, const QStringList&)),
-        this, SLOT(addDccGet(const QString&, const QStringList&)));
-    connect(&inputFilter, SIGNAL(resumeDccGetTransfer(const QString&, const QStringList&)),
-        this, SLOT(resumeDccGetTransfer(const QString&, const QStringList&)));
-    connect(&inputFilter, SIGNAL(resumeDccSendTransfer(const QString&, const QStringList&)),
-        this, SLOT(resumeDccSendTransfer(const QString&, const QStringList&)));
+//    connect(&inputFilter, SIGNAL(addDccGet(const QString&, const QStringList&)),
+//        this, SLOT(addDccGet(const QString&, const QStringList&)));
+//    connect(&inputFilter, SIGNAL(resumeDccGetTransfer(const QString&, const QStringList&)),
+//        this, SLOT(resumeDccGetTransfer(const QString&, const QStringList&)));
+//    connect(&inputFilter, SIGNAL(resumeDccSendTransfer(const QString&, const QStringList&)),
+//        this, SLOT(resumeDccSendTransfer(const QString&, const QStringList&)));
     connect(&inputFilter, SIGNAL(userhost(const QString&,const QString&,bool,bool)),
         this, SLOT(userhost(const QString&,const QString&,bool,bool)) );
     connect(&inputFilter, SIGNAL(topicAuthor(const QString&,const QString&)),
@@ -312,73 +284,73 @@ void Server::connectSignals()
         this,SLOT(invitation(const QString&,const QString&)) );
     connect(&inputFilter, SIGNAL(addToChannelList(const QString&, int, const QString& )),
         this, SLOT(addToChannelList(const QString&, int, const QString& )));
-    connect(&inputFilter, SIGNAL(away()), this, SLOT(away()));
-    connect(&inputFilter, SIGNAL(unAway()), this, SLOT(unAway()));
+//    connect(&inputFilter, SIGNAL(away()), this, SLOT(away()));
+//    connect(&inputFilter, SIGNAL(unAway()), this, SLOT(unAway()));
 
     // Status View
     connect(this, SIGNAL(serverOnline(bool)), statusView, SLOT(serverOnline(bool)));
 
     // Scripts
-    connect(outputFilter, SIGNAL(launchScript(const QString&, const QString&)),
-        m_scriptLauncher, SLOT(launchScript(const QString&, const QString&)));
-    connect(m_scriptLauncher, SIGNAL(scriptNotFound(const QString&)),
-        this, SLOT(scriptNotFound(const QString&)));
-    connect(m_scriptLauncher, SIGNAL(scriptExecutionError(const QString&)),
-        this, SLOT(scriptExecutionError(const QString&)));
+//    connect(outputFilter, SIGNAL(launchScript(const QString&, const QString&)),
+//        m_scriptLauncher, SLOT(launchScript(const QString&, const QString&)));
+//    connect(m_scriptLauncher, SIGNAL(scriptNotFound(const QString&)),
+//        this, SLOT(scriptNotFound(const QString&)));
+//    connect(m_scriptLauncher, SIGNAL(scriptExecutionError(const QString&)),
+//        this, SLOT(scriptExecutionError(const QString&)));
 
 }
 
-QString Server::getServerName() const
+QString IcecapServer::getServerName() const
 {
     return m_serverGroup->serverByIndex(m_currentServerIndex).server();
 }
 
-int Server::getPort() const
+int IcecapServer::getPort() const
 {
     return m_serverGroup->serverByIndex(m_currentServerIndex).port();
 }
 
-QString Server::getServerGroup() const
+QString IcecapServer::getServerGroup() const
 {
     return m_serverGroup->name();
 }
 
-int Server::getLag()  const
+int IcecapServer::getLag()  const
 {
     return currentLag;
 }
 
-bool Server::getAutoJoin()  const
+bool IcecapServer::getAutoJoin()  const
 {
     return autoJoin;
 }
 
-void Server::setAutoJoin(bool on)
+void IcecapServer::setAutoJoin(bool on)
 {
     autoJoin = on;
 }
 
-QString Server::getAutoJoinChannel() const
+QString IcecapServer::getAutoJoinChannel() const
 {
     return autoJoinChannel;
 }
 
-void Server::setAutoJoinChannel(const QString &channel)
+void IcecapServer::setAutoJoinChannel(const QString &channel)
 {
     autoJoinChannel = channel;
 }
 
-QString Server::getAutoJoinChannelKey() const
+QString IcecapServer::getAutoJoinChannelKey() const
 {
     return autoJoinChannelKey;
 }
 
-void Server::setAutoJoinChannelKey(const QString &key)
+void IcecapServer::setAutoJoinChannelKey(const QString &key)
 {
     autoJoinChannelKey = key;
 }
 
-bool Server::isConnected() const
+bool IcecapServer::isConnected() const
 {
     if (!m_socket)
         return false;
@@ -386,12 +358,12 @@ bool Server::isConnected() const
     return (m_socket->state() == KNetwork::KClientSocketBase::Connected);
 }
 
-bool Server::isConnecting() const
+bool IcecapServer::isConnecting() const
 {
     return connecting;
 }
 
-void Server::preShellCommandExited(KProcess* proc)
+void IcecapServer::preShellCommandExited(KProcess* proc)
 {
 
     if (proc && proc->normalExit())
@@ -403,7 +375,7 @@ void Server::preShellCommandExited(KProcess* proc)
     connectSignals();
 }
 
-void Server::connectToIRCServer()
+void IcecapServer::connectToIRCServer()
 {
     deliberateQuit = false;
     keepViewsOpenAfterQuit = false;
@@ -452,34 +424,34 @@ void Server::connectToIRCServer()
             QString::number(m_serverGroup->serverByIndex(m_currentServerIndex).port()));
 
         // set up the connection details
-        setPrefixes(serverNickPrefixModes, serverNickPrefixes);
+//        setPrefixes(serverNickPrefixModes, serverNickPrefixes);
         statusView->appendServerMessage(i18n("Info"),i18n("Looking for server %1:%2...")
             .arg(m_serverGroup->serverByIndex(m_currentServerIndex).server())
             .arg(m_serverGroup->serverByIndex(m_currentServerIndex).port()));
-        // reset InputFilter (auto request info, /WHO request info)
+//        reset InputFilter (auto request info, /WHO request info)
         inputFilter.reset();
         emit connectionChangedState(this, SSConnecting);
     }
 }
 
-void Server::showSSLDialog()
+void IcecapServer::showSSLDialog()
 {
     static_cast<SSLSocket*>(m_socket)->showInfoDialog();
 }
 
 // set available channel types according to 005 RPL_ISUPPORT
-void Server::setChannelTypes(const QString &pre)
+void IcecapServer::setChannelTypes(const QString &pre)
 {
     channelPrefixes = pre;
 }
 
-QString Server::getChannelTypes() const
+QString IcecapServer::getChannelTypes() const
 {
     return channelPrefixes;
 }
 
 // set user mode prefixes according to non-standard 005-Reply (see inputfilter.cpp)
-void Server::setPrefixes(const QString &modes, const QString& prefixes)
+void IcecapServer::setPrefixes(const QString &modes, const QString& prefixes)
 {
     // NOTE: serverModes is QString::null, if server did not supply the
     // modes which relates to the network's nick-prefixes
@@ -488,7 +460,7 @@ void Server::setPrefixes(const QString &modes, const QString& prefixes)
 }
 
 // return a nickname without possible mode character at the beginning
-void Server::mangleNicknameWithModes(QString& nickname,bool& isAdmin,bool& isOwner,
+void IcecapServer::mangleNicknameWithModes(QString& nickname,bool& isAdmin,bool& isOwner,
 bool& isOp,bool& isHalfop,bool& hasVoice)
 {
     isAdmin = false;
@@ -568,7 +540,7 @@ bool& isOp,bool& isHalfop,bool& hasVoice)
     }                                             // loop through the name
 }
 
-void Server::lookupFinished()
+void IcecapServer::lookupFinished()
 {
     // error during lookup
     if(m_serverGroup->serverByIndex(m_currentServerIndex).SSLEnabled() && m_socket->status())
@@ -590,7 +562,7 @@ void Server::lookupFinished()
     }
 }
 
-void Server::ircServerConnectionSuccess()
+void IcecapServer::ircServerConnectionSuccess()
 {
     reconnectCounter = 0;
     Konversation::ServerSettings serverSettings = m_serverGroup->serverByIndex(m_currentServerIndex);
@@ -598,6 +570,7 @@ void Server::ircServerConnectionSuccess()
     connect(this, SIGNAL(nicknameChanged(const QString&)), statusView, SLOT(setNickname(const QString&)));
     statusView->appendServerMessage(i18n("Info"),i18n("Connected; logging in..."));
 
+/*
     QString connectString = "USER " +
         getIdentity()->getIdent() +
         " 8 * :" +                                // 8 = +i; 4 = +w
@@ -610,7 +583,7 @@ void Server::ircServerConnectionSuccess()
     queueAt(2,connectString);
 
     emit nicknameChanged(getNickname());
-
+*/
     m_socket->enableRead(true);
 
     // wait at most 2 seconds for server to send something before sending the queue ourselves
@@ -619,7 +592,7 @@ void Server::ircServerConnectionSuccess()
     connecting = false;
 }
 
-void Server::broken(int state)
+void IcecapServer::broken(int state)
 {
     m_socket->enableRead(false);
     m_socket->enableWrite(false);
@@ -764,7 +737,7 @@ void Server::broken(int state)
     }
 }
 
-void Server::sslError(const QString& reason)
+void IcecapServer::sslError(const QString& reason)
 {
     QString error = i18n("Could not connect to %1:%2 using SSL encryption.Maybe the server does not support SSL, or perhaps you have the wrong port? %3")
         .arg(m_serverGroup->serverByIndex(m_currentServerIndex).server())
@@ -776,7 +749,7 @@ void Server::sslError(const QString& reason)
 }
 
 // Will be called from InputFilter as soon as the Welcome message was received
-void Server::connectionEstablished(const QString& ownHost)
+void IcecapServer::connectionEstablished(const QString& ownHost)
 {
     // Some servers don't include the userhost in RPL_WELCOME, so we
     // need to use RPL_USERHOST to get ahold of our IP later on
@@ -791,7 +764,7 @@ void Server::connectionEstablished(const QString& ownHost)
         alreadyConnected=true;
         // Make a helper object to build ISON (notify) list and map offline nicks to addressbook.
         // TODO: Give the object a kick to get it started?
-        m_serverISON = new ServerISON(this);
+//        m_serverISON = new ServerISON(this);
         // get first notify very early
         startNotifyTimer(1000);
         // Register with services
@@ -825,7 +798,7 @@ void Server::connectionEstablished(const QString& ownHost)
     }
 }
 
-void Server::registerWithServices()
+void IcecapServer::registerWithServices()
 {
     if(!botPassword.isEmpty() && !bot.isEmpty() && !m_autoIdentifyLock)
     {
@@ -837,17 +810,17 @@ void Server::registerWithServices()
     }
 }
 
-QCString Server::getKeyForRecipient(const QString& recipient) const
+QCString IcecapServer::getKeyForRecipient(const QString& recipient) const
 {
     return keyMap[recipient];
 }
 
-void Server::setKeyForRecipient(const QString& recipient, const QCString& key)
+void IcecapServer::setKeyForRecipient(const QString& recipient, const QCString& key)
 {
     keyMap[recipient] = key;
 }
 
-void Server::gotOwnResolvedHostByWelcome(KResolverResults res)
+void IcecapServer::gotOwnResolvedHostByWelcome(KResolverResults res)
 {
     if ( res.error() == KResolver::NoError && !res.isEmpty() )
         ownIpByWelcome = res.first().address().nodeName();
@@ -855,7 +828,7 @@ void Server::gotOwnResolvedHostByWelcome(KResolverResults res)
         kdDebug() << "Server::gotOwnResolvedHostByWelcome(): Got error: " << ( int )res.error() << endl;
 }
 
-void Server::quitServer()
+void IcecapServer::quitServer()
 {
     QString command(Preferences::commandChar()+"QUIT");
     Konversation::OutputFilterResult result = outputFilter->parse(getNickname(),command, QString::null);
@@ -863,7 +836,7 @@ void Server::quitServer()
     if (m_socket) m_socket->enableRead(false);
 }
 
-void Server::notifyAction(const QString& nick)
+void IcecapServer::notifyAction(const QString& nick)
 {
     // parse wildcards (toParse,nickname,channelName,nickList,parameter)
     QString out = parseWildcards(Preferences::notifyDoubleClickAction(),
@@ -882,7 +855,7 @@ void Server::notifyAction(const QString& nick)
     }                                             // endfor
 }
 
-void Server::notifyResponse(const QString& nicksOnline)
+void IcecapServer::notifyResponse(const QString& nicksOnline)
 {
     bool nicksOnlineChanged = false;
     // Create a case correct nick list from the notification reply
@@ -930,7 +903,7 @@ void Server::notifyResponse(const QString& nicksOnline)
     startNotifyTimer();
 }
 
-void Server::startNotifyTimer(int msec)
+void IcecapServer::startNotifyTimer(int msec)
 {
     // make sure the timer gets started properly in case we have reconnected
     notifyTimer.stop();
@@ -942,7 +915,7 @@ void Server::startNotifyTimer(int msec)
     notifyTimer.start(msec, true);
 }
 
-void Server::notifyTimeout()
+void IcecapServer::notifyTimeout()
 {
     // Notify delay time is over, send ISON request if desired
     if(Preferences::useNotify())
@@ -957,7 +930,7 @@ void Server::notifyTimeout()
     }
 }
 
-void Server::autoCommandsAndChannels()
+void IcecapServer::autoCommandsAndChannels()
 {
     if (!m_serverGroup->connectCommands().isEmpty())
     {
@@ -982,7 +955,7 @@ void Server::autoCommandsAndChannels()
         queue(getAutoJoinCommand());
 }
 
-QString Server::getAutoJoinCommand() const
+QString IcecapServer::getAutoJoinCommand() const
 {
     // Multichannel joins
     QStringList channels = QStringList::split(' ',autoJoinChannel);
@@ -993,7 +966,7 @@ QString Server::getAutoJoinCommand() const
     return autoString;
 }
 
-QString Server::getNextNickname()
+QString IcecapServer::getNextNickname()
 {
     QString newNick = getIdentity()->getNickname(++tryNickNumber);
 
@@ -1007,7 +980,7 @@ QString Server::getNextNickname()
     return newNick;
 }
 
-void Server::processIncomingData()
+void IcecapServer::processIncomingData()
 {
     incomingTimer.stop();
 
@@ -1031,17 +1004,17 @@ void Server::processIncomingData()
     }
 }
 
-void Server::unlockSending()
+void IcecapServer::unlockSending()
 {
     sendUnlocked=true;
 }
 
-void Server::lockSending()
+void IcecapServer::lockSending()
 {
     sendUnlocked=false;
 }
 
-void Server::incoming()
+void IcecapServer::incoming()
 {
     if(m_serverGroup->serverByIndex(m_currentServerIndex).SSLEnabled())
         emit sslConnected(this);
@@ -1187,7 +1160,7 @@ void Server::incoming()
         incomingTimer.start(0);
 }
 
-void Server::queue(const QString& buffer)
+void IcecapServer::queue(const QString& buffer)
 {
     // Only queue lines if we are connected
     if(!buffer.isEmpty())
@@ -1203,7 +1176,7 @@ void Server::queue(const QString& buffer)
     }
 }
 
-void Server::queueAt(uint pos,const QString& buffer)
+void IcecapServer::queueAt(uint pos,const QString& buffer)
 {
     if(buffer.isEmpty())
         return;
@@ -1225,7 +1198,7 @@ void Server::queueAt(uint pos,const QString& buffer)
     }
 }
 
-void Server::queueList(const QStringList& buffer)
+void IcecapServer::queueList(const QStringList& buffer)
 {
     // Only queue lines if we are connected
     if(!buffer.isEmpty())
@@ -1248,7 +1221,7 @@ void Server::queueList(const QStringList& buffer)
     This is necessary because the irc server will clip messages so that the
     client receives a maximum of 512 bytes at once.
 */
-int Server::getPreLength(const QString& command, const QString& dest)
+int IcecapServer::getPreLength(const QString& command, const QString& dest)
 {
     int hostMaskLength=getNickInfo(nickname)->getHostmask().length();
 
@@ -1260,7 +1233,7 @@ int Server::getPreLength(const QString& command, const QString& dest)
     return x;
 }
 
-void Server::send()
+void IcecapServer::send()
 {
     // Check if we are still online
     if(!isConnected() || outputBuffer.isEmpty())
@@ -1366,12 +1339,12 @@ void Server::send()
     }
 }
 
-void Server::closed()
+void IcecapServer::closed()
 {
     broken(m_socket->error());
 }
 
-void Server::dcopRaw(const QString& command)
+void IcecapServer::dcopRaw(const QString& command)
 {
     if(command.startsWith(Preferences::commandChar()))
     {
@@ -1381,7 +1354,7 @@ void Server::dcopRaw(const QString& command)
         queue(command);
 }
 
-void Server::dcopSay(const QString& target,const QString& command)
+void IcecapServer::dcopSay(const QString& target,const QString& command)
 {
     if(isAChannel(target))
     {
@@ -1391,11 +1364,13 @@ void Server::dcopSay(const QString& target,const QString& command)
     else
     {
         class Query* query=getQueryByName(target);
+/*
         if(query==0)
         {
             NickInfoPtr nickinfo = obtainNickInfo(target);
             query=addQuery(nickinfo, true);
         }
+*/
         if(query)
         {
             if(!command.isEmpty())
@@ -1411,17 +1386,17 @@ void Server::dcopSay(const QString& target,const QString& command)
     }
 }
 
-void Server::dcopInfo(const QString& string)
+void IcecapServer::dcopInfo(const QString& string)
 {
     appendMessageToFrontmost(i18n("DCOP"),string);
 }
 
-void Server::ctcpReply(const QString &receiver,const QString &text)
+void IcecapServer::ctcpReply(const QString &receiver,const QString &text)
 {
     queue("NOTICE "+receiver+" :"+'\x01'+text+'\x01');
 }
 
-QString Server::getNumericalIp(bool followDccSetting)
+QString IcecapServer::getNumericalIp(bool followDccSetting)
 {
     QHostAddress ip;
     QString sip = getIp(followDccSetting);
@@ -1432,7 +1407,7 @@ QString Server::getNumericalIp(bool followDccSetting)
 }
 
 // Given a nickname, returns NickInfo object.   0 if not found.
-NickInfoPtr Server::getNickInfo(const QString& nickname)
+NickInfoPtr IcecapServer::getNickInfo(const QString& nickname)
 {
     QString lcNickname(nickname.lower());
     if (m_allNicks.contains(lcNickname))
@@ -1447,7 +1422,7 @@ NickInfoPtr Server::getNickInfo(const QString& nickname)
 
 // Given a nickname, returns an existing NickInfo object, or creates a new NickInfo object.
 // Returns pointer to the found or created NickInfo object.
-NickInfoPtr Server::obtainNickInfo(const QString& nickname)
+NickInfoPtr IcecapServer::obtainNickInfo(const QString& nickname)
 {
     NickInfoPtr nickInfo = getNickInfo(nickname);
     if (!nickInfo)
@@ -1458,12 +1433,13 @@ NickInfoPtr Server::obtainNickInfo(const QString& nickname)
     return nickInfo;
 }
 
-const NickInfoMap* Server::getAllNicks() { return &m_allNicks; }
+
+const NickInfoMap* IcecapServer::getAllNicks() { return &m_allNicks; }
 
 // Returns the list of members for a channel in the joinedChannels list.
 // 0 if channel is not in the joinedChannels list.
 // Using code must not alter the list.
-const ChannelNickMap *Server::getJoinedChannelMembers(const QString& channelName) const
+const ChannelNickMap *IcecapServer::getJoinedChannelMembers(const QString& channelName) const
 {
     QString lcChannelName = channelName.lower();
     if (m_joinedChannels.contains(lcChannelName))
@@ -1475,7 +1451,7 @@ const ChannelNickMap *Server::getJoinedChannelMembers(const QString& channelName
 // Returns the list of members for a channel in the unjoinedChannels list.
 // 0 if channel is not in the unjoinedChannels list.
 // Using code must not alter the list.
-const ChannelNickMap *Server::getUnjoinedChannelMembers(const QString& channelName) const
+const ChannelNickMap *IcecapServer::getUnjoinedChannelMembers(const QString& channelName) const
 {
     QString lcChannelName = channelName.lower();
     if (m_unjoinedChannels.contains(lcChannelName))
@@ -1487,7 +1463,7 @@ const ChannelNickMap *Server::getUnjoinedChannelMembers(const QString& channelNa
 // Searches the Joined and Unjoined lists for the given channel and returns the member list.
 // 0 if channel is not in either list.
 // Using code must not alter the list.
-const ChannelNickMap *Server::getChannelMembers(const QString& channelName) const
+const ChannelNickMap *IcecapServer::getChannelMembers(const QString& channelName) const
 {
     const ChannelNickMap *members = getJoinedChannelMembers(channelName);
     if (members)
@@ -1498,7 +1474,7 @@ const ChannelNickMap *Server::getChannelMembers(const QString& channelName) cons
 
 // Returns pointer to the ChannelNick (mode and pointer to NickInfo) for a given channel and nickname.
 // 0 if not found.
-ChannelNickPtr Server::getChannelNick(const QString& channelName, const QString& nickname)
+ChannelNickPtr IcecapServer::getChannelNick(const QString& channelName, const QString& nickname)
 {
     QString lcChannelName = channelName.lower();
     QString lcNickname = nickname.lower();
@@ -1520,7 +1496,7 @@ ChannelNickPtr Server::getChannelNick(const QString& channelName, const QString&
 // is in the watch list, adds the channel and nick to the unjoinedChannels list.
 // If mode != 99, sets the mode for the nick in the channel.
 // Returns the NickInfo object if nick is on any lists, otherwise 0.
-ChannelNickPtr Server::setChannelNick(const QString& channelName, const QString& nickname, unsigned int mode)
+ChannelNickPtr IcecapServer::setChannelNick(const QString& channelName, const QString& nickname, unsigned int mode)
 {
     QString lcNickname = nickname.lower();
     // If already on a list, update mode.
@@ -1545,7 +1521,7 @@ ChannelNickPtr Server::setChannelNick(const QString& channelName, const QString&
 }
 
 // Returns a list of all the joined channels that a nick is in.
-QStringList Server::getNickJoinedChannels(const QString& nickname)
+QStringList IcecapServer::getNickJoinedChannels(const QString& nickname)
 {
     QString lcNickname = nickname.lower();
     QStringList channellist;
@@ -1558,7 +1534,7 @@ QStringList Server::getNickJoinedChannels(const QString& nickname)
 }
 
 // Returns a list of all the channels (joined or unjoined) that a nick is in.
-QStringList Server::getNickChannels(const QString& nickname)
+QStringList IcecapServer::getNickChannels(const QString& nickname)
 {
     QString lcNickname = nickname.lower();
     QStringList channellist;
@@ -1574,13 +1550,13 @@ QStringList Server::getNickChannels(const QString& nickname)
     return channellist;
 }
 
-bool Server::isNickOnline(const QString &nickname)
+bool IcecapServer::isNickOnline(const QString &nickname)
 {
     NickInfoPtr nickInfo = getNickInfo(nickname);
     return (nickInfo != 0);
 }
 
-QString Server::getIp(bool followDccSetting)
+QString IcecapServer::getIp(bool followDccSetting)
 {
     QString ip;
 
@@ -1625,7 +1601,7 @@ QString Server::getIp(bool followDccSetting)
     return ip;
 }
 
-class Query *Server::addQuery(const NickInfoPtr & nickInfo, bool weinitiated)
+class Query *IcecapServer::addQuery(const NickInfoPtr & nickInfo, bool weinitiated)
 {
     QString nickname = nickInfo->getNickname();
     // Only create new query object if there isn't already one with the same name
@@ -1633,6 +1609,7 @@ class Query *Server::addQuery(const NickInfoPtr & nickInfo, bool weinitiated)
     if(!query)
     {
         QString lcNickname = nickname.lower();
+/*
         query=getViewContainer()->addQuery(this,nickInfo, weinitiated);
         query->setIdentity(getIdentity());
 
@@ -1648,6 +1625,7 @@ class Query *Server::addQuery(const NickInfoPtr & nickInfo, bool weinitiated)
         {
             static_cast<KonversationApplication*>(kapp)->notificationHandler()->query(query, nickname);
         }
+*/
     }
 
     // try to get hostmask if there's none yet
@@ -1656,7 +1634,7 @@ class Query *Server::addQuery(const NickInfoPtr & nickInfo, bool weinitiated)
     return query;
 }
 
-void Server::closeQuery(const QString &name)
+void IcecapServer::closeQuery(const QString &name)
 {
     class Query* query=getQueryByName(name);
     removeQuery(query);
@@ -1669,7 +1647,7 @@ void Server::closeQuery(const QString &name)
     if (!isWatchedNick(nickname)) deleteNickIfUnlisted(nickname);
 }
 
-void Server::closeChannel(const QString& name)
+void IcecapServer::closeChannel(const QString& name)
 {
     kdDebug() << "Server::closeChannel(" << name << ")" << endl;
     Channel* channelToClose = getChannelByName(name);
@@ -1682,25 +1660,25 @@ void Server::closeChannel(const QString& name)
     }
 }
 
-void Server::requestChannelList()
+void IcecapServer::requestChannelList()
 {
     inputFilter.setAutomaticRequest("LIST", QString::null, true);
     queue("LIST");
 }
 
-void Server::requestWhois(const QString& nickname)
+void IcecapServer::requestWhois(const QString& nickname)
 {
     inputFilter.setAutomaticRequest("WHOIS", nickname, true);
     queue("WHOIS "+nickname);
 }
 
-void Server::requestWho(const QString& channel)
+void IcecapServer::requestWho(const QString& channel)
 {
     inputFilter.setAutomaticRequest("WHO", channel, true);
     queue("WHO "+channel);
 }
 
-void Server::requestUserhost(const QString& nicks)
+void IcecapServer::requestUserhost(const QString& nicks)
 {
     QStringList nicksList = QStringList::split(" ", nicks);
     for(QStringList::ConstIterator it=nicksList.begin() ; it!=nicksList.end() ; ++it)
@@ -1708,20 +1686,20 @@ void Server::requestUserhost(const QString& nicks)
     queue("USERHOST "+nicks);
 }
 
-void Server::requestTopic(const QString& channel)
+void IcecapServer::requestTopic(const QString& channel)
 {
     inputFilter.setAutomaticRequest("TOPIC", channel, true);
     queue("TOPIC "+channel);
 }
 
-void Server::resolveUserhost(const QString& nickname)
+void IcecapServer::resolveUserhost(const QString& nickname)
 {
     inputFilter.setAutomaticRequest("WHOIS", nickname, true);
     inputFilter.setAutomaticRequest("DNS", nickname, true);
     queue("WHOIS "+nickname);
 }
 
-void Server::requestBan(const QStringList& users,const QString& channel,const QString& a_option)
+void IcecapServer::requestBan(const QStringList& users,const QString& channel,const QString& a_option)
 {
     QString hostmask;
     QString option=a_option.lower();
@@ -1764,24 +1742,24 @@ void Server::requestBan(const QStringList& users,const QString& channel,const QS
     }
 }
 
-void Server::requestUnban(const QString& mask,const QString& channel)
+void IcecapServer::requestUnban(const QString& mask,const QString& channel)
 {
     Konversation::OutputFilterResult result = outputFilter->execUnban(mask,channel);
     queue(result.toServer);
 }
 
-void Server::requestDccSend()
+void IcecapServer::requestDccSend()
 {
     requestDccSend(QString::null);
 }
 
-void Server::sendURIs(const QStrList& uris, const QString& nick)
+void IcecapServer::sendURIs(const QStrList& uris, const QString& nick)
 {
     for (QStrListIterator it(uris) ; *it; ++it)
         addDccSend(nick,KURL(*it));
 }
 
-void Server::requestDccSend(const QString &a_recipient)
+void IcecapServer::requestDccSend(const QString &a_recipient)
 {
     QString recipient(a_recipient);
     // if we don't have a recipient yet, let the user select one
@@ -1831,7 +1809,7 @@ void Server::requestDccSend(const QString &a_recipient)
     }
 }
 
-void Server::addDccSend(const QString &recipient,KURL fileURL, const QString &altFileName, uint fileSize)
+void IcecapServer::addDccSend(const QString &recipient,KURL fileURL, const QString &altFileName, uint fileSize)
 {
     emit addDccPanel();
 
@@ -1860,7 +1838,7 @@ void Server::addDccSend(const QString &recipient,KURL fileURL, const QString &al
                                     ( newDcc->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( newDcc->getFileSize() ) ) );
 }
 
-void Server::addDccGet(const QString &sourceNick, const QStringList &dccArguments)
+void IcecapServer::addDccGet(const QString &sourceNick, const QStringList &dccArguments)
 {
     emit addDccPanel();
 
@@ -1893,19 +1871,19 @@ void Server::addDccGet(const QString &sourceNick, const QStringList &dccArgument
     if(Preferences::dccAutoGet()) newDcc->start();
 }
 
-void Server::requestDccChat(const QString& nickname)
+void IcecapServer::requestDccChat(const QString& nickname)
 {
     emit addDccChat(getNickname(),nickname,getNumericalIp(true),QStringList(),true);
 }
 
-void Server::dccSendRequest(const QString &partner, const QString &fileName, const QString &address, const QString &port, unsigned long size)
+void IcecapServer::dccSendRequest(const QString &partner, const QString &fileName, const QString &address, const QString &port, unsigned long size)
 {
     kdDebug() << "dccSendRequest sent" << endl;
     Konversation::OutputFilterResult result = outputFilter->sendRequest(partner,fileName,address,port,size);
     queue(result.toServer);
 }
 
-void Server::dccResumeGetRequest(const QString &sender, const QString &fileName, const QString &port, KIO::filesize_t startAt)
+void IcecapServer::dccResumeGetRequest(const QString &sender, const QString &fileName, const QString &port, KIO::filesize_t startAt)
 {
     Konversation::OutputFilterResult result;
 
@@ -1917,7 +1895,7 @@ void Server::dccResumeGetRequest(const QString &sender, const QString &fileName,
     queue(result.toServer);
 }
 
-void Server::resumeDccGetTransfer(const QString &sourceNick, const QStringList &dccArguments)
+void IcecapServer::resumeDccGetTransfer(const QString &sourceNick, const QStringList &dccArguments)
 {
     // Check if there actually is a transfer going on on that port
     DccTransferRecv* dccTransfer=static_cast<DccTransferRecv*>(getViewContainer()->getDccPanel()->getTransferByPort(dccArguments[1],DccTransfer::Receive,true));
@@ -1945,7 +1923,7 @@ void Server::resumeDccGetTransfer(const QString &sourceNick, const QStringList &
     }
 }
 
-void Server::resumeDccSendTransfer(const QString &recipient, const QStringList &dccArguments)
+void IcecapServer::resumeDccSendTransfer(const QString &recipient, const QStringList &dccArguments)
 {
     // Check if there actually is a transfer going on on that port
     DccTransferSend* dccTransfer=static_cast<DccTransferSend*>(getViewContainer()->getDccPanel()->getTransferByPort(dccArguments[1],DccTransfer::Send));
@@ -1984,7 +1962,7 @@ void Server::resumeDccSendTransfer(const QString &recipient, const QStringList &
     }
 }
 
-void Server::dccGetDone(const DccTransfer* item)
+void IcecapServer::dccGetDone(const DccTransfer* item)
 {
     if(item->getStatus()==DccTransfer::Done)
         appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of sender",
@@ -1994,7 +1972,7 @@ void Server::dccGetDone(const DccTransfer* item)
             "Download of \"%1\" from %2 failed. Reason: %3.").arg(item->getFileName(), item->getPartnerNick(), item->getStatusDetail()));
 }
 
-void Server::dccSendDone(const DccTransfer* item)
+void IcecapServer::dccSendDone(const DccTransfer* item)
 {
     if(item->getStatus()==DccTransfer::Done)
         appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of recipient",
@@ -2004,7 +1982,7 @@ void Server::dccSendDone(const DccTransfer* item)
             "Upload of \"%1\" to %2 failed. Reason: %3.").arg(item->getFileName(), item->getPartnerNick(), item->getStatusDetail()));
 }
 
-void Server::dccStatusChanged(const DccTransfer *item, int newStatus, int oldStatus)
+void IcecapServer::dccStatusChanged(const DccTransfer *item, int newStatus, int oldStatus)
 {
     getViewContainer()->getDccPanel()->dccStatusChanged(item);
 
@@ -2028,7 +2006,7 @@ void Server::dccStatusChanged(const DccTransfer *item, int newStatus, int oldSta
     }
 }
 
-void Server::removeQuery(class Query* query)
+void IcecapServer::removeQuery(class Query* query)
 {
     // Traverse through list to find the query
     class Query* lookQuery=queryList.first();
@@ -2048,15 +2026,16 @@ void Server::removeQuery(class Query* query)
     query->deleteLater();
 }
 
-void Server::sendJoinCommand(const QString& name, const QString& password)
+void IcecapServer::sendJoinCommand(const QString& name, const QString& password)
 {
     Konversation::OutputFilterResult result = outputFilter->parse(getNickname(),
         Preferences::commandChar() + "JOIN " + name + ' ' + password, QString::null);
     queue(result.toServer);
 }
 
-void Server::joinChannel(const QString& name, const QString& hostmask)
+void IcecapServer::joinChannel(const QString& name, const QString& hostmask)
 {
+/*
     // (re-)join channel, open a new panel if needed
     Channel* channel = getChannelByName(name);
 
@@ -2087,10 +2066,12 @@ void Server::joinChannel(const QString& name, const QString& hostmask)
     }
 
     channel->joinNickname(channelNick);
+*/
 }
 
-void Server::removeChannel(Channel* channel)
+void IcecapServer::removeChannel(Channel* channel)
 {
+/*
     // Update NickInfo.
     removeJoinedChannel(channel->getName());
 
@@ -2099,9 +2080,10 @@ void Server::removeChannel(Channel* channel)
     m_serverGroup->appendChannelHistory(channelSettings);
 
     channelList.removeRef(channel);
+*/
 }
 
-void Server::updateChannelMode(const QString &updater, const QString &channelName, char mode, bool plus, const QString &parameter)
+void IcecapServer::updateChannelMode(const QString &updater, const QString &channelName, char mode, bool plus, const QString &parameter)
 {
 
     Channel* channel=getChannelByName(channelName);
@@ -2155,13 +2137,13 @@ void Server::updateChannelMode(const QString &updater, const QString &channelNam
     }
 }
 
-void Server::updateChannelModeWidgets(const QString &channelName, char mode, const QString &parameter)
+void IcecapServer::updateChannelModeWidgets(const QString &channelName, char mode, const QString &parameter)
 {
     Channel* channel=getChannelByName(channelName);
     if(channel) channel->updateModeWidgets(mode,true,parameter);
 }
 
-void Server::updateChannelQuickButtons()
+void IcecapServer::updateChannelQuickButtons()
 {
     Channel* channel=channelList.first();
     while(channel)
@@ -2171,7 +2153,7 @@ void Server::updateChannelQuickButtons()
     }
 }
 
-Channel* Server::getChannelByName(const QString& name)
+Channel* IcecapServer::getChannelByName(const QString& name)
 {
     // Convert wanted channel name to lowercase
     QString wanted=name;
@@ -2188,7 +2170,7 @@ Channel* Server::getChannelByName(const QString& name)
     return 0;
 }
 
-class Query* Server::getQueryByName(const QString& name)
+class Query* IcecapServer::getQueryByName(const QString& name)
 {
     // Convert wanted query name to lowercase
     QString wanted=name;
@@ -2205,13 +2187,13 @@ class Query* Server::getQueryByName(const QString& name)
     return 0;
 }
 
-void Server::resetNickList(const QString& channelName)
+void IcecapServer::resetNickList(const QString& channelName)
 {
     Channel* outChannel=getChannelByName(channelName);
     if(outChannel) outChannel->resetNickList();
 }
 
-void Server::addPendingNickList(const QString& channelName,const QStringList& nickList)
+void IcecapServer::addPendingNickList(const QString& channelName,const QStringList& nickList)
 {
     Channel* outChannel=getChannelByName(channelName);
     if(outChannel) outChannel->addPendingNickList(nickList);
@@ -2221,8 +2203,9 @@ void Server::addPendingNickList(const QString& channelName,const QStringList& ni
 // Creates new NickInfo if necessary.
 // If needed, moves the channel from the unjoined list to the joined list.
 // Returns the NickInfo for the nickname.
-ChannelNickPtr Server::addNickToJoinedChannelsList(const QString& channelName, const QString& nickname)
+ChannelNickPtr IcecapServer::addNickToJoinedChannelsList(const QString& channelName, const QString& nickname)
 {
+/*
     bool doChannelJoinedSignal = false;
     bool doWatchedNickChangedSignal = false;
     bool doChannelMembersChangedSignal = false;
@@ -2262,8 +2245,10 @@ ChannelNickPtr Server::addNickToJoinedChannelsList(const QString& channelName, c
         else
             channel = m_joinedChannels[lcChannelName];
     }
+*/
     // Add NickInfo to channel list if not already in the list.
     ChannelNickPtr channelNick;
+/*
     if (!channel->contains(lcNickname))
     {
         channelNick = new ChannelNick(nickInfo, false, false, false, false, false);
@@ -2276,6 +2261,7 @@ ChannelNickPtr Server::addNickToJoinedChannelsList(const QString& channelName, c
     if (doWatchedNickChangedSignal) emit watchedNickChanged(this, nickname, true);
     if (doChannelJoinedSignal) emit channelJoinedOrUnjoined(this, channelName, true);
     if (doChannelMembersChangedSignal) emit channelMembersChanged(this, channelName, true, false, nickname);
+*/
     return channelNick;
 }
 
@@ -2284,7 +2270,7 @@ ChannelNickPtr Server::addNickToJoinedChannelsList(const QString& channelName, c
  *  In this class, when channelNick is changed, it emits its own signal, and
  *  calls this function itself.
  */
-void Server::emitChannelNickChanged(const ChannelNickPtr channelNick)
+void IcecapServer::emitChannelNickChanged(const ChannelNickPtr channelNick)
 {
     emit channelNickChanged(this, channelNick);
 }
@@ -2294,7 +2280,7 @@ void Server::emitChannelNickChanged(const ChannelNickPtr channelNick)
  *  In this class, when nickInfo is changed, it emits its own signal, and
  *  calls this function itself.
  */
-void Server::emitNickInfoChanged(const NickInfoPtr nickInfo)
+void IcecapServer::emitNickInfoChanged(const NickInfoPtr nickInfo)
 {
     emit nickInfoChanged(this, nickInfo);
 }
@@ -2304,8 +2290,9 @@ void Server::emitNickInfoChanged(const NickInfoPtr nickInfo)
 // If needed, moves the channel from the joined list to the unjoined list.
 // If mode != 99 sets the mode for this nick in this channel.
 // Returns the NickInfo for the nickname.
-ChannelNickPtr Server::addNickToUnjoinedChannelsList(const QString& channelName, const QString& nickname)
+ChannelNickPtr IcecapServer::addNickToUnjoinedChannelsList(const QString& channelName, const QString& nickname)
 {
+/*
     bool doChannelUnjoinedSignal = false;
     bool doWatchedNickChangedSignal = false;
     bool doChannelMembersChangedSignal = false;
@@ -2341,7 +2328,9 @@ ChannelNickPtr Server::addNickToUnjoinedChannelsList(const QString& channelName,
             channel = m_unjoinedChannels[lcChannelName];
     }
     // Add NickInfo to unjoinedChannels list if not already in the list.
+*/
     ChannelNickPtr channelNick;
+/*
     if (!channel->contains(lcNickname))
     {
         channelNick = new ChannelNick(nickInfo, false, false, false, false, false);
@@ -2353,6 +2342,7 @@ ChannelNickPtr Server::addNickToUnjoinedChannelsList(const QString& channelName,
     if (doWatchedNickChangedSignal) emit watchedNickChanged(this, nickname, true);
     if (doChannelUnjoinedSignal) emit channelJoinedOrUnjoined(this, channelName, false);
     if (doChannelMembersChangedSignal) emit channelMembersChanged(this, channelName, false, false, nickname);
+*/
     return channelNick;
 }
 
@@ -2363,9 +2353,10 @@ ChannelNickPtr Server::addNickToUnjoinedChannelsList(const QString& channelName,
  * @param nickname           The nickname that is online.
  * @return                   Pointer to NickInfo for nick.
  */
-NickInfoPtr Server::setWatchedNickOnline(const QString& nickname)
+NickInfoPtr IcecapServer::setWatchedNickOnline(const QString& nickname)
 {
     NickInfoPtr nickInfo = getNickInfo(nickname);
+/*
     if (!nickInfo)
     {
         QString lcNickname = nickname.lower();
@@ -2378,11 +2369,12 @@ NickInfoPtr Server::setWatchedNickOnline(const QString& nickname)
 
         static_cast<KonversationApplication*>(kapp)->notificationHandler()->nickOnline(getStatusView(), nickname);
     }
+*/
     nickInfo->setPrintedOnline(true);
     return nickInfo;
 }
 
-bool Server::setNickOffline(const QString& nickname)
+bool IcecapServer::setNickOffline(const QString& nickname)
 {
     QString lcNickname = nickname.lower();
     NickInfoPtr nickInfo = getNickInfo(lcNickname);
@@ -2433,7 +2425,7 @@ bool Server::setNickOffline(const QString& nickname)
  * @param nickname           The nickname to be deleted.  Case insensitive.
  * @return                   True if the nickname is deleted.
  */
-bool Server::deleteNickIfUnlisted(QString &nickname)
+bool IcecapServer::deleteNickIfUnlisted(QString &nickname)
 {
     // Don't delete our own nickinfo.
     if (nickname == getNickname()) return false;
@@ -2455,7 +2447,7 @@ bool Server::deleteNickIfUnlisted(QString &nickname)
  * @param channelName The channel name.  Case insensitive.
  * @param nickname    The nickname.  Case insensitive.
  */
-void Server::removeChannelNick(const QString& channelName, const QString& nickname)
+void IcecapServer::removeChannelNick(const QString& channelName, const QString& nickname)
 {
     bool doSignal = false;
     bool joined = false;
@@ -2493,34 +2485,34 @@ void Server::removeChannelNick(const QString& channelName, const QString& nickna
     if (doSignal) emit channelMembersChanged(this, channelName, joined, true, nickname);
 }
 
-QStringList Server::getWatchList()
+QStringList IcecapServer::getWatchList()
 {
     // no nickinfo ISON for the time being
     return Preferences::notifyListByGroupName(getServerGroup());
-    if (m_serverISON)
-        return m_serverISON->getWatchList();
-    else
+//    if (m_serverISON)
+//        return m_serverISON->getWatchList();
+//    else
         return QStringList();
 }
 
-QString Server::getWatchListString() { return getWatchList().join(" "); }
+QString IcecapServer::getWatchListString() { return getWatchList().join(" "); }
 
-QStringList Server::getISONList()
+QStringList IcecapServer::getISONList()
 {
     // no nickinfo ISON for the time being
     return Preferences::notifyListByGroupName(getServerGroup());
-    if (m_serverISON)
-        return m_serverISON->getISONList();
-    else
+//    if (m_serverISON)
+//        return m_serverISON->getISONList();
+//    else
         return QStringList();
 }
 
-QString Server::getISONListString() { return getISONList().join(" "); }
+QString IcecapServer::getISONListString() { return getISONList().join(" "); }
 
 /**
  * Return true if the given nickname is on the watch list.
  */
-bool Server::isWatchedNick(const QString& nickname)
+bool IcecapServer::isWatchedNick(const QString& nickname)
 {
     QStringList watchList = getWatchList();
     return (watchList.contains(nickname.lower()));
@@ -2532,7 +2524,7 @@ bool Server::isWatchedNick(const QString& nickname)
  * empty, it is deleted.
  * @param channelName        Name of the channel.  Case sensitive.
  */
-void Server::removeJoinedChannel(const QString& channelName)
+void IcecapServer::removeJoinedChannel(const QString& channelName)
 {
     bool doSignal = false;
     QStringList watchListLower = getWatchList();
@@ -2579,7 +2571,7 @@ void Server::removeJoinedChannel(const QString& channelName)
 
 // Renames a nickname in all NickInfo lists.
 // Returns pointer to the NickInfo object or 0 if nick not found.
-void Server::renameNickInfo(NickInfoPtr nickInfo, const QString& newname)
+void IcecapServer::renameNickInfo(NickInfoPtr nickInfo, const QString& newname)
 {
     if (nickInfo)
     {
@@ -2618,7 +2610,7 @@ void Server::renameNickInfo(NickInfoPtr nickInfo, const QString& newname)
     }
 }
 
-Channel* Server::nickJoinsChannel(const QString &channelName, const QString &nickname, const QString &hostmask)
+Channel* IcecapServer::nickJoinsChannel(const QString &channelName, const QString &nickname, const QString &hostmask)
 {
     Channel* outChannel=getChannelByName(channelName);
     if(outChannel)
@@ -2636,7 +2628,7 @@ Channel* Server::nickJoinsChannel(const QString &channelName, const QString &nic
     return outChannel;
 }
 
-void Server::addHostmaskToNick(const QString& sourceNick, const QString& sourceHostmask)
+void IcecapServer::addHostmaskToNick(const QString& sourceNick, const QString& sourceHostmask)
 {
     // Update NickInfo.
     NickInfoPtr nickInfo=getNickInfo(sourceNick);
@@ -2649,7 +2641,7 @@ void Server::addHostmaskToNick(const QString& sourceNick, const QString& sourceH
     }
 }
 
-Channel* Server::removeNickFromChannel(const QString &channelName, const QString &nickname, const QString &reason, bool quit)
+Channel* IcecapServer::removeNickFromChannel(const QString &channelName, const QString &nickname, const QString &reason, bool quit)
 {
     Channel* outChannel=getChannelByName(channelName);
     if(outChannel)
@@ -2672,7 +2664,7 @@ Channel* Server::removeNickFromChannel(const QString &channelName, const QString
     return outChannel;
 }
 
-void Server::nickWasKickedFromChannel(const QString &channelName, const QString &nickname, const QString &kicker, const QString &reason)
+void IcecapServer::nickWasKickedFromChannel(const QString &channelName, const QString &nickname, const QString &kicker, const QString &reason)
 {
     Channel* outChannel=getChannelByName(channelName);
     if(outChannel)
@@ -2688,7 +2680,7 @@ void Server::nickWasKickedFromChannel(const QString &channelName, const QString 
     }
 }
 
-void Server::removeNickFromServer(const QString &nickname,const QString &reason)
+void IcecapServer::removeNickFromServer(const QString &nickname,const QString &reason)
 {
     Channel* channel=channelList.first();
     while(channel)
@@ -2711,7 +2703,7 @@ void Server::removeNickFromServer(const QString &nickname,const QString &reason)
     setNickOffline(nickname);
 }
 
-void Server::renameNick(const QString &nickname, const QString &newNick)
+void IcecapServer::renameNick(const QString &nickname, const QString &newNick)
 {
     if(nickname.isEmpty() || newNick.isEmpty())
     {
@@ -2754,7 +2746,7 @@ void Server::renameNick(const QString &nickname, const QString &newNick)
 
 }
 
-void Server::userhost(const QString& nick,const QString& hostmask,bool away,bool /* ircOp */)
+void IcecapServer::userhost(const QString& nick,const QString& hostmask,bool away,bool /* ircOp */)
 {
     addHostmaskToNick(nick,hostmask);
     // remember my IP for DCC things
@@ -2775,7 +2767,7 @@ void Server::userhost(const QString& nick,const QString& hostmask,bool away,bool
     }
 }
 
-void Server::gotOwnResolvedHostByUserhost(KResolverResults res)
+void IcecapServer::gotOwnResolvedHostByUserhost(KResolverResults res)
 {
     if ( res.error() == KResolver::NoError && !res.isEmpty() )
     {
@@ -2785,38 +2777,38 @@ void Server::gotOwnResolvedHostByUserhost(KResolverResults res)
         kdDebug() << "Server::gotOwnResolvedHostByUserhost(): Got error: " << ( int )res.error() << endl;
 }
 
-void Server::appendServerMessageToChannel(const QString& channel,const QString& type,const QString& message)
+void IcecapServer::appendServerMessageToChannel(const QString& channel,const QString& type,const QString& message)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
         outChannel->appendServerMessage(type,message);
 }
 
-void Server::appendCommandMessageToChannel(const QString& channel,const QString& command,const QString& message)
+void IcecapServer::appendCommandMessageToChannel(const QString& channel,const QString& command,const QString& message)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
         outChannel->appendCommandMessage(command,message);
 }
 
-void Server::appendStatusMessage(const QString& type,const QString& message)
+void IcecapServer::appendStatusMessage(const QString& type,const QString& message)
 {
     statusView->appendServerMessage(type,message);
 }
 
-void Server::appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL)
+void IcecapServer::appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL)
 {
     getViewContainer()->appendToFrontmost(type,message, statusView, parseURL);
 }
 
-void Server::setNickname(const QString &newNickname)
+void IcecapServer::setNickname(const QString &newNickname)
 {
     nickname = newNickname;
     m_loweredNickname = newNickname.lower();
     emit nicknameChanged(newNickname);
 }
 
-void Server::setChannelTopic(const QString &channel, const QString &newTopic)
+void IcecapServer::setChannelTopic(const QString &channel, const QString &newTopic)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
@@ -2827,7 +2819,7 @@ void Server::setChannelTopic(const QString &channel, const QString &newTopic)
 }
 
                                                   // Overloaded
-void Server::setChannelTopic(const QString& nickname, const QString &channel, const QString &newTopic)
+void IcecapServer::setChannelTopic(const QString& nickname, const QString &channel, const QString &newTopic)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
@@ -2837,36 +2829,36 @@ void Server::setChannelTopic(const QString& nickname, const QString &channel, co
     }
 }
 
-void Server::setTopicAuthor(const QString& channel,const QString& author)
+void IcecapServer::setTopicAuthor(const QString& channel,const QString& author)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
         outChannel->setTopicAuthor(author);
 }
 
-void Server::endOfWho(const QString& target)
+void IcecapServer::endOfWho(const QString& target)
 {
     Channel* channel = getChannelByName(target);
     if(channel)
         channel->scheduleAutoWho();
 }
 
-bool Server::isNickname(const QString &compare) const
+bool IcecapServer::isNickname(const QString &compare) const
 {
     return (nickname == compare);
 }
 
-QString Server::getNickname() const
+QString IcecapServer::getNickname() const
 {
     return nickname;
 }
 
-QString Server::loweredNickname() const
+QString IcecapServer::loweredNickname() const
 {
     return m_loweredNickname;
 }
 
-QString Server::parseWildcards(const QString& toParse,
+QString IcecapServer::parseWildcards(const QString& toParse,
 const QString& sender,
 const QString& channelName,
 const QString& channelKey,
@@ -2876,7 +2868,7 @@ const QString& parameter)
     return parseWildcards(toParse,sender,channelName,channelKey,QStringList::split(' ',nick),parameter);
 }
 
-QString Server::parseWildcards(const QString& toParse,
+QString IcecapServer::parseWildcards(const QString& toParse,
 const QString& sender,
 const QString& channelName,
 const QString& channelKey,
@@ -2948,27 +2940,27 @@ const QString& /*parameter*/)
     return out;
 }
 
-void Server::setIrcName(const QString &newIrcName)
+void IcecapServer::setIrcName(const QString &newIrcName)
 {
     ircName = newIrcName;
 }
 
-QString Server::getIrcName() const
+QString IcecapServer::getIrcName() const
 {
     return ircName;
 }
 
-InputFilter* Server::getInputFilter()
+IcecapInputFilter* IcecapServer::getInputFilter()
 {
     return &inputFilter;
 }
 
-Konversation::OutputFilter* Server::getOutputFilter()
+Konversation::IcecapOutputFilter* IcecapServer::getOutputFilter()
 {
     return outputFilter;
 }
 
-void Server::sendToAllChannels(const QString &text)
+void IcecapServer::sendToAllChannels(const QString &text)
 {
     // Send a message to all channels we are in
     Channel* channel = channelList.first();
@@ -2979,7 +2971,7 @@ void Server::sendToAllChannels(const QString &text)
     }
 }
 
-void Server::invitation(const QString& nick,const QString& channel)
+void IcecapServer::invitation(const QString& nick,const QString& channel)
 {
     if(Preferences::autojoinOnInvite() &&
         KMessageBox::questionYesNo(getViewContainer()->getWindow(),
@@ -2994,17 +2986,17 @@ void Server::invitation(const QString& nick,const QString& channel)
     }
 }
 
-void Server::scriptNotFound(const QString& name)
+void IcecapServer::scriptNotFound(const QString& name)
 {
     appendMessageToFrontmost(i18n("DCOP"),i18n("Error: Could not find script \"%1\".").arg(name));
 }
 
-void Server::scriptExecutionError(const QString& name)
+void IcecapServer::scriptExecutionError(const QString& name)
 {
     appendMessageToFrontmost(i18n("DCOP"),i18n("Error: Could not execute script \"%1\". Check file permissions.").arg(name));
 }
 
-void Server::away()
+void IcecapServer::away()
 {
     if(!m_isAway)
         startAwayTimer();                         //Don't start timer if we have already started it
@@ -3035,7 +3027,7 @@ void Server::away()
 
 }
 
-void Server::unAway()
+void IcecapServer::unAway()
 {
     m_isAway = false;
     m_awayReason = QString();
@@ -3059,17 +3051,17 @@ void Server::unAway()
 
 }
 
-void Server::setAwayReason(const QString& reason)
+void IcecapServer::setAwayReason(const QString& reason)
 {
     m_awayReason = reason;
 }
 
-bool Server::isAChannel(const QString &channel) const
+bool IcecapServer::isAChannel(const QString &channel) const
 {
     return (getChannelTypes().contains(channel.at(0)) > 0);
 }
 
-void Server::addRawLog(bool show)
+void IcecapServer::addRawLog(bool show)
 {
     if (!rawLog)
         rawLog=getViewContainer()->addRawLog(this);
@@ -3080,7 +3072,7 @@ void Server::addRawLog(bool show)
     if (show) emit showView(rawLog);
 }
 
-void Server::closeRawLog()
+void IcecapServer::closeRawLog()
 {
     if(rawLog)
     {
@@ -3089,8 +3081,9 @@ void Server::closeRawLog()
     }
 }
 
-ChannelListPanel* Server::addChannelListPanel()
+ChannelListPanel* IcecapServer::addChannelListPanel()
 {
+/*
     if(!channelListPanel)
     {
         channelListPanel = getViewContainer()->addChannelListPanel(this);
@@ -3099,22 +3092,22 @@ ChannelListPanel* Server::addChannelListPanel()
         connect(channelListPanel, SIGNAL(joinChannel(const QString&)), this, SLOT(sendJoinCommand(const QString&)));
         connect(this, SIGNAL(serverOnline(bool)), channelListPanel, SLOT(serverOnline(bool)));
     }
-
+*/
     return channelListPanel;
 }
 
-void Server::addToChannelList(const QString& channel, int users, const QString& topic)
+void IcecapServer::addToChannelList(const QString& channel, int users, const QString& topic)
 {
     addChannelListPanel();
     channelListPanel->addToChannelList(channel, users, topic);
 }
 
-ChannelListPanel* Server::getChannelListPanel() const
+ChannelListPanel* IcecapServer::getChannelListPanel() const
 {
     return channelListPanel;
 }
 
-void Server::closeChannelListPanel()
+void IcecapServer::closeChannelListPanel()
 {
     if(channelListPanel)
     {
@@ -3123,7 +3116,7 @@ void Server::closeChannelListPanel()
     }
 }
 
-void Server::updateAutoJoin(const QString& channel)
+void IcecapServer::updateAutoJoin(const QString& channel)
 {
     Konversation::ChannelList tmpList = m_serverGroup->channelList();
 
@@ -3173,7 +3166,7 @@ void Server::updateAutoJoin(const QString& channel)
     }
 }
 
-void Server::autoRejoinChannels()
+void IcecapServer::autoRejoinChannels()
 {
     if (channelList.isEmpty())
         return;
@@ -3191,42 +3184,42 @@ void Server::autoRejoinChannels()
     queue(joinString);
 }
 
-IdentityPtr Server::getIdentity() const
+IdentityPtr IcecapServer::getIdentity() const
 {
     return m_serverGroup->identity();
 }
 
-void Server::setViewContainer(ViewContainer* newViewContainer)
+void IcecapServer::setViewContainer(ViewContainer* newViewContainer)
 {
     m_viewContainerPtr = newViewContainer;
 }
 
-ViewContainer* Server::getViewContainer() const
+ViewContainer* IcecapServer::getViewContainer() const
 {
     return m_viewContainerPtr;
 }
 
-bool Server::getUseSSL() const
+bool IcecapServer::getUseSSL() const
 {
     return m_serverGroup->serverByIndex(m_currentServerIndex).SSLEnabled();
 }
 
-QString Server::getSSLInfo() const
+QString IcecapServer::getSSLInfo() const
 {
     return static_cast<SSLSocket*>(m_socket)->details();
 }
 
-bool Server::connected() const
+bool IcecapServer::connected() const
 {
     return alreadyConnected;
 }
 
-void Server::sendMultiServerCommand(const QString& command, const QString& parameter)
+void IcecapServer::sendMultiServerCommand(const QString& command, const QString& parameter)
 {
     emit multiServerCommand(command, parameter);
 }
 
-void Server::executeMultiServerCommand(const QString& command, const QString& parameter)
+void IcecapServer::executeMultiServerCommand(const QString& command, const QString& parameter)
 {
     if(command == "away" || command == "back")    //back is the same as away, since paramater is ""
     {
@@ -3249,7 +3242,7 @@ void Server::executeMultiServerCommand(const QString& command, const QString& pa
     }
 }
 
-void Server::sendToAllChannelsAndQueries(const QString& text)
+void IcecapServer::sendToAllChannelsAndQueries(const QString& text)
 {
     // Send a message to all channels we are in
     Channel* channel = channelList.first();
@@ -3270,7 +3263,7 @@ void Server::sendToAllChannelsAndQueries(const QString& text)
     }
 }
 
-void Server::reconnect()
+void IcecapServer::reconnect()
 {
     if (isConnected() && !connecting)
     {
@@ -3286,7 +3279,7 @@ void Server::reconnect()
     }
 }
 
-void Server::disconnect()
+void IcecapServer::disconnect()
 {
     if (isConnected())
     {
@@ -3296,24 +3289,24 @@ void Server::disconnect()
     }
 }
 
-void Server::connectToServerGroup(const QString& serverGroup)
+void IcecapServer::connectToServerGroup(const QString& serverGroup)
 {
     KonversationApplication *konvApp = static_cast<KonversationApplication*>(KApplication::kApplication());
     konvApp->connectToServerGroup(serverGroup);
 }
 
-void Server::connectToNewServer(const QString& server, const QString& port, const QString& password)
+void IcecapServer::connectToNewServer(const QString& server, const QString& port, const QString& password)
 {
     KonversationApplication *konvApp = static_cast<KonversationApplication*>(KApplication::kApplication());
     konvApp->quickConnectToServer(server, port,"", "", password);
 }
 
-bool Server::isAway() const
+bool IcecapServer::isAway() const
 {
     return m_isAway;
 }
 
-QString Server::awayTime() const
+QString IcecapServer::awayTime() const
 {
     QString retVal;
 
@@ -3357,30 +3350,30 @@ QString Server::awayTime() const
     return retVal;
 }
 
-void Server::startAwayTimer()
+void IcecapServer::startAwayTimer()
 {
     m_awayTime = QDateTime::currentDateTime().toTime_t();
 }
 
-KABC::Addressee Server::getOfflineNickAddressee(QString& nickname)
+KABC::Addressee IcecapServer::getOfflineNickAddressee(QString& nickname)
 {
-    if (m_serverISON)
-        return m_serverISON->getOfflineNickAddressee(nickname);
-    else
+//    if (m_serverISON)
+//        return m_serverISON->getOfflineNickAddressee(nickname);
+//    else
         return KABC::Addressee();
 }
 
-void Server::enableIdentifyMsg(bool enabled)
+void IcecapServer::enableIdentifyMsg(bool enabled)
 {
     m_identifyMsg = enabled;
 }
 
-bool Server::identifyMsgEnabled()
+bool IcecapServer::identifyMsgEnabled()
 {
     return m_identifyMsg;
 }
 
-void Server::addBan(const QString &channel, const QString &ban)
+void IcecapServer::addBan(const QString &channel, const QString &ban)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
@@ -3389,7 +3382,7 @@ void Server::addBan(const QString &channel, const QString &ban)
     }
 }
 
-void Server::removeBan(const QString &channel, const QString &ban)
+void IcecapServer::removeBan(const QString &channel, const QString &ban)
 {
     Channel* outChannel = getChannelByName(channel);
     if(outChannel)
@@ -3398,7 +3391,7 @@ void Server::removeBan(const QString &channel, const QString &ban)
     }
 }
 
-void Server::sendPing()
+void IcecapServer::sendPing()
 {
     //WHO ourselves once a minute in case the irc server has changed our
     //hostmask, such as what happens when a Freenode cloak is activated.
@@ -3414,7 +3407,7 @@ void Server::sendPing()
     m_pingResponseTimer.start(1000 /*1 sec*/);
 }
 
-void Server::pongReceived()
+void IcecapServer::pongReceived()
 {
     currentLag = m_lagTime.elapsed();
     inputFilter.setLagMeasuring(false);
@@ -3426,7 +3419,7 @@ void Server::pongReceived()
     QTimer::singleShot(60000 /*60 sec*/, this, SLOT(sendPing()));
 }
 
-void Server::updateLongPongLag()
+void IcecapServer::updateLongPongLag()
 {
     if(isConnected())
     {
@@ -3439,7 +3432,7 @@ void Server::updateLongPongLag()
     }
 }
 
-#include "server.moc"
+#include "icecapserver.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
 // vim: set et sw=4 ts=4 cino=l1,cs,U1:

@@ -31,8 +31,10 @@
 #include "viewcontainer.h"
 #include "highlight.h"
 #include "server.h"
+#include "icecapserver.h"
 #include "konversationsound.h"
 #include "quickconnectdialog.h"
+#include "icecapquickconnectdialog.h"
 #include "servergroupsettings.h"
 #include "serversettings.h"
 #include "channel.h"
@@ -117,6 +119,7 @@ int KonversationApplication::newInstance()
         setMainWidget(mainWindow);
 
         connect(mainWindow, SIGNAL(showQuickConnectDialog()), this, SLOT(openQuickConnectDialog()) );
+        connect(mainWindow, SIGNAL(showIcecapQuickConnectDialog()), this, SLOT(openIcecapQuickConnectDialog()) );
         connect(Preferences::self(), SIGNAL(updateTrayIcon()), mainWindow, SLOT(updateTrayIcon()) );
         connect(this, SIGNAL(prefsChanged()), mainWindow, SIGNAL(prefsChanged()) );
         connect(osd, SIGNAL(hidden()), mainWindow, SIGNAL(endNotification()));
@@ -464,6 +467,34 @@ void KonversationApplication::quickConnectToServer(const QString& hostName, cons
     connect(newServer, SIGNAL(awayInsertRememberLine(Server*)), mainWindow, SIGNAL(insertRememberLine(Server*)));
 
     serverList.append(newServer);
+}
+
+void KonversationApplication::quickConnectToIcecapServer(const QString& hostName, const QString& port, const QString& channel, const QString& nick, const QString& password, const bool& useSSL)
+{
+    //used for the quick connect dialog and /server command
+
+    IdentityPtr identity;
+    identity = Preferences::identityByName("Default");
+
+    if (!identity || !validateIdentity(identity))
+        return;
+
+    IcecapServer* newServer = new IcecapServer(mainWindow->getViewContainer(), hostName, port, channel, nick, password, useSSL);
+
+    connect(mainWindow,SIGNAL (startNotifyTimer(int)),newServer,SLOT (startNotifyTimer(int)) );
+    connect(mainWindow,SIGNAL (quitServer()),newServer,SLOT (quitServer()) );
+    connect(newServer, SIGNAL(connectionChangedState(IcecapServer*, IcecapServer::State)),
+        mainWindow, SIGNAL(serverStateChanged(IcecapServer*, IcecapServer::State)));
+
+    connect(newServer,SIGNAL (nicksNowOnline(IcecapServer*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(IcecapServer*,const QStringList&,bool)) );
+
+    connect(newServer,SIGNAL (deleted(IcecapServer*)),this,SLOT (removeServer(IcecapServer*)) );
+
+    connect(newServer, SIGNAL(multiServerCommand(const QString&, const QString&)),
+        this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
+    connect(newServer, SIGNAL(awayInsertRememberLine(IcecapServer*)), mainWindow, SIGNAL(insertRememberLine(IcecapServer*)));
+
+    icecapServerList.append(newServer);
 }
 
 Server* KonversationApplication::getServerByName(const QString& name)
@@ -1006,6 +1037,13 @@ void KonversationApplication::openQuickConnectDialog()
     quickConnectDialog = new QuickConnectDialog(mainWindow);
     connect(quickConnectDialog, SIGNAL(connectClicked(const QString&, const QString&, const QString&, const QString&, const QString&, const bool&)),this, SLOT(quickConnectToServer(const QString&, const QString&, const QString&, const QString&, const QString&,const bool&)));
     quickConnectDialog->show();
+}
+
+void KonversationApplication::openIcecapQuickConnectDialog()
+{
+    icecapQuickConnectDialog = new IcecapQuickConnectDialog(mainWindow);
+    connect(icecapQuickConnectDialog, SIGNAL(connectClicked(const QString&, const QString&, const QString&, const QString&, const QString&, const bool&)),this, SLOT(quickConnectToIcecapServer(const QString&, const QString&, const QString&, const QString&, const QString&, const bool&)));
+    icecapQuickConnectDialog->show();
 }
 
 bool KonversationApplication::emitDCOPSig(const QString &appId, const QString &objId, const QString &signal, QByteArray &data)

@@ -69,6 +69,7 @@ class KonversationMainWindow : public KMainWindow
         void prefsChanged();
         void startNotifyTimer(int msec);
         void showQuickConnectDialog();
+        void showIcecapQuickConnectDialog();
         void nicksNowOnline(Server*);
         void endNotification();
         void quitServer();
@@ -110,6 +111,7 @@ class KonversationMainWindow : public KMainWindow
         void openPrefsDialog();
         void openKeyBindings();
         void openQuickConnectDialog();
+        void openIcecapQuickConnectDialog();
 
         void openNotify();
         // it seems that moc does not honor #ifs in compile so we create an

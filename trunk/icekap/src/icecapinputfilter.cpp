@@ -23,9 +23,9 @@
 #include <config.h>
 #include <kdebug.h>
 
-#include "inputfilter.h"
-// #include "server.h"
-#include "genericserver.h"
+#include "icecapinputfilter.h"
+#include "icecapserver.h"
+//#include "genericserver.h"
 #include "replycodes.h"
 #include "konversationapplication.h"
 #include "commit.h"
@@ -38,21 +38,21 @@
 
 #include <kresolver.h>
 
-InputFilter::InputFilter()
+IcecapInputFilter::IcecapInputFilter()
 {
     m_connecting = false;
 }
 
-InputFilter::~InputFilter()
+IcecapInputFilter::~IcecapInputFilter()
 {
 }
 
-void InputFilter::setServer(Server* newServer)
+void IcecapInputFilter::setServer(IcecapServer* newServer)
 {
     server=newServer;
 }
 
-void InputFilter::parseLine(const QString& a_newLine)
+void IcecapInputFilter::parseLine(const QString& a_newLine)
 {
     QString trailing;
     QString newLine(a_newLine);
@@ -113,7 +113,7 @@ void InputFilter::parseLine(const QString& a_newLine)
     }
 }
 
-void InputFilter::parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &_trailing)
+void IcecapInputFilter::parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &_trailing)
 {
     KonversationApplication* konv_app = static_cast<KonversationApplication *>(KApplication::kApplication());
     Q_ASSERT(konv_app);
@@ -126,474 +126,10 @@ void InputFilter::parseClientCommand(const QString &prefix, const QString &comma
     server->addHostmaskToNick(sourceNick,sourceHostmask);
     QString trailing = _trailing;
 
-    if(command=="privmsg")
-    {
-        bool isChan = isAChannel(parameterList[0]);
-        // CTCP message?
-        if(server->identifyMsg() && (trailing.at(0) == '+' || trailing.at(0) == '-')) {
-            trailing = trailing.mid(1);
-        }
-
-        if(trailing.at(0)==QChar(0x01))
-        {
-            // cut out the CTCP command
-            QString ctcp = trailing.mid(1,trailing.find(1,1)-1);
-
-            QString ctcpCommand=ctcp.left(ctcp.find(" ")).lower();
-            QString ctcpArgument=ctcp.mid(ctcp.find(" ")+1);
-            ctcpArgument=static_cast<KonversationApplication*>(kapp)->doAutoreplace(ctcpArgument,false);
-
-            // If it was a ctcp action, build an action string
-            if(ctcpCommand=="action" && isChan)
-            {
-                if(!isIgnore(prefix,Ignore::Channel))
-                {
-                    Channel* channel = server->getChannelByName( parameterList[0] );
-
-                    channel->appendAction(sourceNick,ctcpArgument);
-
-                    if(channel && sourceNick != server->getNickname())
-                    {
-                        if(ctcpArgument.lower().find(QRegExp("(^|[^\\d\\w])"
-                            + QRegExp::escape(server->loweredNickname())
-                            + "([^\\d\\w]|$)")) !=-1 )
-                        {
-                            konv_app->notificationHandler()->nick(channel, sourceNick, ctcpArgument);
-                        }
-                        else
-                        {
-                            konv_app->notificationHandler()->message(channel, sourceNick, ctcpArgument);
-                        }
-                    }
-                }
-            }
-            // If it was a ctcp action, build an action string
-            else if(ctcpCommand=="action" && !isChan)
-            {
-                // Check if we ignore queries from this nick
-                if(!isIgnore(prefix,Ignore::Query))
-                {
-                    NickInfoPtr nickinfo = server->obtainNickInfo(sourceNick);
-                    nickinfo->setHostmask(sourceHostmask);
-
-                    // create new query (server will check for dupes)
-                    query = server->addQuery(nickinfo, false /* we didn't initiate this*/ );
-
-                    // send action to query
-                    query->appendAction(sourceNick,ctcpArgument, true /*use notifications if enabled - e.g. OSD */);
-
-                    if(sourceNick != server->getNickname() && query)
-                    {
-                        konv_app->notificationHandler()->nick(query, sourceNick, ctcpArgument);
-                    }
-                }
-            }
-
-            // Answer ping requests
-            else if(ctcpCommand=="ping")
-            {
-                if(!isIgnore(prefix,Ignore::CTCP))
-                {
-                    if(isChan)
-                    {
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received CTCP-PING request from %1 to channel %2, sending answer.")
-                            .arg(sourceNick).arg(parameterList[0])
-                            );
-                    }
-                    else
-                    {
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received CTCP-%1 request from %2, sending answer.")
-                            .arg("PING").arg(sourceNick)
-                            );
-                    }
-                    server->ctcpReply(sourceNick,QString("PING %1").arg(ctcpArgument));
-                }
-            }
-
-            // Maybe it was a version request, so act appropriately
-            else if(ctcpCommand=="version")
-            {
-                if(!isIgnore(prefix,Ignore::CTCP))
-                {
-                    if (isChan)
-                    {
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received Version request from %1 to channel %2.")
-                            .arg(sourceNick).arg(parameterList[0])
-                            );
-                    }
-                    else
-                    {
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received Version request from %1.")
-                            .arg(sourceNick)
-                            );
-                    }
-
-                    QString reply;
-                    if(Preferences::customVersionReplyEnabled())
-                    {
-                        reply = Preferences::customVersionReply().stripWhiteSpace();
-                    }
-                    else
-                    {
-                        // Do not internationalize the below version string
-                        reply = QString("Icekap %1 (C) 2007 by the Icekap team")
-                            .arg(QString(KONVI_VERSION));
-                    }
-                    server->ctcpReply(sourceNick,"VERSION "+reply);
-                }
-            }
-            // DCC request?
-            else if(ctcpCommand=="dcc" && !isChan)
-            {
-                if(!isIgnore(prefix,Ignore::DCC))
-                {
-                    // Extract DCC type and argument list
-                    QString dccType=ctcpArgument.lower().section(' ',0,0);
-
-                    // Support file names with spaces
-                    QString dccArguments = ctcpArgument.mid(ctcpArgument.find(" ")+1);
-                    QStringList dccArgumentList;
-
-                    if ((dccArguments.contains('\"') >= 2) && (dccArguments.startsWith("\""))) {
-                        int lastQuotePos = dccArguments.findRev("\"");
-                        if (dccArguments[lastQuotePos+1] == ' ') {
-                            QString fileName = dccArguments.mid(1, lastQuotePos-1);
-                            dccArguments = dccArguments.mid(lastQuotePos+2);
-
-                            dccArgumentList.append(fileName);
-                        }
-                    }
-                    dccArgumentList += QStringList::split(' ', dccArguments);
-
-                    // Incoming file?
-                    if(dccType=="send")
-                    {
-                        konv_app->notificationHandler()->dccIncoming(server->getStatusView(), sourceNick);
-                        emit addDccGet(sourceNick,dccArgumentList);
-                    }
-                    // Incoming file that shall be resumed?
-                    else if(dccType=="accept")
-                    {
-                        emit resumeDccGetTransfer(sourceNick,dccArgumentList);
-                    }
-                    // Remote client wants our sent file resumed
-                    else if(dccType=="resume")
-                    {
-                        emit resumeDccSendTransfer(sourceNick,dccArgumentList);
-                    }
-                    else if(dccType=="chat")
-                    {
-                        // will be connected via Server to KonversationMainWindow::addDccChat()
-                        emit addDccChat(server->getNickname(),sourceNick,server->getNumericalIp(),dccArgumentList,false);
-                    }
-                    else
-                    {
-                        server->appendMessageToFrontmost(i18n("DCC"),
-                            i18n("Unknown DCC command %1 received from %2.")
-                            .arg(ctcpArgument).arg(sourceNick)
-                            );
-                    }
-                }
-            }
-            else if (ctcpCommand=="clientinfo" && !isChan)
-            {
-                server->appendMessageToFrontmost(i18n("CTCP"),
-                    i18n("Received CTCP-%1 request from %2, sending answer.")
-                    .arg("CLIENTINFO").arg(sourceNick)
-                    );
-                server->ctcpReply(sourceNick,QString("CLIENTINFO ACTION CLIENTINFO DCC PING TIME VERSION"));
-            }
-            else if(ctcpCommand=="time" && !isChan)
-            {
-                server->appendMessageToFrontmost(i18n("CTCP"),
-                    i18n("Received CTCP-%1 request from %2, sending answer.")
-                    .arg("TIME").arg(sourceNick)
-                    );
-                server->ctcpReply(sourceNick,QString("TIME ")+QDateTime::currentDateTime().toString());
-            }
-
-            // No known CTCP request, give a general message
-            else
-            {
-                if(!isIgnore(prefix,Ignore::CTCP))
-                {
-                    if (isChan)
-                        server->appendServerMessageToChannel(
-                            parameterList[0],
-                            "CTCP",
-                            i18n("Received unknown CTCP-%1 request from %2 to Channel %3")
-                            .arg(ctcp).arg(sourceNick).arg(parameterList[0])
-                            );
-                    else
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received unknown CTCP-%1 request from %2")
-                            .arg(ctcp).arg(sourceNick)
-                            );
-                }
-            }
-        }
-        // No CTCP, so it's an ordinary channel or query message
-        else
-        {
-            trailing=static_cast<KonversationApplication*>(kapp)->doAutoreplace(trailing,false);
-            if (isChan)
-            {
-                if(!isIgnore(prefix,Ignore::Channel))
-                {
-                    Channel* channel = server->getChannelByName(parameterList[0]);
-                    if(channel)
-                    {
-                        channel->append(sourceNick, trailing);
-
-                        if(sourceNick != server->getNickname())
-                        {
-                            if(trailing.lower().find(QRegExp("(^|[^\\d\\w])" +
-                               QRegExp::escape(server->loweredNickname()) + "([^\\d\\w]|$)")) !=-1 )
-                            {
-                                konv_app->notificationHandler()->nick(channel, sourceNick, trailing);
-                            }
-                            else
-                            {
-                                konv_app->notificationHandler()->message(channel, sourceNick, trailing);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if(!isIgnore(prefix,Ignore::Query))
-                {
-                    NickInfoPtr nickinfo = server->obtainNickInfo(sourceNick);
-                    nickinfo->setHostmask(sourceHostmask);
-
-                    // Create a new query (server will check for dupes)
-                    query = server->addQuery(nickinfo, false /*we didn't initiate this*/ );
-
-                    // send action to query
-                    query->appendQuery(sourceNick, trailing, true /*use notifications if enabled - e.g. OSD */ );
-
-                    if(sourceNick != server->getNickname() && query)
-                    {
-                        konv_app->notificationHandler()->nick(query, sourceNick, trailing);
-                    }
-                }
-            }
-        }
-    }
-    else if(command=="notice")
-    {
-        if(!isIgnore(prefix,Ignore::Notice))
-        {
-            // Channel notice?
-            if(isAChannel(parameterList[0]))
-            {
-                if(server->identifyMsg())
-                {
-                    trailing = trailing.mid(1);
-                }
-
-                server->appendServerMessageToChannel(parameterList[0], i18n("Notice"),
-                    i18n("-%1 to %2- %3")
-                    .arg(sourceNick).arg(parameterList[0]).arg(trailing)
-                    );
-            }
-            // Private notice
-            else
-            {
-                // Was this a CTCP reply?
-                if(trailing.at(0)==QChar(0x01))
-                {
-                    // cut 0x01 bytes from trailing string
-                    QString ctcp(trailing.mid(1,trailing.length()-2));
-                    QString replyReason(ctcp.section(' ',0,0));
-                    QString reply(ctcp.section(' ',1));
-
-                    // pong reply, calculate turnaround time
-                    if(replyReason.lower()=="ping")
-                    {
-                        int dateArrived=QDateTime::currentDateTime().toTime_t();
-                        int dateSent=reply.toInt();
-                        int time = dateArrived-dateSent;
-                        QString unit = "seconds";
-
-                        if (time==1)
-                            unit = "second";
-
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received CTCP-PING reply from %1: %2 %3.")
-                            .arg(sourceNick)
-                            .arg(time)
-                            .arg(unit)
-                            );
-                    }
-                    // all other ctcp replies get a general message
-                    else
-                    {
-                        server->appendMessageToFrontmost(i18n("CTCP"),
-                            i18n("Received CTCP-%1 reply from %2: %3")
-                            .arg(replyReason).arg(sourceNick).arg(reply)
-                            );
-                    }
-                }
-                // No, so it was a normal notice
-                else
-                {
-                    // Nickserv
-                    if (trailing.startsWith("If this is your nick"))
-                    {
-                        // Identify command if specified
-                        server->registerWithServices();
-                    }
-                    else if (server->identifyMsg())
-                        trailing = trailing.mid(1);
-
-                    if(trailing.lower() == "password accepted - you are now recognized"
-                        || trailing.lower() == "you have already identified")
-                    {
-                        NickInfoPtr nickInfo = server->getNickInfo(server->getNickname());
-                        if(nickInfo)
-                            nickInfo->setIdentified(true);
-                    }
-                    server->appendMessageToFrontmost(i18n("Notice"), i18n("-%1- %2").arg(sourceNick).arg(trailing));
-                }
-            }
-        }
-    }
-    else if(command=="join")
-    {
-        QString channelName(trailing);
-        // Sometimes JOIN comes without ":" in front of the channel name
-        if(channelName.isEmpty())
-            channelName=parameterList[parameterList.count()-1];
-
-        // Did we join the channel, or was it someone else?
-        if(server->isNickname(sourceNick))
-        {
-            /*
-                QString key;
-                // TODO: Try to remember channel keys for autojoins and manual joins, so
-                //       we can get %k to work
-
-                if(channelName.find(' ')!=-1)
-                {
-                    key=channelName.section(' ',1,1);
-                    channelName=channelName.section(' ',0,0);
-                }
-            */
-
-            // Join the channel
-            server->joinChannel(channelName, sourceHostmask);
-
-            server->resetNickList(channelName);
-
-            // Upon JOIN we're going to receive some NAMES input from the server which
-            // we need to be able to tell apart from manual invocations of /names
-            setAutomaticRequest("NAMES",channelName,true);
-
-            server->getChannelByName(channelName)->clearModeList();
-
-            // Request modes for the channel
-            server->queue("MODE "+channelName);
-
-            // Initiate channel ban list
-            server->getChannelByName(channelName)->clearBanList();
-            setAutomaticRequest("BANLIST",channelName,true);
-            server->queue("MODE "+channelName+" +b");
-        }
-        else
-        {
-            Channel* channel = server->nickJoinsChannel(channelName,sourceNick,sourceHostmask);
-            konv_app->notificationHandler()->join(channel, sourceNick);
-        }
-    }
-    else if(command=="kick")
-    {
-        server->nickWasKickedFromChannel(parameterList[0],parameterList[1],sourceNick,trailing);
-    }
-    else if(command=="part")
-    {
-        /* FIXME: Ugly workaround for a version of the PART line encountered on ircu:
-         *   :Nick!user@host PART :#channel
-         * Quote: "The final colon is specified as a "last argument" designator, and
-         * is always valid before the final argument."
-         */
-
-        QString channel;
-        QString reason;
-
-        if (parameterList[0].isEmpty())
-        {
-            channel = trailing;
-        }
-        else
-        {
-            channel = parameterList[0];
-            reason = trailing;
-        }
-
-        Channel* channelPtr = server->removeNickFromChannel(channel,sourceNick,reason);
-
-        if(sourceNick != server->getNickname())
-        {
-            konv_app->notificationHandler()->part(channelPtr, sourceNick);
-        }
-    }
-    else if(command=="quit")
-    {
-        server->removeNickFromServer(sourceNick,trailing);
-        if(sourceNick != server->getNickname())
-        {
-            konv_app->notificationHandler()->quit(server->getStatusView(), sourceNick);
-        }
-    }
-    else if(command=="nick")
-    {
-        QString newNick(trailing);
-
-        // Message may not include ":" in front of the new nickname
-        if (newNick.isEmpty())
-            newNick=parameterList[parameterList.count()-1];
-
-        server->renameNick(sourceNick,newNick);
-
-        if (sourceNick != server->getNickname())
-        {
-            konv_app->notificationHandler()->nickChange(server->getStatusView(), sourceNick, newNick);
-        }
-    }
-    else if(command=="topic")
-    {
-        server->setChannelTopic(sourceNick,parameterList[0],trailing);
-    }
-    else if(command=="mode") // mode #channel -/+ mmm params
-    {
-        parseModes(sourceNick,parameterList);
-        Channel* channel = server->getChannelByName(parameterList[0]);
-        if(sourceNick != server->getNickname())
-        {
-            konv_app->notificationHandler()->mode(channel, sourceNick);
-        }
-    }
-    else if(command=="invite")
-    {
-        server->appendMessageToFrontmost(i18n("Invite"),
-            i18n("%1 invited you to channel %2")
-            .arg(sourceNick).arg(trailing)
-            );
-        emit invitation(sourceNick,trailing);
-    }
-    else
-    {
-        server->appendMessageToFrontmost(command,parameterList.join(" ")+' '+trailing);
-    }
+    server->appendMessageToFrontmost(command,parameterList.join(" ")+' '+trailing);
 }
 
-void InputFilter::parseServerCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing)
+void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing)
 {
     bool isNumeric;
     int numeric = command.toInt(&isNumeric);
@@ -1236,7 +772,7 @@ void InputFilter::parseServerCommand(const QString &prefix, const QString &comma
                     else
                     {
                         // whoReauestList seems to be broken.
-                        kdDebug()   << "InputFilter::parseServerCommand(): RPL_ENDOFWHO: malformed ENDOFWHO. retrieved: "
+                        kdDebug()   << "IcecapInputFilter::parseServerCommand(): RPL_ENDOFWHO: malformed ENDOFWHO. retrieved: "
                             << parameterList[1] << " expected: " << whoRequestList.front()
                             << endl;
                         whoRequestList.clear();
@@ -1244,7 +780,7 @@ void InputFilter::parseServerCommand(const QString &prefix, const QString &comma
                 }
                 else
                 {
-                    kdDebug()   << "InputFilter::parseServerCommand(): RPL_ENDOFWHO: unexpected ENDOFWHO. retrieved: "
+                    kdDebug()   << "IcecapInputFilter::parseServerCommand(): RPL_ENDOFWHO: unexpected ENDOFWHO. retrieved: "
                         << parameterList[1]
                         << endl;
                 }
@@ -1721,7 +1257,7 @@ void InputFilter::parseServerCommand(const QString &prefix, const QString &comma
     }
 }
 
-void InputFilter::parseModes(const QString &sourceNick, const QStringList &parameterList)
+void IcecapInputFilter::parseModes(const QString &sourceNick, const QStringList &parameterList)
 {
     const QString modestring=parameterList[1];
 
@@ -1778,14 +1314,14 @@ void InputFilter::parseModes(const QString &sourceNick, const QStringList &param
 // # & + and ! are *often*, but not necessarily, Channel identifiers. + and ! are non-RFC,
 // so if a server doesn't offer 005 and supports + and ! channels, I think thats broken behaviour
 // on their part - not ours. --Argonel
-bool InputFilter::isAChannel(const QString &check)
+bool IcecapInputFilter::isAChannel(const QString &check)
 {
     Q_ASSERT(server);
     // if we ever see the assert, we need the ternary
     return server? server->isAChannel(check) : QString("#&").contains(check.at(0));
 }
 
-bool InputFilter::isIgnore(const QString &sender, Ignore::Type type)
+bool IcecapInputFilter::isIgnore(const QString &sender, Ignore::Type type)
 {
     bool doIgnore = false;
 
@@ -1804,38 +1340,38 @@ bool InputFilter::isIgnore(const QString &sender, Ignore::Type type)
     return doIgnore;
 }
 
-void InputFilter::reset()
+void IcecapInputFilter::reset()
 {
     automaticRequest.clear();
     whoRequestList.clear();
 }
 
-void InputFilter::setAutomaticRequest(const QString& command, const QString& name, bool yes)
+void IcecapInputFilter::setAutomaticRequest(const QString& command, const QString& name, bool yes)
 {
     automaticRequest[command][name.lower()] += (yes) ? 1 : -1;
     if(automaticRequest[command][name.lower()]<0)
     {
-        kdDebug()   << "InputFilter::automaticRequest( " << command << ", " << name
+        kdDebug()   << "IcecapInputFilter::automaticRequest( " << command << ", " << name
             << " ) was negative! Resetting!"
             << endl;
         automaticRequest[command][name.lower()]=0;
     }
 }
 
-int InputFilter::getAutomaticRequest(const QString& command, const QString& name)
+int IcecapInputFilter::getAutomaticRequest(const QString& command, const QString& name)
 {
     return automaticRequest[command][name.lower()];
 }
 
-void InputFilter::addWhoRequest(const QString& name) { whoRequestList << name.lower(); }
+void IcecapInputFilter::addWhoRequest(const QString& name) { whoRequestList << name.lower(); }
 
-bool InputFilter::isWhoRequestUnderProcess(const QString& name) { return (whoRequestList.contains(name.lower())>0); }
+bool IcecapInputFilter::isWhoRequestUnderProcess(const QString& name) { return (whoRequestList.contains(name.lower())>0); }
 
-void InputFilter::setLagMeasuring(bool state) { lagMeasuring=state; }
+void IcecapInputFilter::setLagMeasuring(bool state) { lagMeasuring=state; }
 
-bool InputFilter::getLagMeasuring()           { return lagMeasuring; }
+bool IcecapInputFilter::getLagMeasuring()           { return lagMeasuring; }
 
-// #include "inputfilter.moc"
+#include "icecapinputfilter.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
 // vim: set et sw=4 ts=4 cino=l1,cs,U1:

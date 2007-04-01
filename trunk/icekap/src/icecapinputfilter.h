@@ -11,8 +11,8 @@
   Copyright (C) 2006 Eike Hein <sho@eikehein.com>
 */
 
-#ifndef INPUTFILTER_H
-#define INPUTFILTER_H
+#ifndef ICECAPINPUTFILTER_H
+#define ICECAPINPUTFILTER_H
 
 #include <qobject.h>
 #include <qstringlist.h>
@@ -24,22 +24,22 @@
   @author Dario Abatianni
 */
 
-class Server;
+class IcecapServer;
 //class GenericServer;
 class QWidget;
 class Query;
 
-//class InputFilter : public GenericInputFilter, public QObject
-//class InputFilter : public GenericInputFilter
-class InputFilter : public QObject
+class IcecapInputFilter : public QObject
+//class IcecapInputFilter : public GenericInputFilter, public QObject
+//class IcecapInputFilter : public GenericInputFilter
 {
     Q_OBJECT
 
     public:
-        InputFilter();
-        ~InputFilter();
+        IcecapInputFilter();
+        ~IcecapInputFilter();
 
-        void setServer(Server* newServer);
+        void setServer(IcecapServer* newServer);
         void parseLine(const QString &line);
 
         void reset();                             // reset AutomaticRequest, WhoRequestList
@@ -83,7 +83,7 @@ class InputFilter : public QObject
         bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);
 
-        Server* server;
+        IcecapServer* server;
                                                   // automaticRequest[command][channel or nick]=count
         QMap< QString, QMap<QString,int> > automaticRequest;
         QStringList whoRequestList;

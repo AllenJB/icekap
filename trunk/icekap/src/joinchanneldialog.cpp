@@ -25,7 +25,7 @@
 namespace Konversation
 {
 
-    JoinChannelDialog::JoinChannelDialog(Server* server, QWidget *parent, const char *name)
+    JoinChannelDialog::JoinChannelDialog(GenericServer* server, QWidget *parent, const char *name)
         : KDialogBase(parent, name, true, i18n("Join Channel on %1").arg(server->getServerGroup()), Ok|Cancel, Ok)
     {
         m_server = server;

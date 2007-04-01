@@ -12,8 +12,8 @@
   Copyright (C) 2005 Eike Hein <sho@eikehein.com>
 */
 
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef ICECAPSERVER_H
+#define ICECAPSERVER_H
 
 #include <qtimer.h>
 #include <qdict.h>
@@ -27,8 +27,10 @@
 #include <kstreamsocket.h>
 
 #include "channelnick.h"
-#include "inputfilter.h"
-#include "outputfilter.h"
+// #include "inputfilter.h"
+// #include "outputfilter.h"
+#include "icecapinputfilter.h"
+#include "icecapoutputfilter.h"
 #include "nickinfo.h"
 #include "sslsocket.h"
 #include "serversettings.h"
@@ -42,16 +44,16 @@ class StatusPanel;
 class Identity;
 class RawLog;
 class ChannelListPanel;
-class ScriptLauncher;
-class ServerISON;
+// class ScriptLauncher;
+// class ServerISON;
 class QStrList;
 class ChatWindow;
 class ViewContainer;
 
 using namespace KNetwork;
 
-//class Server : public QObject, public GenericServer
-class Server : public GenericServer
+//class IcecapServer : public QObject, public GenericServer
+class IcecapServer : public GenericServer
 {
     Q_OBJECT
 
@@ -62,17 +64,12 @@ class Server : public GenericServer
             SSConnecting,
             SSConnected
         } State;
-        /** Constructor used for connecting to a known server.
-         *  Read in the prefrences to get all the details about the server.
-         */
-        Server(ViewContainer* viewContainer, int serverGroupId, bool clearQuickServerList = true);
-
         /** Constructor used for a 'fast connect' to a server.
          *  The details are passed in.  Used for example when the user does "/server irc.somewhere.net"
          */
-        Server(ViewContainer* viewContainer, const QString& hostName,const QString& port,
+        IcecapServer(ViewContainer* viewContainer, const QString& hostName,const QString& port,
             const QString& channel,const QString& nick, const QString& password, const bool& useSSL=false);
-        ~Server();
+        ~IcecapServer();
 
         QString getServerName() const;
         QString getServerGroup() const;
@@ -133,8 +130,8 @@ class Server : public GenericServer
         QString getNickname() const;
         QString loweredNickname() const;
 
-        InputFilter* getInputFilter();
-        Konversation::OutputFilter* getOutputFilter();
+        IcecapInputFilter* getInputFilter();
+        Konversation::IcecapOutputFilter* getOutputFilter();
 
         void joinChannel(const QString& name, const QString& hostmask);
         void removeChannel(Channel* channel);
@@ -345,12 +342,12 @@ class Server : public GenericServer
 
     signals:
         void nicknameChanged(const QString&);
-        void serverLag(Server* server,int msec);  /// will be connected to KonversationMainWindow::updateLag()
-        void tooLongLag(Server* server, int msec);/// will be connected to KonversationMainWindow::updateLag()
+        void serverLag(IcecapServer* server,int msec);  /// will be connected to KonversationMainWindow::updateLag()
+        void tooLongLag(IcecapServer* server, int msec);/// will be connected to KonversationMainWindow::updateLag()
         void resetLag();
                                                   /// Will be emitted when new 303 came in
-        void nicksNowOnline(Server* server,const QStringList& list,bool changed);
-        void deleted(Server* myself);             /// will be connected to KonversationApplication::removeServer()
+        void nicksNowOnline(IcecapServer* server,const QStringList& list,bool changed);
+        void deleted(IcecapServer* myself);       /// will be connected to KonversationApplication::removeServer()
         void awayState(bool away);                /// will be connected to any user input panel;
         void multiServerCommand(const QString& command, const QString& parameter);
 
@@ -359,26 +356,26 @@ class Server : public GenericServer
 
         /// Note that these signals haven't been implemented yet.
         /// Fires when the information in a NickInfo object changes.
-        void nickInfoChanged(Server* server, const NickInfoPtr nickInfo);
+        void nickInfoChanged(IcecapServer* server, const NickInfoPtr nickInfo);
         /// Fires when the mode of a nick in a channel changes.
-        void channelNickChanged(Server* server, const ChannelNickPtr channelNick);
+        void channelNickChanged(IcecapServer* server, const ChannelNickPtr channelNick);
         /// Fires when a nick leaves or joins a channel.  Based on joined flag, receiver could
         /// call getJoinedChannelMembers or getUnjoinedChannelMembers, or just
         /// getChannelMembers to get a list of all the nicks now in the channel.
         /// parted indicates whether the nick joined or left the channel.
-        void channelMembersChanged(Server* server, const QString& channelName, bool joined, bool parted, const QString& nickname);
+        void channelMembersChanged(IcecapServer* server, const QString& channelName, bool joined, bool parted, const QString& nickname);
         /// Fires when a channel is moved to/from the Joinied/Unjoined lists.
         /// joined indicates which list it is now on.  Note that if joined is False, it is
         /// possible the channel does not exist in any list anymore.
-        void channelJoinedOrUnjoined(Server* server, const QString& channelName, bool joined);
+        void channelJoinedOrUnjoined(IcecapServer* server, const QString& channelName, bool joined);
         /// Fires when a nick on the watch list goes online or offline.
-        void watchedNickChanged(Server* server, const QString& nickname, bool online);
+        void watchedNickChanged(IcecapServer* server, const QString& nickname, bool online);
         ///Fires when the user switches his state to away and has enabled "Insert Remember Line on away" in his identity.
-        void awayInsertRememberLine(Server* server);
+        void awayInsertRememberLine(IcecapServer* server);
         void sslInitFailure();
-        void sslConnected(Server* server);
+        void sslConnected(IcecapServer* server);
 
-        void connectionChangedState(Server* server, Server::State state);
+        void connectionChangedState(IcecapServer* server, IcecapServer::State state);
 
         void showView(ChatWindow* view);
         void addDccPanel();
@@ -615,8 +612,8 @@ class Server : public GenericServer
         QPtrList<Channel> channelList;
         QPtrList<Query> queryList;
 
-        InputFilter inputFilter;
-        Konversation::OutputFilter* outputFilter;
+        IcecapInputFilter inputFilter;
+        Konversation::IcecapOutputFilter* outputFilter;
 
         StatusPanel* statusView;
         RawLog* rawLog;
@@ -634,7 +631,7 @@ class Server : public GenericServer
 
         int m_awayTime;
 
-        ScriptLauncher* m_scriptLauncher;
+//        ScriptLauncher* m_scriptLauncher;
 
         KProcess preShellCommand;
 
@@ -644,7 +641,7 @@ class Server : public GenericServer
 
         /// Helper object to construct ISON (notify) list and map offline nicks to
         /// addressbook.
-        ServerISON* m_serverISON;
+//        ServerISON* m_serverISON;
         /// All nicks known to this server.  Note this is NOT a list of all nicks on the server.
         /// Any nick appearing in this list is online, but may not necessarily appear in
         /// any of the joined or unjoined channel lists because a WHOIS has not yet been

@@ -36,7 +36,8 @@
 // Konversation includes.
 #include "channel.h"
 #include "nicksonline.h"
-#include "server.h"
+#include "genericserver.h"
+// #include "server.h"
 #include "konversationapplication.h"
 #include "images.h"
 #include "query.h"
@@ -310,7 +311,7 @@ void NicksOnline::updateServerOnlineList(Server* servr)
         {
             // Nick is online.
             // Which server did NickInfo come from?
-            Server* server=nickInfo->getServer();
+            GenericServer* server=nickInfo->getServer();
             // Get addressbook entry (if any) for the nick.
             KABC::Addressee addressee = nickInfo->getAddressee();
             // Construct additional information string for nick.
