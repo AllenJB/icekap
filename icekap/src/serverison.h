@@ -23,7 +23,7 @@
  * @author Gary Cramblitt <garycramblitt@comcast.net>
  */
 
-class Server;
+class IcecapServer;
 
 typedef QMap<QString,KABC::Addressee> OfflineNickToAddresseeMap;
 
@@ -32,7 +32,7 @@ class ServerISON : public QObject
     Q_OBJECT
 
     public:
-        explicit ServerISON(Server* server);
+        explicit ServerISON(IcecapServer* server);
         /**
          * Returns a list of nicks that we want to know whether they are online
          * of offline.
@@ -77,10 +77,10 @@ class ServerISON : public QObject
 
     private slots:
         void addressbookChanged();
-        void nickInfoChanged(Server* server, const NickInfoPtr nickInfo);
+        void nickInfoChanged(IcecapServer* server, const NickInfoPtr nickInfo);
         void slotPrefsChanged();
-        void slotChannelMembersChanged(Server* server, const QString& channelName, bool joined, bool parted, const QString& nickname);
-        void slotChannelJoinedOrUnjoined(Server* server, const QString& channelName, bool joined);
+        void slotChannelMembersChanged(IcecapServer* server, const QString& channelName, bool joined, bool parted, const QString& nickname);
+        void slotChannelJoinedOrUnjoined(IcecapServer* server, const QString& channelName, bool joined);
 
     private:
         /** Map of all offline nicks in the addressbook associated with this server
@@ -89,7 +89,7 @@ class ServerISON : public QObject
         OfflineNickToAddresseeMap m_offlineNickToAddresseeMap;
 
         /// A pointer to the server we are a member of.
-        Server* m_server;
+        IcecapServer* m_server;
         /// List of nicks to watch that come from addressbook.
         QStringList m_addresseesISON;
         /// List from above merged with Watch List from preferences.

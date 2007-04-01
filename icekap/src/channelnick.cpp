@@ -15,7 +15,7 @@
 
 #include "channel.h"
 #include "channelnick.h"
-#include "server.h"
+#include "icecapserver.h"
 
 /** An instance of ChannelNick is made for each nick in each channel.
     So for a person in multiple channels, they will have one NickInfo, and multiple ChannelNicks.

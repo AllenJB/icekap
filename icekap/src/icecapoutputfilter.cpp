@@ -36,9 +36,7 @@
 #include "konversationapplication.h"
 #include "konversationmainwindow.h"
 #include "ignore.h"
-// #include "server.h"
 #include "icecapserver.h"
-#include "genericserver.h"
 #include "irccharsets.h"
 #include "linkaddressbook/addressbook.h"
 #include "konviiphelper.h"
@@ -47,7 +45,7 @@
 
 namespace Konversation
 {
-    IcecapOutputFilter::IcecapOutputFilter(GenericServer* server)
+    IcecapOutputFilter::IcecapOutputFilter(IcecapServer* server)
         : QObject(server)
     {
         m_server = server;

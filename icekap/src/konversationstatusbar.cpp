@@ -137,7 +137,7 @@ void KonversationStatusBar::setLagLabelShown(bool shown)
         m_lagLabel->hide();
 }
 
-void KonversationStatusBar::updateLagLabel(Server* lagServer, int msec)
+void KonversationStatusBar::updateLagLabel(IcecapServer* lagServer, int msec)
 {
     if (lagServer==m_window->getViewContainer()->getFrontServer())
     {
@@ -163,7 +163,7 @@ void KonversationStatusBar::resetLagLabel()
     m_lagLabel->setText(i18n("Lag: Unknown"));
 }
 
-void KonversationStatusBar::setTooLongLag(Server* lagServer, int msec)
+void KonversationStatusBar::setTooLongLag(IcecapServer* lagServer, int msec)
 {
     if ((msec % 5000)==0)
     {
@@ -218,7 +218,7 @@ void KonversationStatusBar::setTooLongLag(Server* lagServer, int msec)
     }
 }
 
-void KonversationStatusBar::updateSSLLabel(Server* server)
+void KonversationStatusBar::updateSSLLabel(IcecapServer* server)
 {
     if (server == m_window->getViewContainer()->getFrontServer()
         && server->getUseSSL() && server->isConnected())

@@ -17,7 +17,7 @@
 #include <klocale.h>
 
 class QFontMetrics;
-class Server;
+class IcecapServer;
 class KPopupMenu;
 
 namespace Konversation
@@ -33,7 +33,7 @@ namespace Konversation
 
             QSize minimumSizeHint() const;
             QSize sizeHint() const;
-            void setServer(Server* server);
+            void setServer(IcecapServer* server);
 
             enum PopupIDs { Copy,CopyUrl,SelectAll,Bookmark };
 
@@ -65,7 +65,7 @@ namespace Konversation
             void highlightedSlot(const QString&);
 
         private:
-            Server* m_server;
+            IcecapServer* m_server;
 
             QPopupMenu* m_popup;
             KPopupMenu* m_channelPopup;

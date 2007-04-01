@@ -23,14 +23,14 @@
 #include <kabc/stdaddressbook.h>
 
 // Konversation includes.
-#include "server.h"
+#include "icecapserver.h"
 #include "serverison.h"
 #include "addressbook.h"
 #include "konversationapplication.h"
 #include "nickinfo.h"
 #include "viewcontainer.h"
 
-ServerISON::ServerISON(Server* server) : m_server(server)
+ServerISON::ServerISON(IcecapServer* server) : m_server(server)
 {
     m_ISONList_invalid = true;
     //We need to know when the addressbook changes because if the info for an offline nick changes,
@@ -39,16 +39,16 @@ ServerISON::ServerISON(Server* server) : m_server(server)
         this, SLOT( addressbookChanged() ) );
     connect( Konversation::Addressbook::self(), SIGNAL(addresseesChanged()),
         this, SLOT(addressbookChanged()));
-    connect( m_server, SIGNAL(nickInfoChanged(Server*, const NickInfoPtr)),
-        this, SLOT(nickInfoChanged(Server*, const NickInfoPtr)));
+    connect( m_server, SIGNAL(nickInfoChanged(IcecapServer*, const NickInfoPtr)),
+        this, SLOT(nickInfoChanged(IcecapServer*, const NickInfoPtr)));
     connect( m_server,
-        SIGNAL(channelMembersChanged(Server*, const QString&, bool, bool, const QString& )),
+        SIGNAL(channelMembersChanged(IcecapServer*, const QString&, bool, bool, const QString& )),
         this,
-        SLOT(slotChannelMembersChanged(Server*, const QString&, bool, bool, const QString& )));
+        SLOT(slotChannelMembersChanged(IcecapServer*, const QString&, bool, bool, const QString& )));
     connect( m_server,
-        SIGNAL(channelJoinedOrUnjoined(Server*, const QString&, bool )),
+        SIGNAL(channelJoinedOrUnjoined(IcecapServer*, const QString&, bool )),
         this,
-        SLOT(slotChannelJoinedOrUnjoined(Server*, const QString&, bool )));
+        SLOT(slotChannelJoinedOrUnjoined(IcecapServer*, const QString&, bool )));
     connect(m_server->getViewContainer()->getWindow(), SIGNAL(prefsChanged()),
         this, SLOT(slotPrefsChanged()));
 }
@@ -209,7 +209,7 @@ void ServerISON::slotPrefsChanged()
     m_ISONList_invalid = true;
 }
 
-void ServerISON::nickInfoChanged(Server* /*server*/, const NickInfoPtr /*nickInfo*/) {
+void ServerISON::nickInfoChanged(IcecapServer* /*server*/, const NickInfoPtr /*nickInfo*/) {
 //We need to call recalculateAddressees before returning m_ISONList
 
 //Maybe we could do something like:
@@ -223,7 +223,7 @@ void ServerISON::addressbookChanged()
     m_ISONList_invalid = true;
 }
 
-void ServerISON::slotChannelMembersChanged(Server* /*server*/, const QString& /*channelName*/,
+void ServerISON::slotChannelMembersChanged(IcecapServer* /*server*/, const QString& /*channelName*/,
 bool joined, bool parted, const QString& nickname)
 {
     // Whenever a nick on the watch list leaves the last joined channel, must recalculate lists.
@@ -232,7 +232,7 @@ bool joined, bool parted, const QString& nickname)
         if (m_server->getNickJoinedChannels(nickname).isEmpty()) m_ISONList_invalid = true;
 }
 
-void ServerISON::slotChannelJoinedOrUnjoined(Server* /*server*/,
+void ServerISON::slotChannelJoinedOrUnjoined(IcecapServer* /*server*/,
 const QString& /*channelName*/, bool /*joined*/)
 {
     // If user left or joined a channel, need to recalculate lists, since watched nicks

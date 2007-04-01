@@ -21,7 +21,7 @@
 #include <ksystemtray.h>
 
 class QTimer;
-class Server;
+class IcecapServer;
 
 namespace Konversation
 {

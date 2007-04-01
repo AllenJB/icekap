@@ -18,7 +18,7 @@
 
 #include <qtimer.h>
 #include <qstring.h>
-#include "server.h"
+#include "icecapserver.h"
 #include "chatwindow.h"
 #include "channelnick.h"
 #include "nick.h"
@@ -95,7 +95,7 @@ class Channel : public ChatWindow
         void setKey(const QString& newKey);
         QString getKey();
 
-        virtual void setServer(Server* newServer);
+        virtual void setServer(IcecapServer* newServer);
         virtual void setIdentity(const Identity *newIdentity);
 
 //Unsure of future placement and/or continued existence of these members

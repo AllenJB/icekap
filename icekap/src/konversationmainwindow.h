@@ -25,7 +25,7 @@
 #include "preferences.h"
 #include "ssllabel.h"
 #include "nickinfo.h"
-#include "server.h"
+#include "icecapserver.h"
 
 class KToggleAction;
 class KScriptManager;
@@ -70,12 +70,12 @@ class KonversationMainWindow : public KMainWindow
         void startNotifyTimer(int msec);
         void showQuickConnectDialog();
         void showIcecapQuickConnectDialog();
-        void nicksNowOnline(Server*);
+        void nicksNowOnline(IcecapServer*);
         void endNotification();
         void quitServer();
-        void serverStateChanged(Server* server, Server::State state);
+        void serverStateChanged(IcecapServer* server, IcecapServer::State state);
         void insertRememberLine();
-        void insertRememberLine(Server* server);
+        void insertRememberLine(IcecapServer* server);
 
     public slots:
         void updateTrayIcon();
@@ -85,7 +85,7 @@ class KonversationMainWindow : public KMainWindow
         void openIdentitiesDialog();
         IdentityPtr editIdentity(IdentityPtr identity);
 
-        void setOnlineList(Server* notifyServer,const QStringList& list, bool changed);
+        void setOnlineList(IcecapServer* notifyServer,const QStringList& list, bool changed);
 
     protected slots:
         /** This is connected to the preferences settingsChanged signal and acts to compress

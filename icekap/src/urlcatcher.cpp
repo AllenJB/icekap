@@ -31,7 +31,7 @@
 
 #include "urlcatcher.h"
 #include "channel.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "konversationapplication.h"
 #include "viewcontainer.h"
 

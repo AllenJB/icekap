@@ -30,7 +30,6 @@
 #include "konversationmainwindow.h"
 #include "viewcontainer.h"
 #include "highlight.h"
-#include "server.h"
 #include "icecapserver.h"
 #include "konversationsound.h"
 #include "quickconnectdialog.h"
@@ -187,7 +186,7 @@ void KonversationApplication::toggleAway()
     bool anyservers = false;
     bool alreadyaway = false;
 
-    Server* lookServer=serverList.first();
+    IcecapServer* lookServer=serverList.first();
 
     while(lookServer)
     {
@@ -217,7 +216,7 @@ void KonversationApplication::dcopMultiServerRaw(const QString &command)
 
 void KonversationApplication::dcopRaw(const QString& server, const QString &command)
 {
-    Server* lookServer=serverList.first();
+    IcecapServer* lookServer=serverList.first();
     while(lookServer)
     {
         if(lookServer->getServerName()==server)
@@ -233,7 +232,7 @@ void KonversationApplication::dcopRaw(const QString& server, const QString &comm
 
 void KonversationApplication::dcopSay(const QString& server,const QString& target,const QString& command)
 {
-    Server* lookServer=serverList.first();
+    IcecapServer* lookServer=serverList.first();
     while(lookServer)
     {
         if(lookServer->getServerName()==server)
@@ -301,18 +300,20 @@ bool KonversationApplication::validateIdentity(IdentityPtr identity, bool intera
     return true;
 }
 
-Server* KonversationApplication::connectToServerGroup(const QString& serverGroup)
+IcecapServer* KonversationApplication::connectToServerGroup(const QString& serverGroup)
 {
     int serverGroupId = Preferences::serverGroupIdByName(serverGroup);
 
     return connectToServer(serverGroupId);
 }
 
-Server* KonversationApplication::connectToServer(int serverGroupId, Konversation::ServerSettings quickServer)
+IcecapServer* KonversationApplication::connectToServer(int serverGroupId, Konversation::ServerSettings quickServer)
 {
+
     // Check if a server window with same name and port is already open
-    Server* lookServer = serverList.first();
-    Server* existingServer = 0;
+    IcecapServer* lookServer = serverList.first();
+/*
+    IcecapServer* existingServer = 0;
 
     while (lookServer)
     {
@@ -415,30 +416,32 @@ Server* KonversationApplication::connectToServer(int serverGroupId, Konversation
 
     mainWindow->show();
 
-    Server* newServer = new Server(mainWindow->getViewContainer(), serverGroupId, clearQuickServerList);
+    IcecapServer* newServer = new IcecapServer(mainWindow->getViewContainer(), serverGroupId, clearQuickServerList);
 
     connect(mainWindow,SIGNAL (startNotifyTimer(int)),newServer,SLOT (startNotifyTimer(int)) );
     connect(mainWindow,SIGNAL (quitServer()),newServer,SLOT (quitServer()) );
-    connect(newServer, SIGNAL(connectionChangedState(Server*, Server::State)),
-        mainWindow, SIGNAL(serverStateChanged(Server*, Server::State)));
+    connect(newServer, SIGNAL(connectionChangedState(IcecapServer*, IcecapServer::State)),
+        mainWindow, SIGNAL(serverStateChanged(IcecapServer*, IcecapServer::State)));
 
-    connect(newServer,SIGNAL (nicksNowOnline(Server*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(Server*,const QStringList&,bool)) );
+    connect(newServer,SIGNAL (nicksNowOnline(IcecapServer*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(IcecapServer*,const QStringList&,bool)) );
 
-    connect(newServer,SIGNAL (deleted(Server*)),this,SLOT (removeServer(Server*)) );
+    connect(newServer,SIGNAL (deleted(IcecapServer*)),this,SLOT (removeServer(IcecapServer*)) );
 
     connect(newServer, SIGNAL(multiServerCommand(const QString&, const QString&)),
         this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
-    connect(newServer, SIGNAL(awayInsertRememberLine(Server*)), mainWindow, SIGNAL(insertRememberLine(Server*)));
+    connect(newServer, SIGNAL(awayInsertRememberLine(IcecapServer*)), mainWindow, SIGNAL(insertRememberLine(IcecapServer*)));
 
     serverList.append(newServer);
 
     return newServer;
+*/
+    return lookServer;
 }
 
 void KonversationApplication::quickConnectToServer(const QString& hostName, const QString& port, const QString& channel, const QString& nick, const QString& password, const bool& useSSL)
 {
     //used for the quick connect dialog and /server command
-
+/*
     IdentityPtr identity;
     Konversation::ServerGroupSettingsPtr serverGroupOfServer;
 
@@ -451,22 +454,23 @@ void KonversationApplication::quickConnectToServer(const QString& hostName, cons
     if (!identity || !validateIdentity(identity))
         return;
 
-    Server* newServer = new Server(mainWindow->getViewContainer(), hostName, port, channel, nick, password, useSSL);
+    IcecapServer* newServer = new IcecapServer(mainWindow->getViewContainer(), hostName, port, channel, nick, password, useSSL);
 
     connect(mainWindow,SIGNAL (startNotifyTimer(int)),newServer,SLOT (startNotifyTimer(int)) );
     connect(mainWindow,SIGNAL (quitServer()),newServer,SLOT (quitServer()) );
-    connect(newServer, SIGNAL(connectionChangedState(Server*, Server::State)),
-        mainWindow, SIGNAL(serverStateChanged(Server*, Server::State)));
+    connect(newServer, SIGNAL(connectionChangedState(IcecapServer*, IcecapServer::State)),
+        mainWindow, SIGNAL(serverStateChanged(IcecapServer*, IcecapServer::State)));
 
-    connect(newServer,SIGNAL (nicksNowOnline(Server*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(Server*,const QStringList&,bool)) );
+    connect(newServer,SIGNAL (nicksNowOnline(IcecapServer*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(IcecapServer*,const QStringList&,bool)) );
 
-    connect(newServer,SIGNAL (deleted(Server*)),this,SLOT (removeServer(Server*)) );
+    connect(newServer,SIGNAL (deleted(IcecapServer*)),this,SLOT (removeServer(IcecapServer*)) );
 
     connect(newServer, SIGNAL(multiServerCommand(const QString&, const QString&)),
         this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
-    connect(newServer, SIGNAL(awayInsertRememberLine(Server*)), mainWindow, SIGNAL(insertRememberLine(Server*)));
+    connect(newServer, SIGNAL(awayInsertRememberLine(IcecapServer*)), mainWindow, SIGNAL(insertRememberLine(IcecapServer*)));
 
     serverList.append(newServer);
+*/
 }
 
 void KonversationApplication::quickConnectToIcecapServer(const QString& hostName, const QString& port, const QString& channel, const QString& nick, const QString& password, const bool& useSSL)
@@ -494,12 +498,12 @@ void KonversationApplication::quickConnectToIcecapServer(const QString& hostName
         this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
     connect(newServer, SIGNAL(awayInsertRememberLine(IcecapServer*)), mainWindow, SIGNAL(insertRememberLine(IcecapServer*)));
 
-    icecapServerList.append(newServer);
+    serverList.append(newServer);
 }
 
-Server* KonversationApplication::getServerByName(const QString& name)
+IcecapServer* KonversationApplication::getServerByName(const QString& name)
 {
-    Server* lookServer=serverList.first();
+    IcecapServer* lookServer=serverList.first();
 
     while(lookServer)
     {
@@ -510,7 +514,7 @@ Server* KonversationApplication::getServerByName(const QString& name)
     return 0;
 }
 
-void KonversationApplication::removeServer(Server* server)
+void KonversationApplication::removeServer(IcecapServer* server)
 {
     serverList.setAutoDelete(false);              // don't delete items when they are removed
     if(!serverList.remove(server))
@@ -986,7 +990,7 @@ void KonversationApplication::saveOptions(bool updateGUI)
 
 void KonversationApplication::updateNickIcons()
 {
-    Server* lookServer=serverList.first();
+    IcecapServer* lookServer=serverList.first();
 
     while(lookServer)
     {
@@ -1077,7 +1081,7 @@ bool KonversationApplication::emitDCOPSig(const QString &appId, const QString &o
 
 void KonversationApplication::sendMultiServerCommand(const QString& command, const QString& parameter)
 {
-    for(Server* server = serverList.first(); server; server = serverList.next())
+    for(IcecapServer* server = serverList.first(); server; server = serverList.next())
     {
         server->executeMultiServerCommand(command, parameter);
     }
@@ -1086,7 +1090,7 @@ void KonversationApplication::sendMultiServerCommand(const QString& command, con
 void KonversationApplication::dcopConnectToServer(const QString& url, int port, const QString& channel,
 const QString& password)
 {
-    Server* server = getServerByName(url);
+    IcecapServer* server = getServerByName(url);
 
     if(server)
         server->sendJoinCommand(channel);
@@ -1105,7 +1109,7 @@ Images* KonversationApplication::images()
 }
 
 // Returns list of pointers to Servers.
-const QPtrList<Server> KonversationApplication::getServerList() { return serverList; }
+const QPtrList<IcecapServer> KonversationApplication::getServerList() { return serverList; }
 
 void KonversationApplication::splitNick_Server(const QString& nick_server, QString &ircnick, QString &serverOrGroup)
 {
@@ -1120,7 +1124,7 @@ NickInfoPtr KonversationApplication::getNickInfo(const QString &ircnick, const Q
 {
     NickInfoPtr nickInfo;
     QString lserverOrGroup = serverOrGroup.lower();
-    for(Server* lookServer = serverList.first(); lookServer; lookServer = serverList.next())
+    for(IcecapServer* lookServer = serverList.first(); lookServer; lookServer = serverList.next())
     {
         if(lserverOrGroup.isEmpty()
             || lookServer->getServerName().lower()==lserverOrGroup

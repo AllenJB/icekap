@@ -22,9 +22,9 @@
 #include "channel.h"
 #include "scriptlauncher.h"
 #include "konversationapplication.h"
-#include "server.h"
+#include "icecapserver.h"
 
-ScriptLauncher::ScriptLauncher(Server* server)
+ScriptLauncher::ScriptLauncher(IcecapServer* server)
 : QObject(server)
 {
     m_server = server;

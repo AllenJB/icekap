@@ -58,14 +58,13 @@
 #include "viewcontainer.h"
 #include "ircview.h"
 #include "highlight.h"
-//#include "server.h"
-#include "genericserver.h"
+#include "icecapserver.h"
 #include "konversationsound.h"
 #include "common.h"
 #include "emoticon.h"
 #include "notificationhandler.h"
 
-IRCView::IRCView(QWidget* parent, GenericServer* newServer) : KTextBrowser(parent)
+IRCView::IRCView(QWidget* parent, IcecapServer* newServer) : KTextBrowser(parent)
 {
     m_copyUrlMenu = false;
     m_resetScrollbar = true;
@@ -163,7 +162,7 @@ void IRCView::setViewBackground(const QColor& backgroundColor, const QString& pi
     }
 }
 
-void IRCView::setServer(GenericServer* newServer)
+void IRCView::setServer(IcecapServer* newServer)
 {
     m_server = newServer;
 

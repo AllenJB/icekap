@@ -19,7 +19,7 @@
 #include "qwidget.h"
 #include <klocale.h>
 #include <kmessagebox.h>
-#include "../server.h"
+#include "../icecapserver.h"
 #include "../channel.h"
 #include "../konversationapplication.h"
 #include <kapplication.h>

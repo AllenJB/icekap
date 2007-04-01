@@ -14,8 +14,7 @@
 
 #include <kdialogbase.h>
 
-//class Server;
-class GenericServer;
+class IcecapServer;
 
 namespace Konversation
 {
@@ -26,7 +25,7 @@ namespace Konversation
     {
         Q_OBJECT
             public:
-            explicit JoinChannelDialog(GenericServer* server, QWidget *parent = 0, const char *name = 0);
+            explicit JoinChannelDialog(IcecapServer* server, QWidget *parent = 0, const char *name = 0);
             ~JoinChannelDialog();
 
             QString channel() const;
@@ -37,7 +36,7 @@ namespace Konversation
 
         private:
             JoinChannelUI* m_widget;
-            GenericServer* m_server;
+            IcecapServer* m_server;
     };
 
 }

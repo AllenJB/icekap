@@ -15,7 +15,7 @@
 #include "nickinfo.h"
 
 #include <qtooltip.h>
-#include "server.h"
+#include "icecapserver.h"
 #include <klocale.h>
 
 #include "konversationapplication.h"
@@ -34,7 +34,7 @@
   Store a pointer to this with NickInfoPtr
 */
 
-NickInfo::NickInfo(const QString& nick, GenericServer* server): KShared()
+NickInfo::NickInfo(const QString& nick, IcecapServer* server): KShared()
 {
     m_addressee=Konversation::Addressbook::self()->getKABCAddresseeFromNick(nick, server->getServerName(), server->getServerGroup());
     m_nickname = nick;
@@ -113,7 +113,7 @@ QString NickInfo::getPrettyOnlineSince() const
 }
 
 // Return the Server object that owns this NickInfo object.
-GenericServer* NickInfo::getServer() const { return m_owningServer; }
+IcecapServer* NickInfo::getServer() const { return m_owningServer; }
 
 // Set properties of NickInfo object.
 void NickInfo::setNickname(const QString& newNickname)

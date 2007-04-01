@@ -15,7 +15,7 @@
 #include "addressbook.h"
 #include <qstringlist.h>
 #include <klocale.h>
-#include "../server.h"
+#include "../icecapserver.h"
 #include "../konversationapplication.h"
 #include <kapplication.h>
 #include <dcopclient.h>

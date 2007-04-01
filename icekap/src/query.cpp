@@ -30,7 +30,7 @@
 
 #include "channel.h"
 #include "query.h"
-#include "server.h"
+#include "icecapserver.h"
 #include "konversationapplication.h"
 #include "ircinput.h"
 #include "ircview.h"

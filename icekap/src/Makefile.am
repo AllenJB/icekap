@@ -12,10 +12,10 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 	nicksonline.cpp dccpanel.cpp dcctransfer.cpp nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \
 	ignore.cpp nicklistview.cpp ircinput.cpp ignorelistviewitem.cpp images.cpp quickbutton.cpp chatwindow.cpp \
-	genericoutputfilter.cpp outputfilter.cpp icecapoutputfilter.cpp \
+	icecapoutputfilter.cpp \
 	query.cpp konversationapplication.cpp nick.cpp \
-	genericinputfilter.cpp inputfilter.cpp icecapinputfilter.cpp \
-	channel.cpp ircview.cpp genericserver.cpp icecapserver.cpp server.cpp main.cpp \
+	icecapinputfilter.cpp \
+	channel.cpp ircview.cpp icecapserver.cpp main.cpp \
 	dcc_preferencesui.ui log_preferences.ui tabs_preferencesui.ui tabs_preferences.cpp \
 	chatwindowappearance_preferences.ui irccolorchooserui.ui colorsappearance_preferences.ui \
 		irccolorchooser.cpp channellistviewitem.cpp osd.cpp trayicon.cpp dccchat.cpp \

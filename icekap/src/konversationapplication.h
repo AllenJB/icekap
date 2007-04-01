@@ -28,7 +28,6 @@ class QCString;
 
 class KonversationMainWindow;
 class KonvDCOP;
-class Server;
 class IcecapServer;
 class QuickConnectDialog;
 class IcecapQuickConnectDialog;
@@ -76,7 +75,7 @@ class KonversationApplication : public KUniqueApplication
 
         static KonversationApplication* instance();
 
-        Server* getServerByName(const QString& name);
+        IcecapServer* getServerByName(const QString& name);
 
         /** For dcop and addressbook, a user can be specified as user@irc.server.net
          *  or user\@servergroup or using the unicode separator symbol 0xE120 instead
@@ -110,7 +109,7 @@ class KonversationApplication : public KUniqueApplication
         void updateNickIcons();
 
         // Returns list of pointers to Servers.
-        const QPtrList<Server> getServerList();
+        const QPtrList<IcecapServer> getServerList();
 
         Konversation::NotificationHandler* notificationHandler() const { return m_notificationHandler; }
 
@@ -133,8 +132,8 @@ class KonversationApplication : public KUniqueApplication
         void closeServerList();
 
     public slots:
-        Server* connectToServerGroup(const QString& serverGroup);
-        Server* connectToServer(int serverGroupId, Konversation::ServerSettings quickServer = Konversation::ServerSettings());
+        IcecapServer* connectToServerGroup(const QString& serverGroup);
+        IcecapServer* connectToServer(int serverGroupId, Konversation::ServerSettings quickServer = Konversation::ServerSettings());
         void quickConnectToServer(const QString& hostName,
             const QString& port = "6667",
             const QString& channel="",
@@ -163,7 +162,7 @@ class KonversationApplication : public KUniqueApplication
     protected slots:
         void openIcecapQuickConnectDialog();
         void openQuickConnectDialog();
-        void removeServer(Server* server);
+        void removeServer(IcecapServer* server);
 
         void dcopMultiServerRaw(const QString &command);
         void dcopRaw(const QString& server, const QString &command);
@@ -172,8 +171,7 @@ class KonversationApplication : public KUniqueApplication
         void sendMultiServerCommand(const QString& command, const QString& parameter);
 
     private:
-        QPtrList<Server> serverList;
-        QPtrList<IcecapServer> icecapServerList;
+        QPtrList<IcecapServer> serverList;
         QStringList urlList;
         KonvDCOP* dcopObject;
         KonvIdentDCOP* identDCOP;

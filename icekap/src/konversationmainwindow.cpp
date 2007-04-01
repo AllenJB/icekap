@@ -76,9 +76,9 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
     connect(KonversationApplication::instance(), SIGNAL(appearanceChanged()), m_viewContainer, SLOT(updateAppearance()));
     connect(KonversationApplication::instance(), SIGNAL(iconChanged(int)), m_viewContainer, SLOT(updateViewIcons()));
     connect(m_viewContainer, SIGNAL(setWindowCaption(const QString&)), this, SLOT(setCaption(const QString&)));
-    connect(this, SIGNAL(serverStateChanged(Server*, Server::State)), m_viewContainer, SLOT(serverStateChanged(Server*, Server::State)));
+    connect(this, SIGNAL(serverStateChanged(IcecapServer*, IcecapServer::State)), m_viewContainer, SLOT(serverStateChanged(IcecapServer*, IcecapServer::State)));
     connect(this, SIGNAL(insertRememberLine()), m_viewContainer, SLOT(insertRememberLine()));
-    connect(this, SIGNAL(insertRememberLine(Server*)), m_viewContainer, SLOT(insertRememberLine(Server*)));
+    connect(this, SIGNAL(insertRememberLine(IcecapServer*)), m_viewContainer, SLOT(insertRememberLine(IcecapServer*)));
 
 
     // Set up status bar
@@ -97,10 +97,10 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
     connect(m_viewContainer, SIGNAL(setStatusBarInfoLabel(const QString&)), m_statusBar, SLOT(updateInfoLabel(const QString&)));
     connect(m_viewContainer, SIGNAL(clearStatusBarInfoLabel()), m_statusBar, SLOT(clearInfoLabel()));
     connect(m_viewContainer, SIGNAL(setStatusBarLagLabelShown(bool)), m_statusBar, SLOT(setLagLabelShown(bool)));
-    connect(m_viewContainer, SIGNAL(updateStatusBarLagLabel(GenericServer*, int)), m_statusBar, SLOT(updateLagLabel(GenericServer*, int)));
+    connect(m_viewContainer, SIGNAL(updateStatusBarLagLabel(IcecapServer*, int)), m_statusBar, SLOT(updateLagLabel(IcecapServer*, int)));
     connect(m_viewContainer, SIGNAL(resetStatusBarLagLabel()), m_statusBar, SLOT(resetLagLabel()));
-    connect(m_viewContainer, SIGNAL(setStatusBarLagLabelTooLongLag(GenericServer*, int)), m_statusBar, SLOT(setTooLongLag(GenericServer*, int)));
-    connect(m_viewContainer, SIGNAL(updateStatusBarSSLLabel(GenericServer*)), m_statusBar, SLOT(updateSSLLabel(GenericServer*)));
+    connect(m_viewContainer, SIGNAL(setStatusBarLagLabelTooLongLag(IcecapServer*, int)), m_statusBar, SLOT(setTooLongLag(IcecapServer*, int)));
+    connect(m_viewContainer, SIGNAL(updateStatusBarSSLLabel(IcecapServer*)), m_statusBar, SLOT(updateSSLLabel(IcecapServer*)));
     connect(m_viewContainer, SIGNAL(removeStatusBarSSLLabel()), m_statusBar, SLOT(removeSSLLabel()));
 
 
@@ -324,7 +324,7 @@ int KonversationMainWindow::confirmQuit()
 {
     KonversationApplication *konvApp=static_cast<KonversationApplication *>(kapp);
 
-    QPtrList<Server> serverList = konvApp->getServerList();
+    QPtrList<IcecapServer> serverList = konvApp->getServerList();
     if (serverList.isEmpty()) return KMessageBox::Continue;
 
     int result=KMessageBox::warningContinueCancel(
@@ -586,13 +586,13 @@ void KonversationMainWindow::openNotifications()
 void KonversationMainWindow::notifyAction(const QString& serverName,const QString& nick)
 {
     KonversationApplication* konv_app=static_cast<KonversationApplication*>(KApplication::kApplication());
-    Server* server=konv_app->getServerByName(serverName);
+    IcecapServer* server=konv_app->getServerByName(serverName);
     server->notifyAction(nick);
 }
 
 
 // TODO: Let an own class handle notify things
-void KonversationMainWindow::setOnlineList(Server* notifyServer,const QStringList& /*list*/, bool /*changed*/)
+void KonversationMainWindow::setOnlineList(IcecapServer* notifyServer,const QStringList& /*list*/, bool /*changed*/)
 {
     emit nicksNowOnline(notifyServer);
     // FIXME  if (changed && nicksOnlinePanel) newText(nicksOnlinePanel, QString::null, true);
@@ -614,7 +614,7 @@ void KonversationMainWindow::openURL(const QString& url, const QString& /*title*
 
     if (Preferences::isServerGroup(host))
     {
-        Server* newServer = KonversationApplication::instance()->connectToServerGroup(host);
+        IcecapServer* newServer = KonversationApplication::instance()->connectToServerGroup(host);
 
         if (!newServer->isConnected())
         {
