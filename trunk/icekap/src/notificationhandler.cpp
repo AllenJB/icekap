@@ -202,21 +202,6 @@ namespace Konversation
         KNotifyClient::event(m_mainWindow->winId(), "nickchange", i18n("%1 changed nickname to %2").arg(oldNick, newNick));
     }
 
-    void NotificationHandler::dccIncoming(ChatWindow* chatWin, const QString& fromNick)
-    {
-        if(!chatWin || !chatWin->notificationsEnabled())
-        {
-            return;
-        }
-
-        if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
-        {
-            return;
-        }
-
-        KNotifyClient::event(m_mainWindow->winId(), "dcc_incoming", i18n("%1 wants to send a file to you").arg(fromNick));
-    }
-
     void NotificationHandler::mode(ChatWindow* chatWin, const QString& /*nick*/)
     {
         if(!chatWin || !chatWin->notificationsEnabled())
@@ -291,17 +276,6 @@ namespace Konversation
 
         KNotifyClient::event(m_mainWindow->winId(), "kick",
             i18n("You are kicked by %1 from %2").arg(nick).arg(channel));
-    }
-
-    void NotificationHandler::dccChat(ChatWindow* chatWin, const QString& nick)
-    {
-        if(!chatWin || !chatWin->notificationsEnabled())
-        {
-            return;
-        }
-
-        KNotifyClient::event(m_mainWindow->winId(), "dccChat",
-            i18n("%1 started a dcc chat with you").arg(nick));
     }
 
     void NotificationHandler::highlight(ChatWindow* chatWin, const QString& fromNick, const QString& message)

@@ -35,13 +35,11 @@ namespace Konversation
             void part(ChatWindow* chatWin, const QString& nick);
             void quit(ChatWindow* chatWin, const QString& nick);
             void nickChange(ChatWindow* chatWin, const QString& oldNick, const QString& newNick);
-            void dccIncoming(ChatWindow* chatWin, const QString& fromNick);
             void mode(ChatWindow* chatWin, const QString& nick);
             void query(ChatWindow* chatWin, const QString& fromNick);
             void nickOnline(ChatWindow* chatWin, const QString& nick);
             void nickOffline(ChatWindow* chatWin, const QString& nick);
             void kick(ChatWindow* chatWin, const QString& channel,const QString& nick);
-            void dccChat(ChatWindow* chatWin, const QString& nick);
             void highlight(ChatWindow* chatWin, const QString& fromNick, const QString& message);
             void connectionFailure(ChatWindow* chatWin, const QString& server);
             void channelJoin(ChatWindow* chatWin, const QString& channel);

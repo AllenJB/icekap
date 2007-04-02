@@ -35,7 +35,6 @@
 #include "servergroupsettings.h"
 
 class Channel;
-class DccTransfer;
 class Query;
 class StatusPanel;
 class Identity;
@@ -157,8 +156,6 @@ class IcecapServer : public QObject
         QString getAutoJoinCommand() const;
 
         void autoCommandsAndChannels();
-
-        void sendURIs(const QStrList& uris, const QString& nick);
 
         void notifyAction(const QString& nick);
         ChannelListPanel* getChannelListPanel() const;
@@ -374,8 +371,6 @@ class IcecapServer : public QObject
         void connectionChangedState(IcecapServer* server, IcecapServer::State state);
 
         void showView(ChatWindow* view);
-        void addDccPanel();
-        void addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen);
 
     public slots:
         void lookupFinished();
@@ -393,11 +388,9 @@ class IcecapServer : public QObject
         void closeQuery(const QString &name);
         void closeChannel(const QString &name);
         void quitServer();
-        void requestDccChat(const QString& nickname);
         void requestBan(const QStringList& users,const QString& channel,const QString& option);
         void requestUnban(const QString& mask,const QString& channel);
 
-        void addDccSend(const QString &recipient,KURL fileURL, const QString &altFileName = QString::null, uint fileSize = 0);
         void removeQuery(Query *query);
         void startNotifyTimer(int msec=0);
         void sendJoinCommand(const QString& channelName, const QString& password = QString::null);
@@ -451,19 +444,6 @@ class IcecapServer : public QObject
         void sslError(const QString& reason);
         void connectionEstablished(const QString& ownHost);
         void notifyResponse(const QString& nicksOnline);
-        void addDccGet(const QString& sourceNick,const QStringList& dccArguments);
-        void requestDccSend();                    // -> to outputFilter, dccPanel
-                                                  // -> to outputFilter
-        void requestDccSend(const QString& recipient);
-                                                  // -> to inputFilter
-        void resumeDccGetTransfer(const QString& sourceNick,const QStringList& dccArguments);
-                                                  // -> to inputFilter
-        void resumeDccSendTransfer(const QString& sourceNick,const QStringList& dccArguments);
-        void dccSendRequest(const QString& recipient,const QString& fileName,const QString& address,const QString& port,unsigned long size);
-        void dccResumeGetRequest(const QString& sender,const QString& fileName,const QString& port,KIO::filesize_t startAt);
-        void dccGetDone(const DccTransfer* item);
-        void dccSendDone(const DccTransfer* item);
-        void dccStatusChanged(const DccTransfer* item, int newStatus, int oldStatus);
         void away();
         void unAway();
         void scriptNotFound(const QString& name);
@@ -603,7 +583,6 @@ class IcecapServer : public QObject
         QString m_loweredNickname;
         QString ownIpByUserhost;                  // RPL_USERHOST
         QString ownIpByWelcome;                   // RPL_WELCOME
-        QString lastDccDir;
 
         QPtrList<Channel> channelList;
         QPtrList<Query> queryList;

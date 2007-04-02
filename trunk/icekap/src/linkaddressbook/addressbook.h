@@ -41,11 +41,9 @@ namespace Konversation
             QStringList allContacts();
             QStringList reachableContacts();
             QStringList onlineContacts();
-            QStringList fileTransferContacts();
             bool isPresent( const QString &uid );
             QString displayName( const QString &uid );
             QString presenceString( const QString &uid );
-            bool canReceiveFiles( const QString &uid );
             bool canRespond( const QString &uid );
             QString locate( const QString &contactId, const QString &protocol );
             // metadata
@@ -69,12 +67,6 @@ namespace Konversation
              * Message a contact by their metaContactId, aka their uid in KABC.
              */
             void chatWithContact( const QString &uid );
-
-            /**
-             * Send the file to the contact
-             */
-            void sendFile(const QString &uid, const KURL &sourceURL,
-                const QString &altFileName = QString::null, uint fileSize = 0);
 
             /**
              * Lets outsiders tell us to emit presenceChanged signal.

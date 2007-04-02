@@ -59,7 +59,6 @@
 #include "tabs_preferences.h"
 #include "colorsappearance_preferences.h"
 #include "generalbehavior_preferences.h"
-#include "dcc_preferences.h"
 #include "osd_preferences.h"
 #include "theme_preferences.h"
 #include "alias_preferences.h"
@@ -187,11 +186,6 @@ KonviSettingsDialog::KonviSettingsDialog( QWidget *parent) :
   pagePath.clear();
   pagePath << i18n("Behavior") << i18n("Logging");
   addPage ( m_confLogWdg, pagePath, "log", i18n("Logging") );
-
-  m_confDCCWdg = new DCC_Config( this, "DCC" );
-  pagePath.clear();
-  pagePath << i18n("Behavior") << i18n("DCC");
-  addPage ( m_confDCCWdg, pagePath, "2rightarrow", i18n("DCC") );
 
   //Notifications/Tab Bar
   m_confTabNotificationsWdg = new TabNotifications_Config( this, "TabBar" );

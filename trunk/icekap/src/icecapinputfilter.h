@@ -18,6 +18,7 @@
 #include <qstringlist.h>
 
 #include "ignore.h"
+#include "servergroupsettings.h"
 
 /*
   @author Dario Abatianni
@@ -54,12 +55,6 @@ class IcecapInputFilter : public QObject
     signals:
         void welcome(const QString& ownHost);
         void notifyResponse(const QString &nicksOnline);
-                                                  // will be connected to Server::addDccGet()
-        void addDccGet(const QString &sourceNick, const QStringList &dccArgument);
-                                                  // will be connected to Server::resumeDccGetTransfer()
-        void resumeDccGetTransfer(const QString &sourceNick, const QStringList &dccArgument);
-                                                  // will be connected to Server::resumeDccSendTransfer()
-        void resumeDccSendTransfer(const QString &sourceNick, const QStringList &dccArgument);
                                                   // will be connected to Server::userhost()
         void userhost(const QString& nick,const QString& hostmask,bool away,bool ircOp);
                                                   // will be connected to Server::setTopicAuthor()
@@ -70,8 +65,6 @@ class IcecapInputFilter : public QObject
         void invitation(const QString& nick,const QString& channel);
         void away();
         void unAway();
-
-        void addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen);
 
     protected:
         void parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing);

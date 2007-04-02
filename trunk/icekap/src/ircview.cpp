@@ -52,7 +52,6 @@
 #include <kmenubar.h>
 
 #include "channel.h"
-#include "dccchat.h"
 #include "konversationapplication.h"
 #include "konversationmainwindow.h"
 #include "viewcontainer.h"
@@ -472,10 +471,6 @@ bool doHighlight, bool parseURL, bool self)
     {
         ownNick = m_server->getNickname();
     }
-    else if (m_chatWin->getType() == ChatWindow::DccChat)
-    {
-        ownNick = static_cast<DccChat*>(m_chatWin)->getMyNick();
-    }
 
     if(doHighlight && (whoSent != ownNick) && !self)
     {
@@ -596,35 +591,6 @@ QString IRCView::createNickLine(const QString& nick, bool encapsulateNick)
 
         if (nick != m_server->getNickname())
             nickColor = Preferences::nickColor(m_server->obtainNickInfo(nick)->getNickColor()).name();
-        else
-            nickColor =  Preferences::nickColor(8).name();
-
-        if(nickColor == "#000000")
-        {
-            nickColor = "#000001";                    // HACK Working around QTextBrowser's auto link coloring
-        }
-
-        nickLine = "<font color=\"" + nickColor + "\">"+nickLine+"</font>";
-    }
-    //FIXME: Another last-minute hack to get DCC Chat colored nicknames
-    // working. We can't use NickInfo::getNickColor() because we don't
-    // have a server.
-    else if (Preferences::useColoredNicks() && m_chatWin->getType() == ChatWindow::DccChat)
-    {
-        QString ownNick = static_cast<DccChat*>(m_chatWin)->getMyNick();
-        QString nickColor;
-
-        if (nick != ownNick)
-        {
-            int nickvalue = 0;
-
-            for (uint index = 0; index < nick.length(); index++)
-            {
-                nickvalue += nick[index].unicode();
-            }
-
-            nickColor = Preferences::nickColor((nickvalue % 8)).name();
-        }
         else
             nickColor =  Preferences::nickColor(8).name();
 
@@ -1215,10 +1181,6 @@ void IRCView::setupNickPopupMenu()
     m_nickPopup->insertSeparator();
 
     m_nickPopup->insertItem(i18n("Open Query"),Konversation::OpenQuery);
-    if (kapp->authorize("allow_downloading"))
-    {
-        m_nickPopup->insertItem(SmallIcon("2rightarrow"),i18n("Send &File..."),Konversation::DccSend);
-    }
     m_nickPopup->insertSeparator();
 
     m_nickPopup->insertItem(i18n("Add to Watched Nicks"), Konversation::AddNotify);
@@ -1270,12 +1232,6 @@ void IRCView::setupQueryPopupMenu()
     m_nickPopup->setItemVisible(Konversation::IgnoreNick, false);
     m_nickPopup->setItemVisible(Konversation::UnignoreNick, false);
     m_nickPopup->insertSeparator();
-
-    if (kapp->authorize("allow_downloading"))
-    {
-        m_nickPopup->insertItem(SmallIcon("2rightarrow"),i18n("Send &File..."),Konversation::DccSend);
-        m_nickPopup->insertSeparator();
-    }
 
     m_nickPopup->insertItem(i18n("Add to Watched Nicks"), Konversation::AddNotify);
 
@@ -1478,13 +1434,6 @@ void IRCView::contentsDragMoveEvent(QDragMoveEvent *e)
 {
     if(acceptDrops() && QUriDrag::canDecode(e))
         e->accept();
-}
-
-void IRCView::contentsDropEvent(QDropEvent *e)
-{
-    QStrList s;
-    if(QUriDrag::decode(e,s))
-        emit filesDropped(s);
 }
 
 QString IRCView::timeStamp()

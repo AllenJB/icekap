@@ -34,11 +34,6 @@
 #include "query.h"
 #include "channel.h"
 #include "konversationapplication.h"
-#include "dccpanel.h"
-#include "dcctransfer.h"
-#include "dcctransfersend.h"
-#include "dcctransferrecv.h"
-#include "dccrecipientdialog.h"
 #include "nick.h"
 #include "irccharsets.h"
 #include "viewcontainer.h"
@@ -229,14 +224,10 @@ void IcecapServer::connectSignals()
     connect(&m_pingResponseTimer, SIGNAL(timeout()), this, SLOT(updateLongPongLag()));
 
     // OutputFilter
-//    connect(outputFilter, SIGNAL(requestDccSend()), this,SLOT(requestDccSend()));
-//    connect(outputFilter, SIGNAL(requestDccSend(const QString&)), this, SLOT(requestDccSend(const QString&)));
     connect(outputFilter, SIGNAL(multiServerCommand(const QString&, const QString&)),
         this, SLOT(sendMultiServerCommand(const QString&, const QString&)));
     connect(outputFilter, SIGNAL(reconnectServer()), this, SLOT(reconnect()));
     connect(outputFilter, SIGNAL(disconnectServer()), this, SLOT(disconnect()));
-//    connect(outputFilter, SIGNAL(openDccSend(const QString &, KURL)), this, SLOT(addDccSend(const QString &, KURL)));
-//    connect(outputFilter, SIGNAL(requestDccChat(const QString &)), this, SLOT(requestDccChat(const QString &)));
     connect(outputFilter, SIGNAL(connectToServer(const QString&, const QString&, const QString&)),
         this, SLOT(connectToNewServer(const QString&, const QString&, const QString&)));
     connect(outputFilter, SIGNAL(connectToServerGroup(const QString&)),
@@ -251,29 +242,16 @@ void IcecapServer::connectSignals()
 
    // ViewContainer
     connect(this, SIGNAL(showView(ChatWindow*)), getViewContainer(), SLOT(showView(ChatWindow*)));
-//    connect(this, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
-//    connect(this, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
-//        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
     connect(this, SIGNAL(serverLag(IcecapServer*, int)), getViewContainer(), SIGNAL(updateStatusBarLagLabel(IcecapServer*, int)));
     connect(this, SIGNAL(tooLongLag(IcecapServer*, int)), getViewContainer(), SIGNAL(setStatusBarLagLabelTooLongLag(IcecapServer*, int)));
     connect(this, SIGNAL(resetLag()), getViewContainer(), SIGNAL(resetStatusBarLagLabel()));
     connect(outputFilter, SIGNAL(showView(ChatWindow*)), getViewContainer(), SLOT(showView(ChatWindow*)));
     connect(outputFilter, SIGNAL(openKonsolePanel()), getViewContainer(), SLOT(addKonsolePanel()));
     connect(outputFilter, SIGNAL(openChannelList(const QString&, bool)), getViewContainer(), SLOT(openChannelList(const QString&, bool)));
-//    connect(outputFilter, SIGNAL(closeDccPanel()), getViewContainer(), SLOT(closeDccPanel()));
-//    connect(outputFilter, SIGNAL(addDccPanel()), getViewContainer(), SLOT(addDccPanel()));
-//    connect(&inputFilter, SIGNAL(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)),
-//        getViewContainer(), SLOT(addDccChat(const QString&,const QString&,const QString&,const QStringList&,bool)) );
 
     // Inputfilter
     connect(&inputFilter, SIGNAL(welcome(const QString&)), this, SLOT(connectionEstablished(const QString&)));
     connect(&inputFilter, SIGNAL(notifyResponse(const QString&)), this, SLOT(notifyResponse(const QString&)));
-//    connect(&inputFilter, SIGNAL(addDccGet(const QString&, const QStringList&)),
-//        this, SLOT(addDccGet(const QString&, const QStringList&)));
-//    connect(&inputFilter, SIGNAL(resumeDccGetTransfer(const QString&, const QStringList&)),
-//        this, SLOT(resumeDccGetTransfer(const QString&, const QStringList&)));
-//    connect(&inputFilter, SIGNAL(resumeDccSendTransfer(const QString&, const QStringList&)),
-//        this, SLOT(resumeDccSendTransfer(const QString&, const QStringList&)));
     connect(&inputFilter, SIGNAL(userhost(const QString&,const QString&,bool,bool)),
         this, SLOT(userhost(const QString&,const QString&,bool,bool)) );
     connect(&inputFilter, SIGNAL(topicAuthor(const QString&,const QString&)),
@@ -1613,7 +1591,6 @@ class Query *IcecapServer::addQuery(const NickInfoPtr & nickInfo, bool weinitiat
         query=getViewContainer()->addQuery(this,nickInfo, weinitiated);
         query->setIdentity(getIdentity());
 
-        connect(query,SIGNAL (sendFile(const QString&)),this,SLOT (requestDccSend(const QString &)) );
         connect(this,SIGNAL (serverOnline(bool)),query,SLOT (serverOnline(bool)) );
 
         // Append query to internal list
@@ -1748,264 +1725,6 @@ void IcecapServer::requestUnban(const QString& mask,const QString& channel)
     queue(result.toServer);
 }
 
-void IcecapServer::requestDccSend()
-{
-    requestDccSend(QString::null);
-}
-
-void IcecapServer::sendURIs(const QStrList& uris, const QString& nick)
-{
-    for (QStrListIterator it(uris) ; *it; ++it)
-        addDccSend(nick,KURL(*it));
-}
-
-void IcecapServer::requestDccSend(const QString &a_recipient)
-{
-    QString recipient(a_recipient);
-    // if we don't have a recipient yet, let the user select one
-    if(recipient.isEmpty())
-    {
-        QStringList nickList;
-        Channel* lookChannel=channelList.first();
-
-        // fill nickList with all nicks we know about
-        while(lookChannel)
-        {
-            QPtrList<Nick> nicks=lookChannel->getNickList();
-            Nick* lookNick=nicks.first();
-            while(lookNick)
-            {
-                if(!nickList.contains(lookNick->getNickname())) nickList.append(lookNick->getNickname());
-                lookNick=nicks.next();
-            }
-            lookChannel=channelList.next();
-        }
-
-        // add Queries as well, but don't insert duplicates
-        class Query* lookQuery=queryList.first();
-        while(lookQuery)
-        {
-            if(!nickList.contains(lookQuery->getName())) nickList.append(lookQuery->getName());
-            lookQuery=queryList.next();
-        }
-
-        recipient=DccRecipientDialog::getNickname(getViewContainer()->getWindow(),nickList);
-    }
-    // do we have a recipient *now*?
-    if(!recipient.isEmpty())
-    {
-        KURL::List fileURLs=KFileDialog::getOpenURLs(
-            lastDccDir,
-            QString::null,
-            getViewContainer()->getWindow(),
-            i18n("Select File(s) to Send to %1").arg(recipient)
-        );
-        KURL::List::iterator it;
-        for ( it = fileURLs.begin() ; it != fileURLs.end() ; ++it )
-        {
-            lastDccDir = (*it).directory();
-            addDccSend( recipient, *it );
-        }
-    }
-}
-
-void IcecapServer::addDccSend(const QString &recipient,KURL fileURL, const QString &altFileName, uint fileSize)
-{
-    emit addDccPanel();
-
-    QString ownIp = getIp(true);
-
-    // We already checked that the file exists in output filter / requestDccSend() resp.
-    DccTransferSend* newDcc = new DccTransferSend( getViewContainer()->getDccPanel(),
-                                                   recipient,
-                                                   fileURL,  // url of the sending file
-                                                   ownIp,
-                                                   altFileName,
-                                                   fileSize );
-
-    connect(newDcc,SIGNAL (sendReady(const QString&,const QString&,const QString&,const QString&,unsigned long)),
-        this,SLOT (dccSendRequest(const QString&,const QString&,const QString&,const QString&,unsigned long)) );
-    connect(newDcc,SIGNAL (done(const DccTransfer*)),this,SLOT (dccSendDone(const DccTransfer*)) );
-    connect(newDcc,SIGNAL (statusChanged(const DccTransfer*,int,int)), this,
-        SLOT(dccStatusChanged(const DccTransfer*,int,int)) );
-
-    newDcc->start();
-
-    appendMessageToFrontmost( i18n( "DCC" ),
-                              i18n( "Asking %1 to accept upload of \"%2\" (%3)..." )
-                              .arg( newDcc->getPartnerNick(),
-                                    newDcc->getFileName(),
-                                    ( newDcc->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( newDcc->getFileSize() ) ) );
-}
-
-void IcecapServer::addDccGet(const QString &sourceNick, const QStringList &dccArguments)
-{
-    emit addDccPanel();
-
-    QHostAddress ip;
-
-    ip.setAddress(dccArguments[1].toULong());
-
-    DccTransferRecv* newDcc=new DccTransferRecv(getViewContainer()->getDccPanel(),
-        sourceNick,
-        KURL(Preferences::dccPath()),
-        dccArguments[0],                          // name
-                                                  // size
-        dccArguments[3].isEmpty() ? 0 : dccArguments[3].toULong(),
-        ip.toString(),                            // ip
-        dccArguments[2] );                        // port
-
-    connect(newDcc,SIGNAL (resumeRequest(const QString&,const QString&,const QString&,KIO::filesize_t)),this,
-        SLOT (dccResumeGetRequest(const QString&,const QString&,const QString&,KIO::filesize_t)) );
-    connect(newDcc,SIGNAL (done(const DccTransfer*)),
-        this,SLOT (dccGetDone(const DccTransfer*)) );
-    connect(newDcc,SIGNAL (statusChanged(const DccTransfer*,int,int)), this,
-        SLOT(dccStatusChanged(const DccTransfer*,int,int)) );
-
-    appendMessageToFrontmost( i18n( "DCC" ),
-                              i18n( "%1 offers to send you \"%2\" (%3)..." )
-                              .arg( newDcc->getPartnerNick(),
-                                    newDcc->getFileName(),
-                                    ( newDcc->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( newDcc->getFileSize() ) ) );
-
-    if(Preferences::dccAutoGet()) newDcc->start();
-}
-
-void IcecapServer::requestDccChat(const QString& nickname)
-{
-    emit addDccChat(getNickname(),nickname,getNumericalIp(true),QStringList(),true);
-}
-
-void IcecapServer::dccSendRequest(const QString &partner, const QString &fileName, const QString &address, const QString &port, unsigned long size)
-{
-    kdDebug() << "dccSendRequest sent" << endl;
-    Konversation::OutputFilterResult result = outputFilter->sendRequest(partner,fileName,address,port,size);
-    queue(result.toServer);
-}
-
-void IcecapServer::dccResumeGetRequest(const QString &sender, const QString &fileName, const QString &port, KIO::filesize_t startAt)
-{
-    Konversation::OutputFilterResult result;
-
-    if (fileName.contains(" ") > 0)
-        result = outputFilter->resumeRequest(sender,"\""+fileName+"\"",port,startAt);
-    else
-        result = outputFilter->resumeRequest(sender,fileName,port,startAt);
-
-    queue(result.toServer);
-}
-
-void IcecapServer::resumeDccGetTransfer(const QString &sourceNick, const QStringList &dccArguments)
-{
-    // Check if there actually is a transfer going on on that port
-    DccTransferRecv* dccTransfer=static_cast<DccTransferRecv*>(getViewContainer()->getDccPanel()->getTransferByPort(dccArguments[1],DccTransfer::Receive,true));
-    if(!dccTransfer)
-        // Check if there actually is a transfer going on with that name, could be behind a NAT
-        // so the port number may get changed
-        // mIRC substitutes this with "file.ext", so we have a problem here with mIRCs behind a NAT
-        dccTransfer=static_cast<DccTransferRecv*>(getViewContainer()->getDccPanel()->getTransferByName(dccArguments[0],DccTransfer::Receive,true));
-
-    if(dccTransfer)
-    {
-        // overcome mIRCs brain-dead "file.ext" substitution
-        appendMessageToFrontmost( i18n( "DCC" ),
-                                  i18n( "%1 = file name, %2 = nickname of sender, %3 = percentage of file size, %4 = file size",
-                                        "Resuming download of \"%1\" from %2 starting at %3% of %4..." )
-                                  .arg( dccTransfer->getFileName(),
-                                        sourceNick,
-                                        QString::number( dccTransfer->getProgress() ),
-                                        ( dccTransfer->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( dccTransfer->getFileSize() ) ) );
-        dccTransfer->startResume(dccArguments[2].toULong());
-    }
-    else
-    {
-        appendMessageToFrontmost(i18n("Error"),i18n("No DCC download running on port %1.").arg(dccArguments[1]));
-    }
-}
-
-void IcecapServer::resumeDccSendTransfer(const QString &recipient, const QStringList &dccArguments)
-{
-    // Check if there actually is a transfer going on on that port
-    DccTransferSend* dccTransfer=static_cast<DccTransferSend*>(getViewContainer()->getDccPanel()->getTransferByPort(dccArguments[1],DccTransfer::Send));
-    if(!dccTransfer)
-        // Check if there actually is a transfer going on with that name, could be behind a NAT
-        // so the port number may get changed
-        // mIRC substitutes this with "file.ext", so we have a problem here with mIRCs behind a NAT
-        dccTransfer=static_cast<DccTransferSend*>(getViewContainer()->getDccPanel()->getTransferByName(dccArguments[0],DccTransfer::Send));
-
-    if(dccTransfer && dccTransfer->getStatus() == DccTransfer::WaitingRemote)
-    {
-        QString fileName=dccTransfer->getFileName();
-        if(dccTransfer->setResume(dccArguments[2].toULong()))
-        {
-            appendMessageToFrontmost( i18n( "DCC" ),
-                                      i18n( "%1 = file name, %2 = nickname of recipient, %3 = percentage of file size, %4 = file size",
-                                            "Resuming upload of \"%1\" to %2 starting at %3% of %4...")
-                                      .arg( fileName,
-                                            recipient,
-                                            QString::number(dccTransfer->getProgress()),
-                                            ( dccTransfer->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( dccTransfer->getFileSize() ) ) );
-            Konversation::OutputFilterResult result = outputFilter->acceptRequest(recipient,
-                fileName, dccArguments[1], dccArguments[2].toUInt());
-            queue(result.toServer);
-            //appendMessageToFrontmost(result.typeString, result.output);
-        }
-        else
-        {
-            appendMessageToFrontmost(i18n("Error"),i18n("%1 = file name, %2 = nickname",
-                "Received invalid resume request for \"%1\" from %2.").arg(fileName, recipient));
-        }
-    }
-    else
-    {
-        appendMessageToFrontmost(i18n("Error"),i18n("No DCC upload running on port %1.").arg(dccArguments[1]));
-    }
-}
-
-void IcecapServer::dccGetDone(const DccTransfer* item)
-{
-    if(item->getStatus()==DccTransfer::Done)
-        appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of sender",
-            "Download of \"%1\" from %2 finished.").arg(item->getFileName(), item->getPartnerNick()));
-    else if(item->getStatus()==DccTransfer::Failed)
-        appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of sender",
-            "Download of \"%1\" from %2 failed. Reason: %3.").arg(item->getFileName(), item->getPartnerNick(), item->getStatusDetail()));
-}
-
-void IcecapServer::dccSendDone(const DccTransfer* item)
-{
-    if(item->getStatus()==DccTransfer::Done)
-        appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of recipient",
-            "Upload of \"%1\" to %2 finished.").arg(item->getFileName(), item->getPartnerNick()));
-    else if(item->getStatus()==DccTransfer::Failed)
-        appendMessageToFrontmost(i18n("DCC"),i18n("%1 = file name, %2 = nickname of recipient",
-            "Upload of \"%1\" to %2 failed. Reason: %3.").arg(item->getFileName(), item->getPartnerNick(), item->getStatusDetail()));
-}
-
-void IcecapServer::dccStatusChanged(const DccTransfer *item, int newStatus, int oldStatus)
-{
-    getViewContainer()->getDccPanel()->dccStatusChanged(item);
-
-    if ( item->getType() == DccTransfer::Send )
-    {
-        // when resuming, a message about the receiver's acceptance has been shown already, so suppress this message
-        if ( newStatus == DccTransfer::Sending && oldStatus == DccTransfer::WaitingRemote && !item->isResumed() )
-            appendMessageToFrontmost( i18n( "DCC" ), i18n( "%1 = file name, %2 nickname of recipient",
-                "Sending \"%1\" to %2...").arg( item->getFileName(), item->getPartnerNick() ) );
-    }
-    else
-    {
-        if ( newStatus == DccTransfer::Receiving && !item->isResumed() )
-        {
-            appendMessageToFrontmost( i18n( "DCC" ),
-                                        i18n( "%1 = file name, %2 = file size, %3 = nickname of sender", "Downloading \"%1\" (%2) from %3...")
-                                        .arg( item->getFileName(),
-                                            ( item->getFileSize() == 0 ) ? i18n( "unknown size" ) : KIO::convertSize( item->getFileSize() ),
-                                            item->getPartnerNick() ) );
-        }
-    }
-}
-
 void IcecapServer::removeQuery(class Query* query)
 {
     // Traverse through list to find the query
@@ -2052,7 +1771,6 @@ void IcecapServer::joinChannel(const QString& name, const QString& hostmask)
         channelList.append(channel);
         m_serverGroup->appendChannelHistory(channelSettings);
 
-        connect(channel,SIGNAL (sendFile()),this,SLOT (requestDccSend()) );
         connect(this,SIGNAL (serverOnline(bool)),channel,SLOT (serverOnline(bool)) );
         connect(this, SIGNAL(nicknameChanged(const QString&)), channel, SLOT(setNickname(const QString&)));
     }
