@@ -768,12 +768,12 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
         // get first notify very early
         startNotifyTimer(1000);
         // Register with services
-        registerWithServices();
+//        registerWithServices();
         // get own ip by userhost
-        requestUserhost(nickname);
+//        requestUserhost(nickname);
 
         // Start the PINGPONG match
-        QTimer::singleShot(1000 /*1 sec*/, this, SLOT(sendPing()));
+//        QTimer::singleShot(1000 /*1 sec*/, this, SLOT(sendPing()));
 
         // Recreate away state if we were set away prior to a reconnect.
         if (isAway())

@@ -15,6 +15,7 @@
 #include <qstringlist.h>
 #include <qdatetime.h>
 #include <qregexp.h>
+#include <qmap.h>
 
 #include <klocale.h>
 #include <kdeversion.h>
@@ -58,49 +59,46 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
 
     // Remove white spaces at the end and beginning
     newLine = newLine.stripWhiteSpace();
-    // Find end of middle parameter list
-    int pos = newLine.find(" :");
-    // Was there a trailing parameter?
-    if(pos != -1)
-    {
-        // Copy trailing parameter
-        trailing = newLine.mid(pos + 2);
-        // Cut trailing parameter from string
-        newLine = newLine.left(pos);
-    }
-    // Remove all unnecessary white spaces to make parsing easier
-    newLine = newLine.simplifyWhiteSpace();
 
-    QString prefix;
-
-    // Do we have a prefix?
-    if(newLine[0] == ':')
-    {
-        // Find end of prefix
-        pos = newLine.find(' ');
-        // Copy prefix
-        prefix = newLine.mid(1, pos - 1);
-        // Remove prefix from line
-        newLine = newLine.mid(pos + 1);
+    QStringList part;
+    int posSep = newLine.find (';');
+    if (posSep != -1) {
+        part = QStringList::split(";", newLine);
     }
 
-    // Find end of command
-    pos = newLine.find(' ');
-    // Copy command (all lowercase to make parsing easier)
-    QString command = newLine.left(pos).lower();
-    // Are there parameters left in the string?
-    QStringList parameterList;
+    // Is this an event?
+    QString tag = part[0];
+    if (tag == "*") {
+        // This is an event
+        // Format: *;<event-name-underscored>;<parameters>
+        // Parameters can be static (cacheable, no prefix) or dynamic (not cacheable, prefix "$")
+        // The time parameter is the time that the event was created on the server, NOT the current time
 
-    if(pos != -1)
-    {
-        // Cut out the command
-        newLine = newLine.mid(pos + 1);
-        // The rest of the string will be the parameter list
-        parameterList = QStringList::split(" ", newLine);
+        QString eventName = part[1];
+        QStringList param = part;
+        // Remove the type and event name from the params list
+        param.pop_front();
+        param.pop_front();
+
+        parseIcecapEvent (eventName, param);
+    } else {
+        // This is a command reply
+        // Format: <tag>;<status>;<params>
+        // tag is the tag sent by the client when the command was issued. Can be just about anything but "*"
+        //  tag is basically the only way we have of identifying command replies
+        // status:
+        //  +  Success; Response possibly in subsequent fields
+        //  -  Failue; 3rd field is error identifier
+        //  >  Success so far; More to follow
+
+        QString status = part[1];
+        QStringList param = part;
+        // Remove the type and event name from the params list
+        param.pop_front();
+        param.pop_front();
+        parseIcecapCommand (tag, status, param);
     }
-
-    Q_ASSERT(server);
-
+/*
     // Server command, if no "!" was found in prefix
     if((prefix.find('!') == -1) && (prefix != server->getNickname()))
     {
@@ -110,6 +108,82 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
     {
         parseClientCommand(prefix, command, parameterList, trailing);
     }
+*/
+}
+
+void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStringList &parameterList)
+{
+    // I assume this ensures there's a valid server to communicate with
+    Q_ASSERT(server); if(!server) return;
+
+    if (eventName == "preauth") {
+        // preauth - currently this is just a welcome signal
+        // eventually icecap will implement authentication so we'll need to add support for that
+
+        // Send the welcome signal, so the server class knows we are connected properly
+        emit welcome("");
+        m_connecting = true;
+        server->appendStatusMessage(i18n("Welcome"), "");
+    }
+}
+
+void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList)
+{
+    // I assume this ensures there's a valid server to communicate with
+    Q_ASSERT(server); if(!server) return;
+
+    if (tag == "netlist")
+    {
+        if(getAutomaticRequest("netlist",QString::null)==0)
+        {
+/*
+            QString message;
+            message=i18n("%1 (%n user): %2", "%1 (%n users): %2", parameterList[2].toInt());
+            server->appendMessageToFrontmost(i18n("List"),message.arg(parameterList[1]).arg(trailing));
+*/
+            if (status == "+") {
+                server->appendMessageToFrontmost (i18n ("End of network list"), "End of network list");
+            }
+            else if (status == ">")
+            {
+                // Split into key, value pairs around the first occurence of =
+                // TODO: Is there an easier way to do this?
+                // TODO: Should this be moved up to the top of this method? Possibly even to parseLine?
+                // TODO: Better handling for keys that appear multiple times
+//                typedef QMap<QString, QString> parameterMap;
+                QMap<QString, QString> parameterMap;
+                for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
+                    QStringList thisParam = QStringList::split("=", *it);
+                    QString key = thisParam.first ();
+                    thisParam.pop_front ();
+                    QString value = thisParam.join ("=");
+//                    parameterMap[key] = value;
+                    parameterMap.insert (key, value, TRUE);
+                }
+
+                QString message;
+                message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["protocol"]).arg (parameterMap["network"]);
+                server->appendMessageToFrontmost (i18n ("Network List"), message);
+            }
+        }
+        else                              // send them to /LIST window
+        {
+//            emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
+        }
+/*
+        if(getAutomaticRequest("LIST",QString::null)==0)
+        {
+            QString message;
+            message=i18n("%1 (%n user): %2", "%1 (%n users): %2", parameterList[2].toInt());
+            server->appendMessageToFrontmost(i18n("List"),message.arg(parameterList[1]).arg(trailing));
+        }
+        else                              // send them to /LIST window
+        {
+            emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
+        }
+*/
+    }
+
 }
 
 void IcecapInputFilter::parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &_trailing)
