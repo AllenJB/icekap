@@ -77,6 +77,8 @@ class IcecapInputFilter : public QObject
         void parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing);
         void parseServerCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing);
         void parseModes(const QString &sourceNick, const QStringList &parameterList);
+		void parseIcecapEvent (const QString &eventName, const QStringList &parameterList);
+		void parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList);
 
         bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);

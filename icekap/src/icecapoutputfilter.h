@@ -53,9 +53,9 @@ namespace Konversation
     };
 
 
-    class IcecapOutputFilter : public QObject
 //    class IcecapOutputFilter : public GenericOutputFilter, public QObject
 //    class IcecapOutputFilter : public GenericOutputFilter
+    class IcecapOutputFilter : public QObject
     {
         Q_OBJECT
 
