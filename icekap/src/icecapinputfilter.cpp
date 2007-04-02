@@ -164,6 +164,9 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
                 QString message;
                 message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["protocol"]).arg (parameterMap["network"]);
                 server->appendMessageToFrontmost (i18n ("Network List"), message);
+            } else {
+                // TODO: Are there any known circumstances that would cause this?
+                server->appendMessageToFrontmost (i18n ("Network List Error"), "Network List: An unhandled error occurred.");
             }
         }
         else                              // send them to /LIST window
