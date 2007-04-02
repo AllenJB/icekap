@@ -301,7 +301,6 @@ namespace Konversation
             else if(command == "list")     result = parseList(parameter);
             else if(command == "names")    result = parseNames(parameter);
             else if(command == "raw")      result = parseRaw(parameter);
-            else if(command == "dcc")      result = parseDcc(parameter);
             else if(command == "konsole")  parseKonsole();
             else if(command == "aaway")    parseAaway(parameter);
             else if(command == "aback")    emit multiServerCommand("back", QString::null);
@@ -801,130 +800,6 @@ namespace Konversation
                 }
             }
         }
-
-        return result;
-    }
-
-    OutputFilterResult IcecapOutputFilter::parseDcc(const QString &parameter)
-    {
-        OutputFilterResult result;
-
-        // No parameter, just open DCC panel
-        if(parameter.isEmpty())
-        {
-            emit addDccPanel();
-        }
-        else
-        {
-            QString tmpParameter = parameter;
-            QStringList parameterList = QStringList::split(' ', tmpParameter.replace("\\ ", "%20"));
-
-            QString dccType = parameterList[0].lower();
-
-            if(dccType=="close")
-            {
-                emit closeDccPanel();
-            }
-            else if(dccType=="send")
-            {
-                if(parameterList.count()==1)      // DCC SEND
-                {
-                    emit requestDccSend();
-                }                                 // DCC SEND <nickname>
-                else if(parameterList.count()==2)
-                {
-                    emit requestDccSend(parameterList[1]);
-                }                                 // DCC SEND <nickname> <file> [file] ...
-                else if(parameterList.count()>2)
-                {
-                    // TODO: make sure this will work:
-                    //output=i18n("Usage: %1DCC SEND nickname [fi6lename] [filename] ...").arg(commandChar);
-                    KURL fileURL(parameterList[2]);
-
-                    //We could easily check if the remote file exists, but then we might
-                    //end up asking for creditionals twice, so settle for only checking locally
-                    if(!fileURL.isLocalFile() || QFile::exists( fileURL.path() ))
-                    {
-                        emit openDccSend(parameterList[1],fileURL);
-                    }
-                    else
-                    {
-                        result = error(i18n("File \"%1\" does not exist.").arg(parameterList[2]));
-                    }
-                }
-                else                              // Don't know how this should happen, but ...
-                {
-                    result = usage(i18n("Usage: %1DCC [SEND nickname filename]").arg(commandChar));
-                }
-            }
-            // TODO: DCC Chat etc. comes here
-            else if(dccType=="chat")
-            {
-                if(parameterList.count()==2)
-                {
-                    emit requestDccChat(parameterList[1]);
-                }
-                else
-                {
-                    result = usage(i18n("Usage: %1DCC [CHAT nickname]").arg(commandChar));
-                }
-            }
-            else
-            {
-                result = error(i18n("Unrecognized command %1DCC %2. Possible commands are SEND, CHAT, CLOSE.").arg(commandChar).arg(parameterList[0]));
-            }
-        }
-
-        return result;
-    }
-
-    OutputFilterResult IcecapOutputFilter::sendRequest(const QString &recipient,const QString &fileName,const QString &address,const QString &port,unsigned long size)
-    {
-        OutputFilterResult result;
-        QString niftyFileName(fileName);
-        /*QFile file(fileName);
-        QFileInfo info(file);*/
-
-        result.toServer = "PRIVMSG " + recipient + " :" + '\x01' + "DCC SEND "
-            + fileName
-            + ' ' + address + ' ' + port + ' ' + QString::number(size) + '\x01';
-
-        // Dirty hack to avoid printing ""name with spaces.ext"" instead of "name with spaces.ext"
-        if ((fileName.startsWith("\"")) && (fileName.endsWith("\"")))
-            niftyFileName = fileName.mid(1, fileName.length()-2);
-
-        return result;
-    }
-
-    // Accepting Resume Request
-    OutputFilterResult IcecapOutputFilter::acceptRequest(const QString &recipient,const QString &fileName,const QString &port,int startAt)
-    {
-        QString niftyFileName(fileName);
-
-        OutputFilterResult result;
-        result.toServer = "PRIVMSG " + recipient + " :" + '\x01' + "DCC ACCEPT " + fileName + ' ' + port
-            + ' ' + QString::number(startAt) + '\x01';
-
-        // Dirty hack to avoid printing ""name with spaces.ext"" instead of "name with spaces.ext"
-        if ((fileName.startsWith("\"")) && (fileName.endsWith("\"")))
-            niftyFileName = fileName.mid(1, fileName.length()-2);
-
-        return result;
-    }
-
-    OutputFilterResult IcecapOutputFilter::resumeRequest(const QString &sender,const QString &fileName,const QString &port,KIO::filesize_t startAt)
-    {
-        QString niftyFileName(fileName);
-
-        OutputFilterResult result;
-        /*QString newFileName(fileName);
-        newFileName.replace(" ", "_");*/
-        result.toServer = "PRIVMSG " + sender + " :" + '\x01' + "DCC RESUME " + fileName + ' ' + port + ' '
-            + QString::number(startAt) + '\x01';
-
-        // Dirty hack to avoid printing ""name with spaces.ext"" instead of "name with spaces.ext"
-        if ((fileName.startsWith("\"")) && (fileName.endsWith("\"")))
-            niftyFileName = fileName.mid(1, fileName.length()-2);
 
         return result;
     }

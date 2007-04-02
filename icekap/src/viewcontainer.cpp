@@ -34,8 +34,6 @@
 #include "logfilereader.h"
 #include "konsolepanel.h"
 #include "urlcatcher.h"
-#include "dccpanel.h"
-#include "dccchat.h"
 #include "statuspanel.h"
 #include "channel.h"
 #include "query.h"
@@ -64,9 +62,6 @@ ViewContainer::ViewContainer(KonversationMainWindow* window)
     m_urlCatcherPanel = 0;
     m_nicksOnlinePanel = 0;
 
-    m_dccPanel = 0;
-    m_dccPanelOpen = false;
-
     m_insertCharDialog = 0;
 
     m_queryViewCount = 0;
@@ -86,7 +81,6 @@ ViewContainer::ViewContainer(KonversationMainWindow* window)
 
 ViewContainer::~ViewContainer()
 {
-    deleteDccPanel();
 }
 
 void ViewContainer::initializeSplitterSizes()
@@ -1019,7 +1013,6 @@ void ViewContainer::unsetViewNotification(ChatWindow* view)
             {
                 case ChatWindow::Channel:
                 case ChatWindow::Query:
-                case ChatWindow::DccChat:
                     m_viewTree->setViewIcon(view, images->getMsgsLed(false));
                     break;
 
@@ -1045,7 +1038,6 @@ void ViewContainer::unsetViewNotification(ChatWindow* view)
             {
                 case ChatWindow::Channel:
                 case ChatWindow::Query:
-                case ChatWindow::DccChat:
                     m_tabWidget->setTabIconSet(view, images->getMsgsLed(false));
                     break;
 
@@ -1191,27 +1183,6 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
 
             break;
 
-        case ChatWindow::DccChat:
-            if (Preferences::tabNotificationsLeds())
-                iconSet = images->getMsgsLed(false);
-            else if (Preferences::closeButtons())
-                iconSet = images->getCloseIcon();
-
-            for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
-            {
-                tmp_ChatWindow = static_cast<ChatWindow*>(m_tabWidget->page(sindex));
-                wtype = tmp_ChatWindow->getType();
-
-                if (wtype != ChatWindow::Status && wtype != ChatWindow::Channel
-                    && wtype != ChatWindow::RawLog && wtype != ChatWindow::Query
-                    && wtype != ChatWindow::DccChat && wtype != ChatWindow::ChannelList)
-                {
-                    placement = sindex;
-                    break;
-                }
-            }
-            break;
-
         case ChatWindow::Status:
             if (Preferences::tabNotificationsLeds())
                 iconSet = images->getServerLed(false);
@@ -1227,8 +1198,7 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
                     if (tmp_ChatWindow->getType() != ChatWindow::Channel
                         && tmp_ChatWindow->getType() != ChatWindow::Status
                         && tmp_ChatWindow->getType() != ChatWindow::RawLog
-                        && tmp_ChatWindow->getType() != ChatWindow::Query
-                        && tmp_ChatWindow->getType() != ChatWindow::DccChat)
+                        && tmp_ChatWindow->getType() != ChatWindow::Query)
                     {
                         placement = sindex;
                         break;
@@ -1348,7 +1318,7 @@ void ViewContainer::switchView(QWidget* newView)
             ChatWindow::WindowType viewType = view->getType();
             notifyAction->setEnabled(viewType == ChatWindow::Channel || viewType == ChatWindow::Query ||
                                      viewType == ChatWindow::Status || viewType == ChatWindow::Konsole ||
-                                     viewType == ChatWindow::DccPanel || viewType == ChatWindow::RawLog);
+                                     viewType == ChatWindow::RawLog);
             notifyAction->setChecked(view->notificationsEnabled());
         }
 
@@ -1478,9 +1448,7 @@ void ViewContainer::closeView(ChatWindow* view)
         else if (viewType==ChatWindow::ChannelList)  confirmClose = view->closeYourself();
         else if (viewType==ChatWindow::Query)        confirmClose = view->closeYourself();
         else if (viewType==ChatWindow::RawLog)       confirmClose = view->closeYourself();
-        else if (viewType==ChatWindow::DccChat)      confirmClose = view->closeYourself();
 
-        else if (viewType==ChatWindow::DccPanel)     closeDccPanel();
         else if (viewType==ChatWindow::Konsole)      closeKonsolePanel(view);
         else if (viewType==ChatWindow::UrlCatcher)   closeUrlCatcher();
         else if (viewType==ChatWindow::NicksOnline)  closeNicksOnlinePanel();
@@ -1600,8 +1568,7 @@ void ViewContainer::showViewContextMenu(QWidget* tab, const QPoint& pos)
             ChatWindow::WindowType viewType = view->getType();
             notifyAction->setEnabled(viewType == ChatWindow::Channel || viewType == ChatWindow::Query ||
                                      viewType == ChatWindow::Status || viewType == ChatWindow::Konsole ||
-                                     viewType == ChatWindow::DccPanel || viewType == ChatWindow::RawLog ||
-                                     viewType == ChatWindow::DccChat);
+                                     viewType == ChatWindow::RawLog);
             notifyAction->setChecked(view->notificationsEnabled());
         }
 
@@ -1642,8 +1609,7 @@ void ViewContainer::showViewContextMenu(QWidget* tab, const QPoint& pos)
                 ChatWindow::WindowType viewType = view->getType();
                 notifyAction->setEnabled(viewType == ChatWindow::Channel || viewType == ChatWindow::Query ||
                                          viewType == ChatWindow::Status || viewType == ChatWindow::Konsole ||
-                                         viewType == ChatWindow::DccPanel || ChatWindow::RawLog ||
-                                         viewType == ChatWindow::DccChat);
+                                         ChatWindow::RawLog);
                 notifyAction->setChecked(view->notificationsEnabled());
             }
 
@@ -1855,7 +1821,7 @@ void ViewContainer::openLogFile()
         ChatWindow* view=static_cast<ChatWindow*>(m_frontView);
         ChatWindow::WindowType viewType=view->getType();
         if (viewType==ChatWindow::Channel || viewType==ChatWindow::Query ||
-            viewType==ChatWindow::Status || viewType==ChatWindow::DccChat)
+            viewType==ChatWindow::Status)
         {
             openLogFile(view->getName(), view->logFileName());
         }
@@ -1917,91 +1883,12 @@ void ViewContainer::addUrlCatcher()
 
 void ViewContainer::closeUrlCatcher()
 {
-    // if there actually is a dcc panel
+    // if there actually is a url catcher panel
     if (m_urlCatcherPanel)
     {
         delete m_urlCatcherPanel;
         m_urlCatcherPanel = 0;
         (dynamic_cast<KToggleAction*>(actionCollection()->action("open_url_catcher")))->setChecked(false);
-    }
-}
-
-void ViewContainer::toggleDccPanel()
-{
-    if (m_dccPanel==0 || !m_dccPanelOpen)
-        addDccPanel();
-    else
-        closeDccPanel();
-}
-
-void ViewContainer::addDccPanel()
-{
-    // if the panel wasn't open yet
-    if (m_dccPanel==0)
-    {
-        m_dccPanel=new DccPanel(m_tabWidget);
-        addView(m_dccPanel, i18n("DCC Status"));
-        connect(m_dccPanel, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
-        m_dccPanelOpen = true;
-        (dynamic_cast<KToggleAction*>(actionCollection()->action("open_dccstatus_window")))->setChecked(true);
-    }
-    // show already opened panel
-    else
-    {
-        if (!m_dccPanelOpen)
-        {
-            addView(m_dccPanel, i18n("DCC Status"));
-            m_dccPanelOpen=true;
-            (dynamic_cast<KToggleAction*>(actionCollection()->action("open_dccstatus_window")))->setChecked(true);
-        }
-        // FIXME newText(dccPanel,QString::null,true);
-    }
-}
-
-void ViewContainer::closeDccPanel()
-{
-    // if there actually is a dcc panel
-    if (m_dccPanel)
-    {
-        // hide it from view, does not delete it
-        emit removeView(m_dccPanel);
-        m_tabWidget->removePage(m_dccPanel);
-        m_dccPanelOpen=false;
-        (dynamic_cast<KToggleAction*>(actionCollection()->action("open_dccstatus_window")))->setChecked(false);
-    }
-}
-
-void ViewContainer::deleteDccPanel()
-{
-    if (m_dccPanel)
-    {
-        closeDccPanel();
-        delete m_dccPanel;
-        m_dccPanel=0;
-    }
-}
-
-DccPanel* ViewContainer::getDccPanel()
-{
-    return m_dccPanel;
-}
-
-void ViewContainer::addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen)
-{
-    if (!listen) // Someone else initiated dcc chat
-    {
-        KonversationApplication* konv_app=static_cast<KonversationApplication*>(KApplication::kApplication());
-        konv_app->notificationHandler()->dccChat(m_frontView, nick);
-    }
-
-    if (m_frontServer)
-    {
-        DccChat* dccChatPanel=new DccChat(m_tabWidget, myNick,nick,arguments,listen);
-        addView(dccChatPanel, dccChatPanel->getName());
-        connect(dccChatPanel, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
-        if(listen)
-            m_frontServer->queue(QString("PRIVMSG %1 :\001DCC CHAT chat %2 %3\001")
-              .arg(nick).arg(numericalIp).arg(dccChatPanel->getPort()));
     }
 }
 
@@ -2027,7 +1914,6 @@ StatusPanel* ViewContainer::addStatusView(IcecapServer* server)
 
     connect(m_window, SIGNAL(prefsChanged()), statusView, SLOT(updateName()));
     connect(statusView, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
-    connect(statusView, SIGNAL(sendFile()), server, SLOT(requestDccSend()));
     connect(server, SIGNAL(awayState(bool)), statusView, SLOT(indicateAway(bool)) );
 
     // make sure that m_frontServer gets set on adding the first status panel, too,

@@ -31,7 +31,6 @@ class ChatWindow;
 class IcecapServer;
 class Images;
 class UrlCatcher;
-class DccPanel;
 class NicksOnline;
 
 namespace Konversation
@@ -115,14 +114,6 @@ class ViewContainer : public QObject
         void addUrlCatcher();
         void closeUrlCatcher();
 
-        void toggleDccPanel();
-        void addDccPanel();
-        void closeDccPanel();
-        void deleteDccPanel();
-        DccPanel* getDccPanel();
-
-        void addDccChat(const QString& myNick,const QString& nick,const QString& numericalIp,const QStringList& arguments,bool listen);
-
         StatusPanel* addStatusView(IcecapServer* server);
         RawLog* addRawLog(IcecapServer* server);
         void disconnectFrontServer();
@@ -193,9 +184,6 @@ class ViewContainer : public QObject
 
         UrlCatcher* m_urlCatcherPanel;
         NicksOnline* m_nicksOnlinePanel;
-
-        DccPanel* m_dccPanel;
-        bool m_dccPanelOpen;
 
         Konversation::InsertCharDialog* m_insertCharDialog;
 

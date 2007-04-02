@@ -72,13 +72,6 @@ namespace Konversation
             bool replaceAliases(QString& line);
 
         signals:
-            void openDccSend(const QString &recipient, KURL kurl);
-            void requestDccSend();                // Choose Recipient and File from requester
-                                                  // Choose File from requester
-            void requestDccSend(const QString& recipient);
-            void requestDccChat(const QString& nick);
-            void addDccPanel();
-            void closeDccPanel();
             void openRawLog(bool show);
             void closeRawLog();
             void openKonsolePanel();
@@ -134,7 +127,6 @@ namespace Konversation
             OutputFilterResult parseExec(const QString& parameter);
             OutputFilterResult parseNotify(const QString& parameter);
             OutputFilterResult parseOper(const QString& myNick,const QString& parameter);
-            OutputFilterResult parseDcc(const QString& parameter);
             OutputFilterResult parseRaw(const QString& parameter);
             OutputFilterResult parseIgnore(const QString& parameter);
             OutputFilterResult parseUnignore(const QString& parameter);

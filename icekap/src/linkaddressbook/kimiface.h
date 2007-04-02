@@ -57,12 +57,6 @@ class KIMIface : virtual public DCOPObject
      * @return a list of KABC uids who are online with unspecified presence.
      */
     virtual QStringList onlineContacts() = 0;
-    /**
-     * Obtain a list of  KDE address book entries who may
-     * receive file transfers.
-     * @return a list of KABC uids capable of file transfer.
-     */
-    virtual QStringList fileTransferContacts() = 0;
 
     // individual
     /**
@@ -90,12 +84,6 @@ class KIMIface : virtual public DCOPObject
      * @return a numeric representation of presence - currently one of 0 (Unknown), 1 (Offline), 2 (Connecting), 3 (Away), 4 (Online)
      */
     virtual int presenceStatus( const QString & uid ) = 0;
-    /**
-     * Indicate if a given uid can receive files
-     * @param uid the KABC uid you are interested in.
-     * @return Whether the specified addressee can receive files.
-     */
-    virtual bool canReceiveFiles( const QString & uid ) = 0;
     /**
      * Some media are unidirectional (eg, sending SMS via a web interface).
      * @param uid the KABC uid you are interested in.
@@ -150,16 +138,6 @@ class KIMIface : virtual public DCOPObject
      * @param uid the KABC uid you want to chat with.
      */
     virtual void chatWithContact( const QString &uid ) = 0;
-
-    /**
-     * Send the file to the contact
-     * @param uid the KABC uid you are sending to.
-     * @param sourceURL a KURL to send.
-     * @param altFileName an alternate filename describing the file
-     * @param fileSize file size in bytes
-     */
-    virtual void sendFile(const QString &uid, const KURL &sourceURL,
-        const QString &altFileName = QString::null, uint fileSize = 0) = 0;
 
     // MUTATORS
     // Contact list

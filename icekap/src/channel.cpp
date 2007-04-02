@@ -278,7 +278,6 @@ Channel::Channel(QWidget* parent)
 
     connect(nicknameListView,SIGNAL (popupCommand(int)),this,SLOT (popupCommand(int)) );
     connect(nicknameListView,SIGNAL (doubleClicked(QListViewItem*)),this,SLOT (doubleClickCommand(QListViewItem*)) );
-    connect(nicknameListView,SIGNAL (dropped(QDropEvent*,QListViewItem*)),this,SLOT (filesDropped(QDropEvent*)) );
     connect(nicknameCombobox,SIGNAL (activated(int)),this,SLOT(nicknameComboboxChanged()));
 
     if(nicknameCombobox->lineEdit())
@@ -353,15 +352,6 @@ void Channel::showOptionsDialog()
 
     m_optionsDialog->refreshModes();
     m_optionsDialog->show();
-}
-
-void Channel::filesDropped(QDropEvent* e)
-{
-    QPoint p(nicknameListView->contentsToViewport(e->pos()));
-    NickListViewItem* it = dynamic_cast<NickListViewItem*>(nicknameListView->itemAt(p));
-    if (!it) return;
-    QStrList uris;
-    if (QUriDrag::decode(e,uris)) m_server->sendURIs(uris, it->getNick()->getNickname());
 }
 
 void Channel::textPasted(const QString& text)

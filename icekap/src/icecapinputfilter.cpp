@@ -136,11 +136,6 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     {
         if(getAutomaticRequest("netlist",QString::null)==0)
         {
-/*
-            QString message;
-            message=i18n("%1 (%n user): %2", "%1 (%n users): %2", parameterList[2].toInt());
-            server->appendMessageToFrontmost(i18n("List"),message.arg(parameterList[1]).arg(trailing));
-*/
             if (status == "+") {
                 server->appendMessageToFrontmost (i18n ("End of network list"), "End of network list");
             }
@@ -150,20 +145,29 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
                 // TODO: Is there an easier way to do this?
                 // TODO: Should this be moved up to the top of this method? Possibly even to parseLine?
                 // TODO: Better handling for keys that appear multiple times
-//                typedef QMap<QString, QString> parameterMap;
                 QMap<QString, QString> parameterMap;
                 for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
                     QStringList thisParam = QStringList::split("=", *it);
                     QString key = thisParam.first ();
                     thisParam.pop_front ();
                     QString value = thisParam.join ("=");
-//                    parameterMap[key] = value;
                     parameterMap.insert (key, value, TRUE);
                 }
 
                 QString message;
                 message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["protocol"]).arg (parameterMap["network"]);
                 server->appendMessageToFrontmost (i18n ("Network List"), message);
+
+                // Put it here for now while testing
+                if (parameterMap["protocol"] != "IRC") {
+                    return;
+                }
+
+                Konversation::ServerGroupSettingsPtr network = new Konversation::ServerGroupSettings (parameterMap["network"]);
+                Preferences::addServerGroup (network);
+                static_cast<KonversationApplication*>(kapp)->saveOptions(true);
+//                emit serverGroupsChanged();
+
             } else {
                 // TODO: Are there any known circumstances that would cause this?
                 server->appendMessageToFrontmost (i18n ("Network List Error"), "Network List: An unhandled error occurred.");
@@ -171,20 +175,23 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         }
         else                              // send them to /LIST window
         {
-//            emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
+            QMap<QString, QString> parameterMap;
+            for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
+                QStringList thisParam = QStringList::split("=", *it);
+                QString key = thisParam.first ();
+                thisParam.pop_front ();
+                QString value = thisParam.join ("=");
+                parameterMap.insert (key, value, TRUE);
+            }
+
+            if (parameterMap["protocol"] != "IRC") {
+                return;
+            }
+
+            Konversation::ServerGroupSettingsPtr network = new Konversation::ServerGroupSettings (parameterMap["network"]);
+            Preferences::addServerGroup (network);
+//            emit addToNetworkList (parameterMap[protocol], parameterMap[network]);
         }
-/*
-        if(getAutomaticRequest("LIST",QString::null)==0)
-        {
-            QString message;
-            message=i18n("%1 (%n user): %2", "%1 (%n users): %2", parameterList[2].toInt());
-            server->appendMessageToFrontmost(i18n("List"),message.arg(parameterList[1]).arg(trailing));
-        }
-        else                              // send them to /LIST window
-        {
-            emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
-        }
-*/
     }
 
 }

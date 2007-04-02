@@ -141,7 +141,6 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
         actionCollection(), "identities_dialog"))->setToolTip(i18n("Manage your nick, away and other identity settings"));
 
     new KToggleAction(i18n("&Watched Nicks Online"), "kontact_contacts", KShortcut("F4"), m_viewContainer, SLOT(openNicksOnlinePanel()), actionCollection(), "open_nicksonline_window");
-    new KToggleAction(i18n("&DCC Status"), "2rightarrow", KShortcut("F9"), m_viewContainer, SLOT(toggleDccPanel()), actionCollection(), "open_dccstatus_window");
     action = new KAction(i18n("&Open Logfile"), "history", KShortcut("Ctrl+O"), m_viewContainer, SLOT(openLogFile()), actionCollection(), "open_logfile");
     action->setEnabled(false);
     action->setToolTip(i18n("Open the known history for this channel in a new tab"));

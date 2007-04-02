@@ -74,10 +74,6 @@ namespace Konversation
     {
         return onlineContacts();
     }
-    QStringList Addressbook::fileTransferContacts()
-    {
-        return onlineContacts();
-    }
     bool Addressbook::isPresent(const QString &uid)
     {
         return hasAnyNicks(addressBook->findByUid(uid));
@@ -113,17 +109,6 @@ namespace Konversation
         return presenceStatusByAddressee(addressBook->findByUid(uid));
     }
 
-    bool Addressbook::canReceiveFiles(const QString &uid)
-    {
-        if(uid.isEmpty())
-        {
-            kdDebug() << "Addressbook::canReceiveFiles() called with empty uid" << endl;
-            return false;
-        }
-        int presence = presenceStatus(uid);
-
-        return (presence == 4) || (presence == 3);
-    }
     bool Addressbook::canRespond(const QString &uid)
     {
         if(uid.isEmpty())
@@ -254,41 +239,6 @@ void Addressbook::chatWithContact( const QString &uid )
         return;
     }
     messageContact(uid, QString::null);
-}
-
-/**
- * Send the file to the contact
- * @param uid the KABC uid you are sending to.
- * @param sourceURL a KURL to send.
- * @param altFileName an alternate filename describing the file
- * @param fileSize file size in bytes
- */
-void Addressbook::sendFile(const QString &uid, const KURL &sourceURL, const QString &altFileName, uint fileSize)
-{
-    if(uid.isEmpty())
-    {
-        focusAndShowErrorMessage(i18n("Another KDE application tried to use Konversation to send a file to a contact, but did not specify any contact to send the file to.  This is probably a bug in the other application."));
-        return;
-    }
-    KABC::Addressee addressee = addressBook->findByUid(uid);
-    if(addressee.isEmpty())
-    {
-        focusAndShowErrorMessage(i18n("Another KDE application tried to use Konversation to send a file to a contact, but Konversation could not find the specified contact in the KDE address book."));
-        return;
-    }
-    NickInfoPtr nickInfo = getNickInfo(addressee);
-    if(!nickInfo)
-    {
-        QString user = addressee.fullEmail();
-        if(!user.isEmpty()) user = " (" + user + ')';
-        focusAndShowErrorMessage(i18n("Another KDE application tried to use Konversation to send a file to a contact, but the requested user%1 is not currently online.").arg(user));
-        return;
-    }
-    nickInfo->getServer()->addDccSend(nickInfo->getNickname(), sourceURL, altFileName, fileSize);
-    QWidget *widget = nickInfo->getServer()->getViewContainer()->getWindow();
-    KWin::demandAttention(widget->winId());       //If activeWindow request is denied, at least demand attention!
-    KWin::activateWindow(widget->winId());        //May or may not work, depending on focus stealing prevention.
-
 }
 
 // MUTATORS

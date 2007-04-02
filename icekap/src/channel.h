@@ -258,7 +258,6 @@ class Channel : public ChatWindow
     protected slots:
         void completeNick(); ///< I guess this is a GUI function, might be nice to have at DCOP level though --argonel
         void endCompleteNick();
-        void filesDropped(QDropEvent* e);
         void quickButtonClicked(const QString& definition);
         void modeButtonClicked(int id,bool on);
         void channelLimitChanged();
