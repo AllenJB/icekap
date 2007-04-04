@@ -482,7 +482,7 @@ void IcecapServer::incoming()
         bool isServerMessage = false;
         QString channelKey;
 //        QTextCodec* codec = getIdentity()->getCodec();
-        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        QTextCodec* codec = QTextCodec::codecForName("utf8");
         QCString front = qcsBufferLines.front();
 
         QStringList lineSplit = QStringList::split(" ",codec->toUnicode(front));
@@ -555,7 +555,7 @@ void IcecapServer::incoming()
         {
             // check setting
             QString channelEncoding;
-            channelEncoding = "UTF-8";
+            channelEncoding = "utf8";
 /*
             if( !channelKey.isEmpty() )
             {
@@ -682,24 +682,10 @@ void IcecapServer::send()
         // set channel encoding if specified
         QString channelCodecName;
 
-        if(outputLineSplit.count()>2) //"for safe" <-- so no encoding if no data
-        {
-        if(outboundCommand=="PRIVMSG"   //PRIVMSG target :message
-           || outboundCommand=="NOTICE" //NOTICE target :message
-           || outboundCommand=="KICK"   //KICK target :message
-           || outboundCommand=="PART"   //PART target :message
-           || outboundCommand=="TOPIC"  //TOPIC target :message
-            )
-            { //KV << outboundCommand << " queued" <<endl;
-//                channelCodecName=Preferences::channelEncoding(getServerGroup(),outputLineSplit[1]);
-                channelCodecName = "UTF-8";
-            }
-        }
-
         // init stream props
         serverStream.setEncoding(QTextStream::Locale);
 //        QTextCodec* codec = getIdentity()->getCodec();
-        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        QTextCodec* codec = QTextCodec::codecForName("utf8");
 
         if(!channelCodecName.isEmpty())
         {
@@ -710,12 +696,6 @@ void IcecapServer::send()
         if(QString(QTextCodec::codecForLocale()->name()).lower() != QString(codec->name()).lower())
         {
             serverStream.setCodec(codec);
-        }
-
-        // Blowfish
-        if(outboundCommand=="PRIVMSG" || outboundCommand=="TOPIC")
-        {
-            Konversation::encrypt(outputLineSplit[1],outputLine,this);
         }
 
         serverStream << outputLine;

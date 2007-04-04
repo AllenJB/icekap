@@ -1535,7 +1535,7 @@ void ViewContainer::updateViewEncoding(ChatWindow* view)
                 if(m_frontServer)
                 {
 //                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg(m_frontServer->getIdentity()->getCodecName()));
-                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg("UTF-8"));
+                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg("utf8"));
                 }
 
                 if(encoding.isEmpty())

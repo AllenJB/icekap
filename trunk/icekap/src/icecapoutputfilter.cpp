@@ -99,7 +99,7 @@ namespace Icecap
     QStringList IcecapOutputFilter::splitForEncoding(const QString& inputLine, int MAX)
     {
 //        QString channelCodecName=Preferences::channelEncoding(m_server->getServerGroup(), destination);
-        QString channelCodecName = "UTF-8";
+        QString channelCodecName = "utf8";
 
         int sublen=0; //The encoded length since the last split
         int charLength=0; //the length of this char
