@@ -494,7 +494,7 @@ void KonversationApplication::quickConnectToIcecapServer(const QString& hostName
     connect(newServer, SIGNAL(connectionChangedState(IcecapServer*, IcecapServer::State)),
         mainWindow, SIGNAL(serverStateChanged(IcecapServer*, IcecapServer::State)));
 
-    connect(newServer,SIGNAL (nicksNowOnline(IcecapServer*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(IcecapServer*,const QStringList&,bool)) );
+//    connect(newServer,SIGNAL (nicksNowOnline(IcecapServer*,const QStringList&,bool)),mainWindow,SLOT (setOnlineList(IcecapServer*,const QStringList&,bool)) );
 
     connect(newServer,SIGNAL (deleted(IcecapServer*)),this,SLOT (removeServer(IcecapServer*)) );
 

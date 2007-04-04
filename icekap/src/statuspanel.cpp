@@ -113,16 +113,14 @@ void StatusPanel::sendStatusText(const QString& sendLine)
     {
         QString output(outList[index]);
 
-/*
         // encoding stuff is done in Server()
-        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, QString::null);
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse("", output, QString::null);
 
         if(!result.output.isEmpty())
         {
             appendServerMessage(result.typeString, result.output);
         }
         m_server->queue(result.toServer);
-*/
     } // for
 }
 
@@ -340,14 +338,14 @@ void StatusPanel::setChannelEncoding(const QString& encoding)
 QString StatusPanel::getChannelEncoding()         // virtual
 {
 //    return Preferences::channelEncoding(m_server->getServerGroup(), ":server");
-	return "UTF-8";
+	return "utf8";
 }
 
                                                   // virtual
 QString StatusPanel::getChannelEncodingDefaultDesc()
 {
 //    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
-	return "Unimplemented (UTF-8)";
+	return "Unimplemented (utf8)";
 }
 
 //Used to disable functions when not connected

@@ -2403,13 +2403,13 @@ void Channel::setChannelEncoding(const QString& encoding) // virtual
 QString Channel::getChannelEncoding() // virtual
 {
 //    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
-    return "UTF-8";
+    return "utf8";
 }
 
 QString Channel::getChannelEncodingDefaultDesc()  // virtual
 {
 //    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
-    return "Unimplemented (UTF-8)";
+    return "Unimplemented (utf8)";
 }
 
 void Channel::showNicknameBox(bool show)
