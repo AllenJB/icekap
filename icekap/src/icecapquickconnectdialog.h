@@ -34,8 +34,6 @@ class IcecapQuickConnectDialog : public KDialogBase
         signals:
         void connectClicked(const QString& hostName,
             const QString& port,
-            const QString& channel,
-            const QString& nick,
             const QString& password,
             const bool& useSSL
             );
@@ -46,8 +44,8 @@ class IcecapQuickConnectDialog : public KDialogBase
     protected:
         KLineEdit*  hostNameInput;
         KLineEdit*  portInput;
-        KLineEdit*  passwordInput;
+//        KLineEdit*  passwordInput;
         KLineEdit*  nickInput;
-        QCheckBox*      sslCheckBox;
+//        QCheckBox*      sslCheckBox;
 };
 #endif

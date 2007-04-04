@@ -38,12 +38,11 @@
 #include "ignore.h"
 #include "icecapserver.h"
 #include "irccharsets.h"
-#include "linkaddressbook/addressbook.h"
 #include "konviiphelper.h"
 
 #include "query.h"
 
-namespace Konversation
+namespace Icecap
 {
     IcecapOutputFilter::IcecapOutputFilter(IcecapServer* server)
         : QObject(server)
@@ -99,7 +98,8 @@ namespace Konversation
 
     QStringList IcecapOutputFilter::splitForEncoding(const QString& inputLine, int MAX)
     {
-        QString channelCodecName=Preferences::channelEncoding(m_server->getServerGroup(), destination);
+//        QString channelCodecName=Preferences::channelEncoding(m_server->getServerGroup(), destination);
+        QString channelCodecName = "UTF-8";
 
         int sublen=0; //The encoded length since the last split
         int charLength=0; //the length of this char
@@ -122,16 +122,8 @@ namespace Konversation
         //Get the codec we're supposed to use. This must not fail. (not verified)
         QTextCodec* codec;
 
-        // I copied this bit straight out of Server::send
-        if (channelCodecName.isEmpty())
-        {
-            codec = m_server->getIdentity()->getCodec();
-        }
-        else
-        {
-            // FIXME Doesn't this just return `getIdentity()->getCodec();` if no codec set?
-            codec = Konversation::IRCCharsets::self()->codecForName(channelCodecName);
-        }
+        // FIXME Doesn't this just return `getIdentity()->getCodec();` if no codec set?
+        codec = Konversation::IRCCharsets::self()->codecForName(channelCodecName);
 
         Q_ASSERT(codec);
 
@@ -328,23 +320,6 @@ namespace Konversation
         else if(!destination.isEmpty())
         {
             BYPASS_COMMAND_PARSING:
-
-            QStringList outputList=splitForEncoding(inputLine, m_server->getPreLength("PRIVMSG", destination));
-            if (outputList.count() > 1)
-            {
-                result.output=QString();
-                result.outputList=outputList;
-                for ( QStringList::Iterator it = outputList.begin(); it != outputList.end(); ++it )
-                {
-                    result.toServerList += "PRIVMSG " + destination + " :" + *it;
-                }
-            }
-            else
-            {
-                result.output = inputLine;
-                result.toServer = "PRIVMSG " + destination + " :" + inputLine;
-            }
-
             result.type = Message;
         }
         // Eveything else goes to the server unchanged
@@ -430,12 +405,6 @@ namespace Konversation
                 // get kick reason (if any)
                 QString reason = parameter.mid(victim.length() + 1);
 
-                // if no reason given, take default reason
-                if(reason.isEmpty())
-                {
-                    reason = m_server->getIdentity()->getKickReason();
-                }
-
                 result.toServer = "KICK " + destination + ' ' + victim + " :" + reason;
             }
         }
@@ -455,14 +424,6 @@ namespace Konversation
         if(parameter.isEmpty())
         {
             // But only if we actually are in a channel
-            if(isAChannel(destination))
-            {
-                result.toServer = "PART " + destination + " :" + m_server->getIdentity()->getPartReason();
-            }
-            else
-            {
-                result = error(i18n("%1PART without parameters only works from within a channel or a query.").arg(commandChar));
-            }
         }
         else
         {
@@ -473,12 +434,6 @@ namespace Konversation
                 QString channel = parameter.left(parameter.find(" "));
                 // get part reason (if any)
                 QString reason = parameter.mid(channel.length() + 1);
-
-                // if no reason given, take default reason
-                if(reason.isEmpty())
-                {
-                    reason = m_server->getIdentity()->getPartReason();
-                }
 
                 result.toServer = "PART " + channel + " :" + reason;
             }
@@ -526,25 +481,6 @@ namespace Konversation
                 // get topic (if any)
                 QString topic=parameter.mid(channel.length()+1);
                 // if no topic given, retrieve topic
-                if(topic.isEmpty())
-                {
-                    m_server->requestTopic(channel);
-                }
-                // otherwise set topic there
-                else
-                {
-                    result.toServer = "TOPIC " + channel + " :";
-                    //If we get passed a ^A as a topic its a sign we should clear the topic.
-                    //Used to be a \n, but those get smashed by QStringList::split and readded later
-                    //Now is not the time to fight with that. FIXME
-                    //If anyone out there *can* actually set the topic to a single ^A, now they have to
-                    //specify it twice to get one.
-                    if (topic =="\x01\x01")
-                        result.toServer += '\x01';
-                    else if (topic!="\x01")
-                        result.toServer += topic;
-
-                }
             }
             // set this channel's topic
             else
@@ -569,15 +505,6 @@ namespace Konversation
 
         if (reason.isEmpty())
             reason = i18n("Gone away for now.");
-
-        if (m_server->getIdentity()->getShowAwayMessage())
-        {
-            QString message = m_server->getIdentity()->getAwayMessage();
-            emit sendToAllChannels(message.replace(QRegExp("%s",false),reason));
-        }
-
-        m_server->setAwayReason(reason);
-        result.toServer = "AWAY :" + reason;
 
         return result;
     }
@@ -607,13 +534,6 @@ namespace Konversation
     OutputFilterResult IcecapOutputFilter::parseQuit(const QString &reason)
     {
         OutputFilterResult result;
-
-        result.toServer = "QUIT :";
-        // if no reason given, take default reason
-        if(reason.isEmpty())
-            result.toServer += m_server->getIdentity()->getPartReason();
-        else
-            result.toServer += reason;
 
         return result;
     }
@@ -668,35 +588,6 @@ namespace Konversation
         }
 
         ::Query *query;
-
-        if(isQuery || output.isEmpty())
-        {
-            //if this is a /query, always open a query window.
-            //treat "/msg nick" as "/query nick"
-
-            //Note we have to be a bit careful here.
-            //We only want to create ('obtain') a new nickinfo if we have done /query
-            //or "/msg nick".  Not "/msg nick message".
-            NickInfoPtr nickInfo = m_server->obtainNickInfo(recipient);
-            query = m_server->addQuery(nickInfo, true /*we initiated*/);
-            //force focus if the user did not specify any message
-            if (output.isEmpty()) emit showView(query);
-        }
-        else
-        {
-            //We have  "/msg nick message"
-            query = m_server->getQueryByName(recipient);
-        }
-
-        if(query && !output.isEmpty())
-        {
-            if(message.startsWith(commandChar+"me"))
-                                                  //log if and only if the query open
-                query->appendAction(m_server->getNickname(), message.mid(4));
-            else
-                                                  //log if and only if the query open
-                query->appendQuery(m_server->getNickname(), output);
-        }
 
         if(output.isEmpty()) return result;       //result should be completely empty;
         //FIXME - don't do below line if query is focused
@@ -762,18 +653,6 @@ namespace Konversation
         if(nickList.count())
         {
             // Check if the user specified a channel
-            if(isAChannel(nickList[0]))
-            {
-                token = "MODE " + nickList[0];
-                // remove the first element
-                nickList.remove(nickList.begin());
-            }
-            // Add default destination if it is a channel
-            else if(isAChannel(destination))
-            {
-                token = "MODE " + destination;
-            }
-
             // Only continue if there was no error
             if(token.length())
             {
@@ -816,30 +695,6 @@ namespace Konversation
         {
             QString nick = parameter.section(' ', 0, 0, QString::SectionSkipEmpty);
             QString channel = parameter.section(' ', 1, 1, QString::SectionSkipEmpty);
-
-            if(channel.isEmpty())
-            {
-                if(isAChannel(destination))
-                {
-                    channel = destination;
-                }
-                else
-                {
-                    result = error(i18n("%1INVITE without channel name works only from within channels.").arg(commandChar));
-                }
-            }
-
-            if(!channel.isEmpty())
-            {
-                if(isAChannel(channel))
-                {
-                    result.toServer = "INVITE " + nick + ' ' + channel;
-                }
-                else
-                {
-                    result = error(i18n("%1 is not a channel.").arg(channel));
-                }
-            }
         }
 
         return result;
@@ -893,7 +748,7 @@ namespace Konversation
     OutputFilterResult IcecapOutputFilter::parseNotify(const QString& parameter)
     {
         OutputFilterResult result;
-
+/*
         QString groupName = m_server->getServerGroup();
         int serverGroupId = m_server->serverGroupSettings()->id();
 
@@ -916,7 +771,7 @@ namespace Konversation
         }
 
         // show (new) notify list to user
-        QString list = Preferences::notifyStringByGroupName(groupName) + ' ' + Konversation::Addressbook::self()->allContactsNicksForServer(m_server->getServerName(), m_server->getServerGroup()).join(" ");
+        QString list = Preferences::notifyStringByGroupName(groupName) + ' ';
 
         result.typeString = i18n("Notify");
 
@@ -926,6 +781,7 @@ namespace Konversation
             result.output = i18n("Current notify list: %1").arg(list);
 
         result.type = Program;
+*/
         return result;
     }
 
@@ -990,26 +846,6 @@ namespace Konversation
             // look for channel / ban mask
             if (parameterList.count())
             {
-                // user specified channel
-                if (isAChannel(parameterList[0]))
-                {
-                    channel = parameterList[0];
-                    parameterList.pop_front();
-                }
-                // no channel, so assume current destination as channel
-                else if (isAChannel(destination))
-                    channel = destination;
-                else
-                {
-                    // destination is no channel => error
-                    if (!kick)
-                        result = error(i18n("%1BAN without channel name works only from inside a channel.").arg(commandChar));
-                    else
-                        result = error(i18n("%1KICKBAN without channel name works only from inside a channel.").arg(commandChar));
-
-                    // no usage information after error
-                    showUsage = false;
-                }
                 // signal server to ban this user if all went fine
                 if (!channel.isEmpty())
                 {
@@ -1066,24 +902,6 @@ namespace Konversation
             QString channel;
             QString mask;
 
-            // if the user specified a channel
-            if(isAChannel(parameterList[0]))
-            {
-                // get channel
-                channel = parameterList[0];
-                // remove channel from parameter list
-                parameterList.pop_front();
-            }
-            // otherwise the current destination must be a channel
-            else if(isAChannel(destination))
-                channel = destination;
-            else
-            {
-                // destination is no channel => error
-                result = error(i18n("%1UNBAN without channel name works only from inside a channel.").arg(commandChar));
-                // no usage information after error
-                showUsage = false;
-            }
             // if all went good, signal server to unban this mask
             if(!channel.isEmpty())
             {
@@ -1281,9 +1099,12 @@ namespace Konversation
     // supports + and ! channels, I think thats broken behaviour on their part - not ours.
     bool IcecapOutputFilter::isAChannel(const QString &check)
     {
+/*
         Q_ASSERT(m_server);
                                                   // XXX if we ever see the assert, we need the ternary
         return m_server? m_server->isAChannel(check) : QString("#&").contains(check.at(0));
+*/
+        return true;
     }
 
     OutputFilterResult IcecapOutputFilter::usage(const QString& string)
@@ -1551,8 +1372,6 @@ namespace Konversation
     void IcecapOutputFilter::parseCharset(const QString& charset)
     {
         QString shortName = Konversation::IRCCharsets::self()->ambiguousNameToShortName(charset);
-        if(!shortName.isEmpty())
-            m_server->getIdentity()->setCodecName(shortName);
     }
 
     OutputFilterResult IcecapOutputFilter::parseSetKey(const QString& parameter)
@@ -1660,10 +1479,6 @@ namespace Konversation
             }
             // Parameter is either host nor IP, so request a lookup from server, which in
             // turn lets inputfilter do the job.
-            else
-            {
-                m_server->resolveUserhost(target);
-            }
         }
 
         return result;

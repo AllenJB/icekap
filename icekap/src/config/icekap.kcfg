@@ -8,7 +8,7 @@
   <include>kdialog.h</include>
   <include>kuser.h</include>
   <include>kglobalsettings.h</include>
-  <kcfgfile name="konversationrc" />
+  <kcfgfile name="icekaprc" />
 
   <group name="Appearance">
     <entry key="ShowMenuBar" type="Bool">
@@ -95,10 +95,6 @@
       <label></label>
       <whatsthis></whatsthis>
     </entry>
-<!-- quick buttons are handled outside of KConfigXT for now (Eisfuchs)
-    <entry key="QuickButtons" type="StringList" name="ButtonList">
-      <default code="true">(QStringList() &lt;&lt; "Op,/OP %u%n"&lt;&lt;"DeOp,/DEOP %u%n"&lt;&lt;"WhoIs,/WHOIS %s,%%u%n"&lt;&lt;"Version,/CTCP %s,%%u VERSION%n"&lt;&lt;"Kick,/KICK %u%n"&lt;&lt;"Kick,/KICK %u%n"&lt;&lt;"Ban,/BAN %u%n"&lt;&lt;"Part,/PART %c Leaving...%n"&lt;&lt;"Quit,/QUIT Leaving...%n")</default>
-    </entry>  -->
     <entry key="ShowModeButtons" type="Bool">
       <default>false</default>
       <label></label>
@@ -367,43 +363,6 @@
     </entry>
   </group>
   <group name="Sort Nicknames">
-<!-- done outside of KConfigXT (Eisfuchs)
-    <entry key="AdminValue" type="Int">
-      <default>1</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="OwnerValue" type="Int">
-      <default>2</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="OperatorValue" type="Int" name="OpValue">
-      <default>4</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="HalfopValue" type="Int">
-      <default>8</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="VoiceValue" type="Int">
-      <default>16</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="AwayValue" type="Int">
-      <default>32</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="NoRightsValue" type="Int">
-      <default>64</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
--->
     <entry key="SortByStatus" type="Bool">
       <default>false</default>
       <label></label>
@@ -580,102 +539,9 @@
       <whatsthis></whatsthis>
     </entry>
   </group>
-  <group name="DCC Settings">
-    <entry key="BufferSize" type="Int" name="DccBufferSize">
-      <default>8192</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="MethodToGetOwnIp" type="Int" name="DccMethodToGetOwnIp">
-      <default>1</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SpecificOwnIp" type="String" name="DccSpecificOwnIp">
-      <default>0.0.0.0</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SpecificSendPorts" type="Bool" name="DccSpecificSendPorts">
-      <default>true</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SendPortsFirst" type="Int"  name="DccSendPortsFirst">
-      <default>1026</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SendPortsLast" type="UInt" name="DccSendPortsLast">
-      <default>7000</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SpecificChatPorts" type="Bool" name="DccSpecificChatPorts">
-      <default>true</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="ChatPortsFirst" type="Int" name="DccChatPortsFirst">
-      <default>1026</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="ChatPortsLast" type="UInt" name="DccChatPortsLast">
-      <default>7000</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="AddPartner" type="Bool" name="DccAddPartner">
-      <default>false</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="CreateFolder" type="Bool" name="DccCreateFolder">
-      <default>false</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SpaceToUnderscore" type="Bool" name="DccSpaceToUnderscore">
-      <default>true</default>
-      <label></label>
-      <whatis></whatis>
-    </entry>
-    <entry key="AutoGet" type="Bool" name="DccAutoGet">
-      <default>false</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="AutoResume" type="Bool" name="DccAutoResume">
-      <default>true</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="FastSend" type="Bool" name="DccFastSend">
-      <default>true</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="SendTimeout" type="Int" name="DccSendTimeout">
-      <default>180</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="IPv4Fallback" type="Bool" name="DccIPv4Fallback">
-      <default>false</default>
-    </entry>
-    <entry key="IPv4FallbackIface" type="String" name="DccIPv4FallbackIface">
-      <default>eth0</default>
-    </entry>
-  </group>
   <group name="Path Settings">
     <entry key="LogfilePath" type="Path">
       <default code="true">KUser(KUser::UseRealUserID).homeDir()+"/logs"</default>
-      <label></label>
-      <whatsthis></whatsthis>
-    </entry>
-    <entry key="DccPath" type="Path">
-      <default code="true">KUser(KUser::UseRealUserID).homeDir()+"/dccrecv"</default>
       <label></label>
       <whatsthis></whatsthis>
     </entry>

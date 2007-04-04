@@ -19,11 +19,10 @@
   @author Gary Cramblitt
 */
 
+#include <qobject.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
 #include <ksharedptr.h>
-
-#include <kabc/addressbook.h>
 
 class IcecapServer;
 class QTimer;
@@ -33,7 +32,7 @@ class QTimer;
   It is owned by the Server object and should NOT be deleted by anything other than Server.
 
   A NickInfo is _only_ for online (or away) nicks.  Not for offline nicks.
-  Offline (but watched or in addressbook) nicks are stored in the Server object.
+  Offline (but watched) nicks are stored in the Server object.
 
 */
 class NickInfo : public QObject, public KShared
@@ -74,9 +73,6 @@ class NickInfo : public QObject, public KShared
         /// Return the Server object that owns this NickInfo object.
         IcecapServer* getServer() const;
 
-        /// Return the kabc (kaddressbook) contact for this nick
-        KABC::Addressee getAddressee() const;
-
         /** Set properties of NickInfo object. */
         void setNickname(const QString& newNickname);
         /** Set properties of NickInfo object. Ignores the request is newmask is empty.*/
@@ -115,23 +111,6 @@ class NickInfo : public QObject, public KShared
          */
         void tooltipTableData(QTextStream &tooltip) const;
 
-        /** Returns a full name for this contact. Tries to use the name out of addressbook.
-         *  If that is empty, uses the real name from whois.  If that fails, use nickname.
-         *
-         *  @return A string to show the user for the name of this contact
-         */
-        QString getBestAddresseeName();
-
-        /** Open this contact up in a "edit addresee association" window
-         */
-        void showLinkAddressbookUI();
-        /** Edit the contact in kaddressbook
-         */
-        bool editAddressee() const;
-        /** Run kmail for this contact
-         */
-        bool sendEmail() const;
-
         void setPrintedOnline(bool printed);
         bool getPrintedOnline();
 
@@ -154,7 +133,6 @@ class NickInfo : public QObject, public KShared
         QString m_netServer;
         QString m_netServerInfo;
         QDateTime m_onlineSince;
-        KABC::Addressee m_addressee;
         /** Whether this user is identified with nickserv.
          *  Found only by doing /whois nick
          */
@@ -167,7 +145,6 @@ class NickInfo : public QObject, public KShared
         uint m_nickColor;
 
     private slots:
-        void refreshAddressee();
         /** emits NickInfoChanged for this object, and calls the server emitNickInfoChanged.
          *  Called when the m_changedTimer activates.
          */

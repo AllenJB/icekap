@@ -4,6 +4,7 @@
 	<MenuBar>
 		<Menu name="file">
 			<Action name="icecap_quick_connect_dialog" />
+<!--
 			<Separator />
 			<Action name="open_server_list" />
 			<Action name="quick_connect_dialog" />
@@ -14,6 +15,7 @@
 			<Action name="join_channel" />
 			<Separator />
 			<Action name="toggle_away" />
+-->
 		</Menu>
 		<Menu name="edit">
 			<Action name="clear_window" />

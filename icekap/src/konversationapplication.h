@@ -20,14 +20,12 @@
 
 #include "preferences.h"
 #include "osd.h"
-#include "konvdcop.h"
 #include "identity.h"
 #include "nickinfo.h"
 
 class QCString;
 
 class KonversationMainWindow;
-class KonvDCOP;
 class IcecapServer;
 class QuickConnectDialog;
 class IcecapQuickConnectDialog;
@@ -143,8 +141,6 @@ class KonversationApplication : public KUniqueApplication
             );
         void quickConnectToIcecapServer(const QString& hostName,
             const QString& port = "1027",
-            const QString& channel="",
-            const QString& nick = Preferences::nickname(0),
             const QString& password="",
             const bool& useSSL=false
             );
@@ -173,8 +169,8 @@ class KonversationApplication : public KUniqueApplication
     private:
         QPtrList<IcecapServer> serverList;
         QStringList urlList;
-        KonvDCOP* dcopObject;
-        KonvIdentDCOP* identDCOP;
+//        KonvDCOP* dcopObject;
+//        KonvIdentDCOP* identDCOP;
         KonversationMainWindow* mainWindow;
         Konversation::Sound* m_sound;
         QuickConnectDialog* quickConnectDialog;

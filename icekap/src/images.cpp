@@ -17,6 +17,7 @@
 #include <qbitmap.h>
 #include <qpainter.h>
 #include <qstringlist.h>
+#include <qimage.h>
 
 #include <kdebug.h>
 #include <kiconloader.h>

@@ -157,7 +157,7 @@ void Query::queryTextEntered()
     }
     else if(line.lower()==Preferences::commandChar()+"part")
     {
-        m_server->closeQuery(getName());
+//        m_server->closeQuery(getName());
     }
     else if(line.length())
     {
@@ -190,7 +190,7 @@ void Query::sendQueryText(const QString& sendLine)
     // replace aliases and wildcards
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
-        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), getName(), QString::null, QString::null, QString::null);
+//        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), getName(), QString::null, QString::null, QString::null);
     }
 
     // Send all strings, one after another
@@ -200,11 +200,12 @@ void Query::sendQueryText(const QString& sendLine)
         QString output(outList[index]);
 
         // encoding stuff is done in Server()
-        Konversation::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, getName());
+//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, getName());
 
+/*
         if(!result.output.isEmpty())
         {
-            if(result.type == Konversation::Action) appendAction(m_server->getNickname(), result.output);
+            if(result.type == Icecap::Action) appendAction(m_server->getNickname(), result.output);
             else if(result.type == Konversation::Command) appendCommandMessage(result.typeString, result.output);
             else if(result.type == Konversation::Program) appendServerMessage(result.typeString, result.output);
             else if(!result.typeString.isEmpty()) appendQuery(result.typeString, result.output);
@@ -215,7 +216,7 @@ void Query::sendQueryText(const QString& sendLine)
             Q_ASSERT(result.type==Konversation::Message);
             for ( QStringList::Iterator it = result.outputList.begin(); it != result.outputList.end(); ++it )
             {
-                append(m_server->getNickname(), *it);
+//                append(m_server->getNickname(), *it);
             }
         }
 
@@ -227,6 +228,7 @@ void Query::sendQueryText(const QString& sendLine)
         {
             m_server->queue(result.toServer);
         }
+*/
     } // for
 }
 
@@ -364,10 +366,6 @@ void Query::popup(int id)
             }
             break;
         }
-        case Konversation::AddNotify:
-            if (!Preferences::isNotify(m_server->serverGroupSettings()->id(), name))
-                Preferences::addNotify(m_server->serverGroupSettings()->id(),name);
-            break;
         case Konversation::DccSend:
             sendQueryText(Preferences::commandChar()+"DCC SEND "+name);
             break;
@@ -380,9 +378,6 @@ void Query::popup(int id)
             sendQueryText(Preferences::commandChar()+"CTCP "+name+" PING");
             break;
 
-        case Konversation::Topic:
-            m_server->requestTopic(getTextView()->currentChannel());
-            break;
         case Konversation::Names:
             m_server->queue("NAMES " + getTextView()->currentChannel());
             break;
@@ -416,15 +411,17 @@ void Query::setNickInfo(const NickInfoPtr & nickInfo)
 
     m_nickInfo = nickInfo;
     Q_ASSERT(m_nickInfo); if(!m_nickInfo) return;
-    setName(m_nickInfo->getNickname());
-    connect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
+//    setName(m_nickInfo->getNickname());
+//    connect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
     nickInfoChanged();
 }
 
 void Query::nickInfoChanged()
 {
+/*
     if(m_nickInfo)
     {
+
         setName(m_nickInfo->getNickname());
         QString text = m_nickInfo->getBestAddresseeName();
         if(!m_nickInfo->getHostmask().isEmpty() && !text.isEmpty())
@@ -434,42 +431,8 @@ void Query::nickInfoChanged()
             text += " (" + KStringHandler::rsqueeze(m_nickInfo->getAwayMessage(),100) + ") ";
         queryHostmask->setText(Konversation::removeIrcMarkup(text));
 
-        KABC::Picture pic = m_nickInfo->getAddressee().photo();
-        if(pic.isIntern())
-        {
-            QPixmap qpixmap(pic.data().scaleHeight(queryHostmask->height()));
-            if(!qpixmap.isNull())
-            {
-                addresseeimage->setPixmap(qpixmap);
-                addresseeimage->show();
-            }
-            else
-            {
-                addresseeimage->hide();
-            }
-        }
-        else
-        {
-            addresseeimage->hide();
-        }
-        KABC::Picture logo = m_nickInfo->getAddressee().logo();
-        if(logo.isIntern())
-        {
-            QPixmap qpixmap(logo.data().scaleHeight(queryHostmask->height()));
-            if(!qpixmap.isNull())
-            {
-                addresseelogoimage->setPixmap(qpixmap);
-                addresseelogoimage->show();
-            }
-            else
-            {
-                addresseelogoimage->hide();
-            }
-        }
-        else
-        {
-            addresseelogoimage->hide();
-        }
+        addresseeimage->hide();
+        addresseelogoimage->hide();
 
         QString strTooltip;
         QTextStream tooltip( &strTooltip, IO_WriteOnly );
@@ -494,6 +457,7 @@ void Query::nickInfoChanged()
 
     emit updateQueryChrome(this,getName());
     emitUpdateInfo();
+*/
 }
 
 NickInfoPtr Query::getNickInfo()
@@ -514,17 +478,19 @@ void Query::appendInputText(const QString& s)
                                                   // virtual
 void Query::setChannelEncoding(const QString& encoding)
 {
-    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
+//    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
 }
 
 QString Query::getChannelEncoding()               // virtual
 {
-    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
+//    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
+	return "UTF-8";
 }
 
 QString Query::getChannelEncodingDefaultDesc()    // virtual
 {
-    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+//    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+	return "Unimplemented (UTF-8)";
 }
 
 bool Query::closeYourself()
@@ -538,7 +504,7 @@ bool Query::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
-        m_server->removeQuery(this);
+//        m_server->removeQuery(this);
         return true;
     }
 
@@ -568,6 +534,7 @@ void Query::serverOnline(bool online)
 
 void Query::emitUpdateInfo()
 {
+/*
     QString info;
     if(m_nickInfo->loweredNickname() == m_server->loweredNickname())
         info = i18n("Talking to yourself");
@@ -577,6 +544,7 @@ void Query::emitUpdateInfo()
         info = getName();
 
     emit updateInfo(info);
+*/
 }
 
 // show quit message of nick if we see it

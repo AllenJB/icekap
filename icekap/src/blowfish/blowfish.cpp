@@ -9,6 +9,7 @@
   Copyright (C) 2005 İsmail Dönmez <ismail@kde.org>
 */
 
+#include <stdlib.h>
 #include <qcstring.h>
 #include <qstringlist.h>
 
@@ -48,9 +49,6 @@ namespace Konversation
             QCString backup = cipher.mid(0,index+1);
             QCString tmp = cipher.mid(index+1);
             char* tmp2;
-
-            if(server->identifyMsgEnabled()) // Workaround braindead Freenode prefixing messages with +
-                tmp = tmp.mid(1);
 
             if( !(tmp.mid(0,4) == "+OK ") && !(tmp.mid(0,5) == "mcps ") )
                 return;

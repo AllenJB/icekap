@@ -92,19 +92,6 @@ void NickListViewItem::refresh()
 
     setPixmap( 0, icon );
 
-    KABC::Picture pic = nickInfo->getAddressee().photo();
-
-    if(!pic.isIntern())
-    {
-        pic = nickInfo->getAddressee().logo();
-    }
-
-    if(pic.isIntern())
-    {
-        QPixmap qpixmap(pic.data().scaleHeight(m_height));
-        setPixmap(1,qpixmap);
-    }
-
     QString newtext1 = calculateLabel1();
     if(newtext1 != text(1))
     {
@@ -125,13 +112,8 @@ void NickListViewItem::refresh()
 QString NickListViewItem::calculateLabel1()
 {
     NickInfoPtr nickinfo = nick->getNickInfo();
-    KABC::Addressee addressee = nickinfo->getAddressee();
 
-    if(!addressee.realName().isEmpty())           //if no addressee, realName will be empty
-    {
-        return nick->getNickInfo()->getNickname() + " (" + addressee.realName() + ')';
-    }
-    else if(Preferences::showRealNames() && !nick->getNickInfo()->getRealName().isEmpty())
+    if(Preferences::showRealNames() && !nick->getNickInfo()->getRealName().isEmpty())
     {
         return nick->getNickInfo()->getNickname() + " (" + nick->getNickInfo()->getRealName() + ')';
     }

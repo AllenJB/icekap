@@ -54,7 +54,7 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     nickInput = new KLineEdit(Preferences::nickname(0), page);
     QWhatsThis::add(nickInput, nickWT);
     nickLabel->setBuddy(nickInput);
-
+/*
     QLabel* passwordLabel = new QLabel(i18n("P&assword:"), page);
     QString passwordWT = i18n("If the Icecap server requires a password, enter it here (most servers do not require a password.)");
     QWhatsThis::add(passwordLabel, passwordWT);
@@ -64,7 +64,7 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
 
     sslCheckBox = new QCheckBox(page, "sslCheckBox");
     sslCheckBox->setText(i18n("&Use SSL"));
-
+*/
     layout->addWidget(hostNameLabel, 0, 0);
     layout->addWidget(hostNameInput, 0, 1);
     layout->addWidget(portLabel, 0, 2);
@@ -72,11 +72,12 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
 
     layout->addWidget(nickLabel, 1, 0);
     layout->addWidget(nickInput, 1, 1);
+/*
     layout->addWidget(passwordLabel, 1, 2);
     layout->addWidget(passwordInput, 1, 3);
 
     layout->addWidget(sslCheckBox, 2, 0);
-
+*/
     hostNameInput->setFocus();
 
     setButtonOK(KGuiItem(i18n("C&onnect"),"connect_creating",i18n("Connect to the Icecap server")));
@@ -94,10 +95,8 @@ void IcecapQuickConnectDialog::slotOk()
     {
         emit connectClicked(hostNameInput->text().stripWhiteSpace(),
             portInput->text(),
-            "",
-            nickInput->text(),
-            passwordInput->text(),
-            sslCheckBox->isChecked() ? true : false);
+            "", // passwords not implemented
+            false);
         delayedDestruct();
     }
 }

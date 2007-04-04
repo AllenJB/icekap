@@ -11,6 +11,7 @@
   email:     eisfuchs@tigress.com
 */
 
+#include <kdebug.h>
 #include <klocale.h>
 
 #include "channel.h"
@@ -122,7 +123,7 @@ bool ChannelNick::setMode(bool admin,bool owner,bool op,bool halfop,bool voice)
     isop=op;
     ishalfop=halfop;
     hasvoice=voice;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -134,7 +135,7 @@ bool ChannelNick::setVoice(bool state)
 {
     if(hasvoice==state) return false;
     hasvoice=state;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -143,7 +144,7 @@ bool ChannelNick::setOwner(bool state)
 {
     if(isowner==state) return false;
     isowner=state;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -152,7 +153,7 @@ bool ChannelNick::setAdmin(bool state)
 {
     if(isadmin==state) return false;
     isadmin=state;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -161,7 +162,7 @@ bool ChannelNick::setHalfOp(bool state)
 {
     if(ishalfop==state) return false;
     ishalfop=state;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -170,7 +171,7 @@ bool ChannelNick::setOp(bool state)
 {
     if(isop==state) return false;
     isop=state;
-    nickInfo->getServer()->emitChannelNickChanged(this);
+//    nickInfo->getServer()->emitChannelNickChanged(this);
     emit channelNickChanged();
     return true;
 }
@@ -196,7 +197,6 @@ QString ChannelNick::getHostmask() const
 QString ChannelNick::tooltip()
 {
     //  if(addressee.isEmpty()) return QString();
-    KABC::Addressee addressee = nickInfo->getAddressee();
     QString strTooltip;
     QTextStream tooltip( &strTooltip, IO_WriteOnly );
 

@@ -26,12 +26,12 @@ namespace Konversation
 {
 
     JoinChannelDialog::JoinChannelDialog(IcecapServer* server, QWidget *parent, const char *name)
-        : KDialogBase(parent, name, true, i18n("Join Channel on %1").arg(server->getServerGroup()), Ok|Cancel, Ok)
+        : KDialogBase(parent, name, true, i18n("Join Channel on *unimplemented*"), Ok|Cancel, Ok)
     {
         m_server = server;
         m_widget = new JoinChannelUI(this);
         setMainWidget(m_widget);
-
+/*
         m_widget->serverLbl->setText(server->getServerGroup());
 
         ChannelList history = server->serverGroupSettings()->channelHistory();
@@ -62,7 +62,7 @@ namespace Konversation
                 m_widget->channelCombo->addToHistory((*it).name());
             }
         }
-
+*/
         m_widget->channelCombo->setCurrentText("");
     }
 
@@ -73,12 +73,12 @@ namespace Konversation
     QString JoinChannelDialog::channel() const
     {
         QString channel = m_widget->channelCombo->currentText();
-
+/*
         if(!m_server->isAChannel(channel))
         {
             channel = '#' + channel;
         }
-
+*/
         return channel;
     }
 
@@ -90,7 +90,7 @@ namespace Konversation
     void JoinChannelDialog::slotOk()
     {
         // If the channel already exist in the history only the password will be updated.
-        m_server->serverGroupSettings()->appendChannelHistory(ChannelSettings(channel(), password()));
+//        m_server->serverGroupSettings()->appendChannelHistory(ChannelSettings(channel(), password()));
 
         accept();
     }
