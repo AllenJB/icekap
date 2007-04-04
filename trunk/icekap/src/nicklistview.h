@@ -17,7 +17,7 @@
 
 #include <klistview.h>
 #include "channel.h"
-#include "nicklisttooltip.h"
+// #include "nicklisttooltip.h"
 #include "images.h"
 #include "common.h"
 
@@ -63,13 +63,11 @@ class NickListView : public KListView
     protected:
         void contextMenuEvent(QContextMenuEvent* ce);
         virtual bool acceptDrag (QDropEvent* event) const;
-        void insertAssociationSubMenu();
         void updateActions();
-        Konversation::KonversationNickListViewToolTip *m_tooltip;
+//        Konversation::KonversationNickListViewToolTip *m_tooltip;
         QPopupMenu* popup;
         QPopupMenu* modes;
         QPopupMenu* kickban;
-        QPopupMenu* addressbook;
         Channel *channel;
         QTimer *m_resortTimer;
 

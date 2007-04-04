@@ -132,7 +132,7 @@ namespace Konversation
             {
                 QString channel(link);
                 channel.replace("##","#");
-                m_server->sendJoinCommand(channel);
+//                m_server->sendJoinCommand(channel);
             }
             // Always use KDE default mailer.
             else if (!Preferences::useCustomBrowser() || link.lower().startsWith("mailto:"))

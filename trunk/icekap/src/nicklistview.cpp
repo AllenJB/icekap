@@ -26,7 +26,6 @@
 #include "konversationapplication.h"
 #include "nicklistview.h"
 #include "nicklistviewitem.h"
-#include "linkaddressbook/addressbook.h"
 
 NickListView::NickListView(QWidget* parent, Channel *chan) :
 KListView(parent)
@@ -37,7 +36,6 @@ KListView(parent)
     popup=new KPopupMenu(this,"nicklist_context_menu");
     modes=new KPopupMenu(this,"nicklist_modes_context_submenu");
     kickban=new KPopupMenu(this,"nicklist_kick_ban_context_submenu");
-    addressbook= new KPopupMenu(this,"nicklist_addressbook_context_submenu");
     setAcceptDrops(true);
     setDropHighlighter(true);
     setDropVisualizer(false);
@@ -100,15 +98,11 @@ KListView(parent)
 
         popup->insertSeparator();
 
-        if (addressbook)
-            popup->insertItem(i18n("Addressbook Associations"), addressbook, Konversation::AddressbookSub);
-
         popup->insertItem(i18n("Add to Watched Nicks"), Konversation::AddNotify);
 
         connect (popup, SIGNAL(activated(int)), this, SIGNAL(popupCommand(int)));
         connect (modes, SIGNAL(activated(int)), this, SIGNAL(popupCommand(int)));
         connect (kickban, SIGNAL(activated(int)), this, SIGNAL(popupCommand(int)));
-        connect (addressbook, SIGNAL(activated(int)), this, SIGNAL(popupCommand(int)));
 
     }
     else
@@ -122,7 +116,7 @@ KListView(parent)
 
     // We have our own tooltips, don't use the default QListView ones
     setShowToolTips(false);
-    m_tooltip = new Konversation::KonversationNickListViewToolTip(viewport(), this);
+//    m_tooltip = new Konversation::KonversationNickListViewToolTip(viewport(), this);
 
     m_resortTimer = new QTimer(this);
     connect(m_resortTimer, SIGNAL(timeout()), SLOT(resort()));
@@ -163,7 +157,7 @@ void NickListView::setWhatsThis()
             "<tr><th><img src=\"normalaway\"></th><td>This indicates that this person is currently away.</td></tr>"
             "</table><p>"
             "The meaning of admin, owner and halfop varies between different IRC servers.<p>"
-            "Hovering over any nick shows their current status, as well as any information in the addressbook for this person.  See the Konversation Handbook for more information."
+            "Hovering over any nick shows their current status.  See the Icekap Handbook for more information."
             "</qt>"
             ));
     }
@@ -202,7 +196,6 @@ void NickListView::contextMenuEvent(QContextMenuEvent* ce)
 
     if (selectedItems().count())
     {
-        insertAssociationSubMenu();
         updateActions();
         popup->popup(ce->globalPos());
     }
@@ -214,7 +207,8 @@ void NickListView::updateActions()
     int unignoreCounter = 0;
     int notifyCounter = 0;
 
-    int serverGroupId = channel->getServer()->serverGroupSettings()->id();
+//    int serverGroupId = channel->getServer()->serverGroupSettings()->id();
+	int serverGroupId = 0;
 
     ChannelNickList nickList=channel->getSelectedChannelNicks();
     ChannelNickList::ConstIterator it;
@@ -244,59 +238,6 @@ void NickListView::updateActions()
         popup->setItemEnabled(Konversation::AddNotify, false);
     else
         popup->setItemEnabled(Konversation::AddNotify, true);
-}
-
-void NickListView::insertAssociationSubMenu()
-{
-
-    bool existingAssociation = false;
-    bool noAssociation = false;
-    bool emailAddress = false;
-
-    addressbook->clear();
-
-    ChannelNickList nickList=channel->getSelectedChannelNicks();
-    for(ChannelNickList::ConstIterator it=nickList.begin();it!=nickList.end();++it)
-    {
-        KABC::Addressee addr = (*it)->getNickInfo()->getAddressee();
-        if(addr.isEmpty())
-        {
-            noAssociation=true;
-            if(existingAssociation && emailAddress) break;
-        }
-        else
-        {
-            if(!emailAddress && !addr.preferredEmail().isEmpty())
-                emailAddress = true;
-            existingAssociation=true;
-            if(noAssociation && emailAddress) break;
-        }
-    }
-
-    if(!noAssociation && existingAssociation)
-    {
-        addressbook->insertItem(SmallIcon("contents"), i18n("Edit Contact..."), Konversation::AddressbookEdit);
-        addressbook->insertSeparator();
-    }
-
-    if(noAssociation && existingAssociation)
-        addressbook->insertItem(i18n("Choose/Change Associations..."), Konversation::AddressbookChange);
-    else if(noAssociation)
-        addressbook->insertItem(i18n("Choose Contact..."), Konversation::AddressbookChange);
-    else
-        addressbook->insertItem(i18n("Change Association..."), Konversation::AddressbookChange);
-
-    if(noAssociation && !existingAssociation)
-        addressbook->insertItem(i18n("Create New Contact..."), Konversation::AddressbookNew);
-
-    if(existingAssociation)
-        addressbook->insertItem(SmallIcon("editdelete"), i18n("Delete Association"), Konversation::AddressbookDelete);
-
-    if(!emailAddress)
-        popup->setItemEnabled(Konversation::SendEmail, false);
-    else
-        popup->setItemEnabled(Konversation::SendEmail, true);
-
 }
 
 void NickListView::setSorting(int column, bool ascending)

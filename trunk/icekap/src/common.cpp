@@ -10,6 +10,7 @@
   email:     psn@linux.se
 */
 
+#include <qimage.h>
 #include <qcstring.h>
 #include <qstring.h>
 #include <qregexp.h>

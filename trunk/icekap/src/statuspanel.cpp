@@ -100,10 +100,12 @@ void StatusPanel::sendStatusText(const QString& sendLine)
     // create a work copy
     QString outputAll(sendLine);
     // replace aliases and wildcards
+/*
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
         outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
     }
+*/
 
     // Send all strings, one after another
     QStringList outList=QStringList::split('\n',outputAll);
@@ -111,14 +113,16 @@ void StatusPanel::sendStatusText(const QString& sendLine)
     {
         QString output(outList[index]);
 
+/*
         // encoding stuff is done in Server()
-        Konversation::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, QString::null);
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, QString::null);
 
         if(!result.output.isEmpty())
         {
             appendServerMessage(result.typeString, result.output);
         }
         m_server->queue(result.toServer);
+*/
     } // for
 }
 
@@ -208,12 +212,14 @@ void StatusPanel::setName(const QString& newName)
 
 void StatusPanel::updateName()
 {
+/*
     if (getServer()->serverGroupSettings())
     {
         QString newName = getServer()->serverGroupSettings()->name();
         setName(newName);
         setLogfileName(newName.lower());
     }
+*/
 }
 
 void StatusPanel::sendFileMenu()
@@ -256,7 +262,7 @@ bool StatusPanel::searchView()       { return true; }
 
 void StatusPanel::setNotificationsEnabled(bool enable)
 {
-    m_server->serverGroupSettings()->setNotificationsEnabled(enable);
+//    m_server->serverGroupSettings()->setNotificationsEnabled(enable);
     m_notificationsEnabled = enable;
 }
 
@@ -283,7 +289,7 @@ bool StatusPanel::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
-        m_server->serverGroupSettings()->setNotificationsEnabled(notificationsEnabled());
+//        m_server->serverGroupSettings()->setNotificationsEnabled(notificationsEnabled());
         m_server->quitServer();
         //Why are these separate?  why would deleting the server not quit it? FIXME
         delete m_server;
@@ -297,7 +303,7 @@ bool StatusPanel::closeYourself()
 void StatusPanel::nicknameComboboxChanged()
 {
     QString newNick=nicknameCombobox->currentText();
-    oldNick=m_server->getNickname();
+//    oldNick=m_server->getNickname();
     if(oldNick!=newNick)
     {
       nicknameCombobox->setCurrentText(oldNick);
@@ -314,7 +320,8 @@ void StatusPanel::changeNickname(const QString& newNickname)
 
 void StatusPanel::emitUpdateInfo()
 {
-    QString info = m_server->getServerGroup();
+//    QString info = m_server->getServerGroup();
+	QString info = "unimplemented";
 
     emit updateInfo(info);
 }
@@ -327,18 +334,20 @@ void StatusPanel::appendInputText(const QString& text)
                                                   // virtual
 void StatusPanel::setChannelEncoding(const QString& encoding)
 {
-    Preferences::setChannelEncoding(m_server->getServerGroup(), ":server", encoding);
+//    Preferences::setChannelEncoding(m_server->getServerGroup(), ":server", encoding);
 }
 
 QString StatusPanel::getChannelEncoding()         // virtual
 {
-    return Preferences::channelEncoding(m_server->getServerGroup(), ":server");
+//    return Preferences::channelEncoding(m_server->getServerGroup(), ":server");
+	return "UTF-8";
 }
 
                                                   // virtual
 QString StatusPanel::getChannelEncodingDefaultDesc()
 {
-    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+//    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+	return "Unimplemented (UTF-8)";
 }
 
 //Used to disable functions when not connected

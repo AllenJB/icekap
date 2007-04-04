@@ -30,7 +30,7 @@
 class IcecapServer;
 class ChatWindow;
 
-namespace Konversation
+namespace Icecap
 {
 
     typedef enum MessageType

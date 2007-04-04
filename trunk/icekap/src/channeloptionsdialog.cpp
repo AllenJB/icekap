@@ -208,6 +208,7 @@ namespace Konversation
 
     void ChannelOptionsDialog::refreshAllowedChannelModes()
     {
+/*
         QString modeString = m_channel->getServer()->allowedChannelModes();
         // These modes are handled in a special way: ntimslkbeI
         modeString.remove('t');
@@ -228,6 +229,7 @@ namespace Konversation
         {
             new QCheckListItem(m_widget->otherModesList, QString(modeString[i]), QCheckListItem::CheckBox);
         }
+*/
     }
 
     void ChannelOptionsDialog::refreshModes()
@@ -397,7 +399,7 @@ namespace Konversation
         {
             if (!m_NewBan->text(0).isEmpty())
             {
-                m_channel->getServer()->requestBan(QStringList(m_NewBan->text(0)), m_channel->getName(), QString::null);
+//                m_channel->getServer()->requestBan(QStringList(m_NewBan->text(0)), m_channel->getName(), QString::null);
             }
 
             // We will delete the item and let the addBan slot handle
@@ -414,11 +416,11 @@ namespace Konversation
 
         if (new_edited->getOldValue() != new_edited->text(0))
         {
-            m_channel->getServer()->requestUnban(new_edited->getOldValue(), m_channel->getName());
+//            m_channel->getServer()->requestUnban(new_edited->getOldValue(), m_channel->getName());
 
             if (!new_edited->text(0).isEmpty())
             {
-                m_channel->getServer()->requestBan(QStringList(new_edited->text(0)), m_channel->getName(), QString::null);
+//                m_channel->getServer()->requestBan(QStringList(new_edited->text(0)), m_channel->getName(), QString::null);
             }
 
             // We delete the existing item because it's possible the server may
@@ -440,7 +442,7 @@ namespace Konversation
     {
         if (m_widget->banList->currentItem())
         {
-            m_channel->getServer()->requestUnban(m_widget->banList->currentItem()->text(0), m_channel->getName());
+//            m_channel->getServer()->requestUnban(m_widget->banList->currentItem()->text(0), m_channel->getName());
         }
     }
 

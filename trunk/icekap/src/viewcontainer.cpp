@@ -39,7 +39,7 @@
 #include "query.h"
 #include "rawlog.h"
 #include "channellistpanel.h"
-#include "nicksonline.h"
+// #include "nicksonline.h"
 #include "insertchardialog.h"
 #include "irccolorchooser.h"
 #include "joinchanneldialog.h"
@@ -575,11 +575,13 @@ void ViewContainer::updateFrontView()
         {
             if (view->getServer())
             {
+/*
                 QString name = view->getServer()->getServerGroup();
                 name = name.replace('&', "&&");
                 channelListAction->setEnabled(true);
                 channelListAction->setChecked(m_frontServer->getChannelListPanel());
                 channelListAction->setText(i18n("Channel &List for %1").arg(name));
+*/
             }
             else
             {
@@ -728,8 +730,10 @@ void ViewContainer::updateViews()
         {
             if (view->getType()==ChatWindow::Status)
             {
+/*
                 if (view->getServer()->serverGroupSettings())
                     label = view->getServer()->serverGroupSettings()->name();
+*/
 
                 if (!label.isEmpty() && m_tabWidget->tabLabel(view) != label)
                 {
@@ -758,8 +762,10 @@ void ViewContainer::updateViews()
         {
             if (view->getType()==ChatWindow::Status)
             {
+/*
                 if (view->getServer()->serverGroupSettings())
                     label = view->getServer()->serverGroupSettings()->name();
+*/
 
                 if (!label.isEmpty() && m_tabWidget->tabLabel(view) != label)
                 {
@@ -1293,7 +1299,7 @@ void ViewContainer::switchView(QWidget* newView)
     if (m_frontServer)
     {
         updateStatusBarSSLLabel(m_frontServer);
-        updateStatusBarLagLabel(m_frontServer, m_frontServer->getLag());
+//        updateStatusBarLagLabel(m_frontServer, m_frontServer->getLag());
     }
 
     emit clearStatusBarTempText();
@@ -1528,7 +1534,8 @@ void ViewContainer::updateViewEncoding(ChatWindow* view)
 
                 if(m_frontServer)
                 {
-                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg(m_frontServer->getIdentity()->getCodecName()));
+//                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg(m_frontServer->getIdentity()->getCodecName()));
+                    codecAction->changeItem(0, i18n("Default encoding", "Default ( %1 )").arg("UTF-8"));
                 }
 
                 if(encoding.isEmpty())
@@ -1634,6 +1641,7 @@ QString ViewContainer::currentViewTitle()
         }
         else
         {
+/*
             QString serverGroup = m_frontServer->getServerGroup();
             if (!serverGroup.isEmpty())
             {
@@ -1643,6 +1651,8 @@ QString ViewContainer::currentViewTitle()
             {
                 return m_frontServer->getServerName();
             }
+*/
+                return m_frontServer->getServerName();
         }
     }
     else
@@ -1665,6 +1675,7 @@ QString ViewContainer::currentViewURL(bool passNetwork)
         if (m_frontView->getType() == ChatWindow::Channel)
             channel = m_frontView->getName();
 
+/*
         if (passNetwork)
             server = m_frontServer->getServerGroup();
         else
@@ -1672,6 +1683,7 @@ QString ViewContainer::currentViewURL(bool passNetwork)
             server = m_frontServer->getServerName();
             port = ':'+QString::number(m_frontServer->getPort());
         }
+*/
 
         if (server.contains(':')) // IPv6
             server = '['+server+']';
@@ -1898,11 +1910,12 @@ StatusPanel* ViewContainer::addStatusView(IcecapServer* server)
 
     // first set up internal data ...
     statusView->setServer(server);
-    statusView->setIdentity(server->getIdentity());
-    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
+//    statusView->setIdentity(server->getIdentity());
+//    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
 
     // Get group name for tab if available
-    QString label = server->getServerGroup();
+//    QString label = server->getServerGroup();
+	QString label = "";
     if (label.isEmpty()) label = server->getServerName();
     statusView->setName(label);
 
@@ -1928,7 +1941,7 @@ RawLog* ViewContainer::addRawLog(IcecapServer* server)
     RawLog* rawLog=new RawLog(m_tabWidget);
     rawLog->setServer(server);
     rawLog->setLog(false);
-    rawLog->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
+//    rawLog->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
     addView(rawLog, i18n("Raw Log"));
 
     connect(rawLog, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
@@ -1990,8 +2003,8 @@ void ViewContainer::showJoinChannelDialog()
 
     Konversation::JoinChannelDialog dlg(server, m_window);
 
-    if (dlg.exec() == QDialog::Accepted)
-        server->sendJoinCommand(dlg.channel(), dlg.password());
+//    if (dlg.exec() == QDialog::Accepted)
+//        server->sendJoinCommand(dlg.channel(), dlg.password());
 }
 
 void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State state)
@@ -2199,6 +2212,7 @@ void ViewContainer::openChannelList(const QString& filter, bool getList)
 
 void ViewContainer::openNicksOnlinePanel()
 {
+/*
     if (!m_nicksOnlinePanel)
     {
         m_nicksOnlinePanel=new NicksOnline(m_window);
@@ -2214,17 +2228,19 @@ void ViewContainer::openNicksOnlinePanel()
         closeNicksOnlinePanel();
         (dynamic_cast<KToggleAction*>(actionCollection()->action("open_nicksonline_window")))->setChecked(false);
     }
-
+*/
 }
 
 void ViewContainer::closeNicksOnlinePanel()
 {
+/*
     if(m_nicksOnlinePanel)
     {
         delete m_nicksOnlinePanel;
         m_nicksOnlinePanel = 0;
     }
     (dynamic_cast<KToggleAction*>(actionCollection()->action("open_nicksonline_window")))->setChecked(false);
+*/
 }
 
 #include "viewcontainer.moc"

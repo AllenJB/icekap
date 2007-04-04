@@ -16,10 +16,8 @@
 
 #include "nicklistviewitem.h"
 #include "nick.h"
-#include "addressbook.h"
 #include <klocale.h>
 #include <qtextstream.h>
-#include <kabc/phonenumber.h>
 
 Nick::Nick(KListView *listView,
 const ChannelNickPtr& channelnick)

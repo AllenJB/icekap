@@ -478,10 +478,11 @@ void ChannelListPanel::updateUsersChannels()
     emit updateNumUsers(i18n("Non-unique users: %1 (%2 shown)").arg(getNumUsers()).arg(getVisibleUsers()));
 }
 
+// TODO: Fix (by re-implementing closeChannelListPanel) or remove this
 bool ChannelListPanel::closeYourself()
 {
     // make the server delete us so server can reset the pointer to us
-    m_server->closeChannelListPanel();
+//    m_server->closeChannelListPanel();
     return true;
 }
 
@@ -575,7 +576,8 @@ void ChannelListPanel::serverOnline(bool online)
 void ChannelListPanel::emitUpdateInfo()
 {
     QString info;
-    info = i18n("Channel List for %1").arg(m_server->getServerGroup());
+//    info = i18n("Channel List for %1").arg(m_server->getServerGroup());
+    info = i18n("Channel List");
     emit updateInfo(info);
 }
 

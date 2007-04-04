@@ -35,15 +35,12 @@
 #include <kstandarddirs.h>
 #include <dcopclient.h>
 #include <scriptmanager.h>
-#include <kabc/addressbook.h>
-#include <kabc/errorhandler.h>
 
 #include <config.h>
 #ifdef  USE_KNOTIFY
 #include <knotifydialog.h>
 #endif
 
-#include "linkaddressbook/addressbook.h"
 #include "konversationmainwindow.h"
 #include "konvisettingsdialog.h"
 #include "viewcontainer.h"
@@ -302,12 +299,6 @@ KonversationMainWindow::KonversationMainWindow() : KMainWindow(0,"main_window", 
     // Bookmarks
     m_bookmarkHandler = new KonviBookmarkHandler(this);
     connect(m_bookmarkHandler,SIGNAL(openURL(const QString&,const QString&)),this,SLOT(openURL(const QString&,const QString&)));
-
-    // set up KABC with a nice gui error dialog
-    KABC::GuiErrorHandler *m_guiErrorHandler = new KABC::GuiErrorHandler(this);
-    kapp->dcopClient()->setAcceptCalls( false );
-    Konversation::Addressbook::self()->getAddressBook()->setErrorHandler(m_guiErrorHandler);
-    kapp->dcopClient()->setAcceptCalls( true );
 
     if (Preferences::useNotify() && Preferences::openWatchedNicksAtStartup())
         m_viewContainer->openNicksOnlinePanel();
@@ -582,11 +573,12 @@ void KonversationMainWindow::openNotifications()
     #endif
 }
 
+// TODO: Fix (as in unbreak by implementing notifyAction or remove this
 void KonversationMainWindow::notifyAction(const QString& serverName,const QString& nick)
 {
     KonversationApplication* konv_app=static_cast<KonversationApplication*>(KApplication::kApplication());
     IcecapServer* server=konv_app->getServerByName(serverName);
-    server->notifyAction(nick);
+//    server->notifyAction(nick);
 }
 
 
@@ -611,21 +603,7 @@ void KonversationMainWindow::openURL(const QString& url, const QString& /*title*
     QString channel = urlN.section('/',1,1);
     QString password;
 
-    if (Preferences::isServerGroup(host))
-    {
-        IcecapServer* newServer = KonversationApplication::instance()->connectToServerGroup(host);
-
-        if (!newServer->isConnected())
-        {
-            newServer->setAutoJoin(true);
-            newServer->setAutoJoinChannel(channel);
-            newServer->setAutoJoinChannelKey(password);
-        }
-        else if (!channel.isEmpty())
-            newServer->queue("JOIN " + channel + ' ' + password);
-    }
-    else
-        KonversationApplication::instance()->quickConnectToServer(host,port,channel,"",password);
+    KonversationApplication::instance()->quickConnectToServer(host,port,channel,"",password);
 }
 
 QString KonversationMainWindow::currentURL(bool passNetwork)

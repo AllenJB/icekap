@@ -206,7 +206,7 @@ void IcecapInputFilter::parseClientCommand(const QString &prefix, const QString 
     QString sourceNick = prefix.left(pos);
     QString sourceHostmask = prefix.mid(pos + 1);
     // remember hostmask for this nick, it could have changed
-    server->addHostmaskToNick(sourceNick,sourceHostmask);
+//    server->addHostmaskToNick(sourceNick,sourceHostmask);
     QString trailing = _trailing;
 
     server->appendMessageToFrontmost(command,parameterList.join(" ")+' '+trailing);
@@ -245,12 +245,6 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
         }
         else if(command=="pong")
         {
-            // double check if we are in lag measuring mode since some servers fail to send
-            // the LAG cookie back in PONG
-            if(trailing.startsWith("LAG") || getLagMeasuring())
-            {
-                server->pongReceived();
-            }
         }
         else if(command=="mode")
         {
@@ -282,12 +276,10 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         host = trailing.section("@",1);
 
                     // re-set nickname, since the server may have truncated it
+/*
                     if(parameterList[0]!=server->getNickname())
                         server->renameNick(server->getNickname(), parameterList[0]);
-
-                    // Remember server's insternal name
-                    server->setIrcName(prefix);
-
+*/
                     // Send the welcome signal, so the server class knows we are connected properly
                     emit welcome(host);
                     m_connecting = true;
@@ -304,7 +296,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                     .arg(parameterList[3])
                     .arg(parameterList[4])
                     );
-                server->setAllowedChannelModes(parameterList[4]);
+//                server->setAllowedChannelModes(parameterList[4]);
                 break;
             }
             //case RPL_BOUNCE:   // RFC 1459 name, now seems to be obsoleted by ...
@@ -338,19 +330,19 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         pos = value.find(')',1);
                         if(pos==-1)
                         {
-                            server->setPrefixes (QString::null, value);
+//                            server->setPrefixes (QString::null, value);
                             // XXX if ) isn't in the string, NOTHING should be there. anyone got a server
                             if (value.length() || property.length())
                                 server->appendStatusMessage("","XXX Server sent bad PREFIX in RPL_ISUPPORT, please report.");
                         }
                         else
                         {
-                            server->setPrefixes (value.mid(1, pos-1), value.mid(pos+1));
+//                            server->setPrefixes (value.mid(1, pos-1), value.mid(pos+1));
                         }
                     }
                     else if (property=="CHANTYPES")
                     {
-                        server->setChannelTypes(value);
+//                        server->setChannelTypes(value);
                     }
                     else if (property == "CAPAB")
                     {
@@ -414,19 +406,19 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         {
                             modesAre+=mode;
                         }
-                        server->updateChannelModeWidgets(parameterList[1],mode,parameter);
+//                        server->updateChannelModeWidgets(parameterList[1],mode,parameter);
                     }
                 }                                 // endfor
                 if(!modesAre.isEmpty())
                     if (Preferences::useLiteralModes())
                 {
-                    server->appendCommandMessageToChannel(parameterList[1],i18n("Mode"),message);
+//                    server->appendCommandMessageToChannel(parameterList[1],i18n("Mode"),message);
                 }
                 else
                 {
-                    server->appendCommandMessageToChannel(parameterList[1],i18n("Mode"),
-                        i18n("Channel modes: ") + modesAre
-                        );
+//                    server->appendCommandMessageToChannel(parameterList[1],i18n("Mode"),
+//                        i18n("Channel modes: ") + modesAre
+//                        );
                 }
                 break;
             }
@@ -434,15 +426,15 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             {
                 QDateTime when;
                 when.setTime_t(parameterList[2].toUInt());
-                server->appendCommandMessageToChannel(parameterList[1],i18n("Created"),
-                    i18n("This channel was created on %1.")
-                    .arg(when.toString(Qt::LocalDate))
-                    );
+//                server->appendCommandMessageToChannel(parameterList[1],i18n("Created"),
+//                    i18n("This channel was created on %1.")
+//                    .arg(when.toString(Qt::LocalDate))
+//                    );
                 break;
             }
             case RPL_WHOISACCOUNT:
             {
-                server->appendMessageToFrontmost(i18n("Whois"),i18n("%1 is logged in as %2.").arg(parameterList[1]).arg(parameterList[2]));
+//                server->appendMessageToFrontmost(i18n("Whois"),i18n("%1 is logged in as %2.").arg(parameterList[1]).arg(parameterList[2]));
 
                 break;
             }
@@ -466,7 +458,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 }
 
                 // send list to channel
-                server->addPendingNickList(parameterList[2], nickList);
+//                server->addPendingNickList(parameterList[2], nickList);
 
                 // Display message only if this was not an automatic request.
                 if(!getAutomaticRequest("NAMES",parameterList[2])==1)
@@ -507,7 +499,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 if(getAutomaticRequest("TOPIC",parameterList[1])==0)
                 {
                     // Update channel window
-                    server->setChannelTopic(parameterList[1],topic);
+//                    server->setChannelTopic(parameterList[1],topic);
                 }
                 else
                 {
@@ -525,10 +517,10 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 // See FIXME in RPL_TOPIC
                 if(getAutomaticRequest("TOPIC",parameterList[1])==0)
                 {
-                    server->appendCommandMessageToChannel(parameterList[1],i18n("Topic"),
-                        i18n("The topic was set by %1 on %2.")
-                        .arg(parameterList[2]).arg(when.toString(Qt::LocalDate))
-                        );
+//                    server->appendCommandMessageToChannel(parameterList[1],i18n("Topic"),
+//                        i18n("The topic was set by %1 on %2.")
+//                        .arg(parameterList[2]).arg(when.toString(Qt::LocalDate))
+//                        );
 
                     emit topicAuthor(parameterList[1],parameterList[2]);
                 }
@@ -582,6 +574,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 }
                 else                              // not connected yet, so try to find a nick that's not in use
                 {
+/*
                     // Get the next nick from the list or ask for a new one
                     QString newNick = server->getNextNickname();
 
@@ -600,6 +593,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         // Send nickchange request to the server
                         server->queue("NICK "+newNick);
                     }
+*/
                 }
                 break;
             }
@@ -611,6 +605,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 }
                 else                              // Find a new nick as in ERR_NICKNAMEINUSE
                 {
+/*
                     QString newNick = server->getNextNickname();
 
                     // The user chose to disconnect
@@ -625,6 +620,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         server->appendMessageToFrontmost(i18n("Nick"), i18n("Erroneus nickname. Changing nick to %1." ).arg(newNick)) ;
                         server->queue("NICK "+newNick);
                     }
+*/
                 }
                 break;
             }
@@ -651,16 +647,16 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 if(!m_connecting || !Preferences::skipMOTD())
                     server->appendStatusMessage(i18n("MOTD"),i18n("End of message of the day"));
 
-                if(m_connecting)
-                    server->autoCommandsAndChannels();
+//                if(m_connecting)
+//                    server->autoCommandsAndChannels();
 
                 m_connecting = false;
                 break;
             }
             case ERR_NOMOTD:
             {
-                if(m_connecting)
-                    server->autoCommandsAndChannels();
+//                if(m_connecting)
+//                    server->autoCommandsAndChannels();
 
                 m_connecting = false;
                 break;
@@ -693,6 +689,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             }
             case RPL_AWAY:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[1]);
                 if(nickInfo)
                 {
@@ -708,7 +705,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         .arg(parameterList[1]).arg(trailing)
                         );
                 }
-
+*/
                 break;
             }
             case RPL_INVITING:
@@ -730,6 +727,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             //[19:11] :zahn.freenode.net 318 PhantomsDad psn :End of /WHOIS list.
             case RPL_WHOISUSER:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[1]);
                 if(nickInfo)
                 {
@@ -778,12 +776,14 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         setAutomaticRequest("DNS", parameterList[1], false);
                     }
                 }
+*/
                 break;
             }
             // From a WHOIS.
             //[19:11] :zahn.freenode.net 320 PhantomsDad psn :is an identified user
             case RPL_IDENTIFIED:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[1]);
                 if(nickInfo)
                 {
@@ -796,6 +796,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                     // The above line works fine, but can't be i18n'ised. So use the below instead.. I hope this is okay.
                     server->appendMessageToFrontmost(i18n("Whois"), i18n("%1 is an identified user.").arg(parameterList[1]));
                 }
+*/
                 break;
             }
             // Sample WHO response
@@ -804,6 +805,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             //[21:39] [352] #lounge ~Nottingha worldforge.org irc.worldforge.org SherwoodSpirit H 0 Arboreal Entity
             case RPL_WHOREPLY:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[5]);
                                                   // G=away G@=away,op G+=away,voice
                 bool bAway = parameterList[6].upper().startsWith("G");
@@ -832,6 +834,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                             , false); // Don't parse as url
                     }
                 }
+*/
                 break;
             }
             case RPL_ENDOFWHO:
@@ -872,6 +875,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             }
             case RPL_WHOISCHANNELS:
             {
+/*
                 QStringList userChannels,voiceChannels,opChannels,halfopChannels,ownerChannels,adminChannels;
 
                 // get a list of all channels the user is in
@@ -967,10 +971,12 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                             );
                     }
                 }
+*/
                 break;
             }
             case RPL_WHOISSERVER:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[1]);
                 if(nickInfo)
                 {
@@ -989,6 +995,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                         .arg(parameterList[2]).arg(trailing)
                         );
                 }
+*/
                 break;
             }
             case RPL_WHOISIDENTIFY:
@@ -1088,6 +1095,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                     }
                 }
 
+/*
                 if(parameterList.count()==4)
                 {
                     QDateTime when;
@@ -1106,6 +1114,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                             );
                     }
                 }
+*/
                 break;
             }
             case RPL_ENDOFWHOIS:
@@ -1146,7 +1155,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                     }
 
                     // inform server of this user's data
-                    emit userhost(nick,mask,away,ircOp);
+//                    emit userhost(nick,mask,away,ircOp);
 
                     // display message only if this was no automatic request
                     if(getAutomaticRequest("USERHOST",nick)==0)
@@ -1185,7 +1194,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 }
                 else                              // send them to /LIST window
                 {
-                    emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
+//                    emit addToChannelList(parameterList[1],parameterList[2].toInt(),trailing);
                 }
 
                 break;
@@ -1205,14 +1214,15 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             }
             case RPL_NOWAWAY:
             {
-                NickInfo* nickInfo = server->getNickInfo(parameterList[0]);
-                if (nickInfo) nickInfo->setAway(true);
+  //              NickInfo* nickInfo = server->getNickInfo(parameterList[0]);
+  //              if (nickInfo) nickInfo->setAway(true);
                 server->appendMessageToFrontmost(i18n("Away"),i18n("You are now marked as being away."));
-                if (!server->isAway()) emit away();
+//                if (!server->isAway()) emit away();
                 break;
             }
             case RPL_UNAWAY:
             {
+/*
                 NickInfo* nickInfo = server->getNickInfo(parameterList[0]);
                 if(nickInfo)
                 {
@@ -1236,11 +1246,12 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 {
                     server->appendMessageToFrontmost(i18n("Away"),i18n("You are not marked as being away."));
                 }
-
+*/
                 break;
             }
             case RPL_BANLIST:
             {
+/*
                 if (getAutomaticRequest("BANLIST", parameterList[1]))
                 {
                     server->addBan(parameterList[1], parameterList.join(" ").section(' ', 2, 4));
@@ -1250,6 +1261,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
 
                     server->appendMessageToFrontmost(i18n("BanList:%1").arg(parameterList[1]), i18n("BanList message: e.g. *!*@aol.com set by MrGrim on <date>", "%1 set by %2 on %3").arg(parameterList[2]).arg(parameterList[3].section('!', 0, 0)).arg(when.toString(Qt::LocalDate)));
                 }
+*/
                 break;
             }
             case RPL_ENDOFBANLIST:
@@ -1264,6 +1276,7 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             }
             case ERR_NOCHANMODES:
             {
+/*
                 ChatWindow *chatwindow = server->getChannelByName(parameterList[1]);
                 if(chatwindow)
                 {
@@ -1273,15 +1286,11 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
                 {
                     server->appendMessageToFrontmost(i18n("Channel"), trailing);
                 }
+*/
                 break;
             }
             case ERR_NOSUCHSERVER:
             {
-                //Some servers don't know their name, so they return an error instead of the PING data
-                if (getLagMeasuring() && trailing.startsWith(prefix))
-                {
-                    server->pongReceived();
-                }
                 break;
             }
             case ERR_UNAVAILRESOURCE:
@@ -1320,12 +1329,6 @@ void IcecapInputFilter::parseServerCommand(const QString &prefix, const QString 
             }
             case RPL_CAPAB: // Special freenode reply afaik
             {
-                // Disable as we don't use this for anything yet
-                if(trailing.contains("IDENTIFY-MSG"))
-                {
-                    server->enableIdentifyMsg(true);
-                    break;
-                }
 
             /* don't break; - this is also used as RPL_DATASTR on ircu and some others */
             }
@@ -1384,13 +1387,13 @@ void IcecapInputFilter::parseModes(const QString &sourceNick, const QStringList 
                     << parameterList.join(", ") << "'"
                     << endl;
             }
-            server->updateChannelMode(sourceNick,parameterList[0],mode,plus,parameter);
+//            server->updateChannelMode(sourceNick,parameterList[0],mode,plus,parameter);
         }
     }                                             // endfor
 
     if (Preferences::useLiteralModes())
     {
-        server->appendCommandMessageToChannel(parameterList[0],i18n("Mode"),message);
+//        server->appendCommandMessageToChannel(parameterList[0],i18n("Mode"),message);
     }
 }
 
@@ -1401,7 +1404,8 @@ bool IcecapInputFilter::isAChannel(const QString &check)
 {
     Q_ASSERT(server);
     // if we ever see the assert, we need the ternary
-    return server? server->isAChannel(check) : QString("#&").contains(check.at(0));
+//    return server? server->isAChannel(check) : QString("#&").contains(check.at(0));
+    return true;
 }
 
 bool IcecapInputFilter::isIgnore(const QString &sender, Ignore::Type type)
@@ -1449,10 +1453,6 @@ int IcecapInputFilter::getAutomaticRequest(const QString& command, const QString
 void IcecapInputFilter::addWhoRequest(const QString& name) { whoRequestList << name.lower(); }
 
 bool IcecapInputFilter::isWhoRequestUnderProcess(const QString& name) { return (whoRequestList.contains(name.lower())>0); }
-
-void IcecapInputFilter::setLagMeasuring(bool state) { lagMeasuring=state; }
-
-bool IcecapInputFilter::getLagMeasuring()           { return lagMeasuring; }
 
 #include "icecapinputfilter.moc"
 

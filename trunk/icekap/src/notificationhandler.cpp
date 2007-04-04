@@ -44,12 +44,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         QString cleanedMessage = QStyleSheet::escape(Konversation::removeIrcMarkup(message));
         QString cutup = addLineBreaks(cleanedMessage);
 
@@ -74,12 +74,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         QString cleanedMessage = QStyleSheet::escape(Konversation::removeIrcMarkup(message));
         QString cutup = addLineBreaks(cleanedMessage);
 
@@ -114,12 +114,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         if(!m_mainWindow->isActiveWindow() && chatWin->getServer() && chatWin->getServer()->connected())
         {
             m_mainWindow->systemTrayIcon()->startNotification();
@@ -132,12 +132,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "join", i18n("%1 joined %2").arg(nick, chatWin->getName()));
 
         // OnScreen Message
@@ -155,12 +155,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "part", i18n("%1 parted %2").arg(nick, chatWin->getName()));
 
         // OnScreen Message
@@ -178,12 +178,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "part", i18n("%1 quit %2").arg(nick, chatWin->getServer()->getServerName()));
     }
 
@@ -193,12 +193,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "nickchange", i18n("%1 changed nickname to %2").arg(oldNick, newNick));
     }
 
@@ -208,12 +208,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "mode");
     }
 
@@ -223,12 +223,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         startTrayNotification(chatWin);
 
         KNotifyClient::event(m_mainWindow->winId(), "query",
@@ -241,12 +241,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "notify",
             i18n("%1 is online (%2).").arg(nick).arg(chatWin->getServer()->getServerName()));
     }
@@ -257,12 +257,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "notify",
             i18n("%1 went offline (%2).").arg(nick).arg(chatWin->getServer()->getServerName()));
     }
@@ -284,12 +284,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         startTrayNotification(chatWin);
 
         if(Preferences::oSDShowOwnNick() &&
@@ -323,12 +323,12 @@ namespace Konversation
         {
             return;
         }
-
+/*
         if(Preferences::disableNotifyWhileAway() && chatWin->getServer()->isAway())
         {
             return;
         }
-
+*/
         KNotifyClient::event(m_mainWindow->winId(), "channelJoin", i18n("You have joined %1.").arg(channel));
     }
 

@@ -56,15 +56,10 @@
 #include "ircinput.h"
 #include "ircviewbox.h"
 #include "ircview.h"
-#include <kabc/addressbook.h>
-#include <kabc/stdaddressbook.h>
 #include "common.h"
 #include "topiclabel.h"
 #include "channeloptionsdialog.h"
 #include "notificationhandler.h"
-
-#include "linkaddressbook/linkaddressbookui.h"
-#include "linkaddressbook/addressbook.h"
 
 Channel::Channel(QWidget* parent)
   : ChatWindow(parent), key(" ")
@@ -300,10 +295,6 @@ Channel::Channel(QWidget* parent)
     m_allowNotifications = true;
 
     updateAppearance();
-
-    //FIXME JOHNFLUX
-    //  connect( Konversation::Addressbook::self()->getAddressBook(), SIGNAL( addressBookChanged( AddressBook * ) ), this, SLOT( slotLoadAddressees() ) );
-    //  connect( Konversation::Addressbook::self(), SIGNAL(addresseesChanged()), this, SLOT(slotLoadAddressees()));
 }
 
 void Channel::setServer(IcecapServer *server)
@@ -311,7 +302,7 @@ void Channel::setServer(IcecapServer *server)
     ChatWindow::setServer(server);
     topicLine->setServer(server);
     refreshModeButtons();
-    setIdentity(server->getIdentity());
+//    setIdentity(server->getIdentity());
 }
 
 Channel::~Channel()
@@ -322,7 +313,7 @@ Channel::~Channel()
     purgeNicks();
 
     // Unlink this channel from channel list
-    m_server->removeChannel(this);
+//    m_server->removeChannel(this);
 }
 
 ChannelNickPtr Channel::getOwnChannelNick()
@@ -332,7 +323,8 @@ ChannelNickPtr Channel::getOwnChannelNick()
 
 ChannelNickPtr Channel::getChannelNick(const QString &ircnick)
 {
-    return m_server->getChannelNick(getName(), ircnick);
+//    return m_server->getChannelNick(getName(), ircnick);
+    return 0;
 }
 
 void Channel::purgeNicks()
@@ -391,64 +383,6 @@ void Channel::popupCommand(int id)
 
     switch(id)
     {
-        case Konversation::AddressbookEdit:
-        {
-            ChannelNickList nickList=getSelectedChannelNicks();
-            for(ChannelNickList::ConstIterator it=nickList.begin();it!=nickList.end();++it)
-            {
-                if(!(*it)->getNickInfo()->editAddressee()) break;;
-            }
-            break;
-        }
-        case Konversation::AddressbookNew:
-        case Konversation::AddressbookDelete:
-        {
-            Konversation::Addressbook *addressbook = Konversation::Addressbook::self();
-            ChannelNickList nickList=getSelectedChannelNicks();
-            //Handle all the selected nicks in one go.  Either they all save, or none do.
-            if(addressbook->getAndCheckTicket())
-            {
-                for(ChannelNickList::ConstIterator it=nickList.begin();it!=nickList.end();++it)
-                {
-                    if(id == Konversation::AddressbookDelete)
-                    {
-                        KABC::Addressee addr = (*it)->getNickInfo()->getAddressee();
-                        addressbook->unassociateNick(addr, (*it)->getNickname(), m_server->getServerName(), m_server->getServerGroup());
-                    }
-                    else
-                    {
-                        //make new addressbook contact
-                        KABC::Addressee addr;
-                        NickInfoPtr nickInfo = (*it)->getNickInfo();
-                        if(nickInfo->getRealName().isEmpty())
-                            addr.setGivenName(nickInfo->getNickname());
-                        else
-                            addr.setGivenName(nickInfo->getRealName());
-                        addr.setNickName(nickInfo->getNickname());
-                        addressbook->associateNickAndUnassociateFromEveryoneElse(addr, (*it)->getNickname(), m_server->getServerName(), m_server->getServerGroup());
-                    }
-                }
-                addressbook->saveTicket(); // This will refresh the nicks automatically for us. At least, if it doesn't, it's a bug :)
-            }
-            break;
-        }
-        case Konversation::AddressbookChange:
-        {
-            ChannelNickList nickList=getSelectedChannelNicks();
-            for(ChannelNickList::ConstIterator it=nickList.begin();it!=nickList.end();++it)
-            {
-                (*it)->getNickInfo()->showLinkAddressbookUI();
-            }
-            break;
-        }
-        case Konversation::SendEmail:
-        {
-            Konversation::Addressbook::self()->sendEmail(getSelectedChannelNicks());
-            break;
-        }
-        case Konversation::AddressbookSub:
-            kdDebug() << "sub called" << endl;
-            break;
         case Konversation::GiveOp:
             pattern="MODE %c +o %u";
             raw=true;
@@ -481,7 +415,7 @@ void Channel::popupCommand(int id)
             raw=true;
             break;
         case Konversation::Topic:
-            m_server->requestTopic(getTextView()->currentChannel());
+//            m_server->requestTopic(getTextView()->currentChannel());
             break;
         case Konversation::Names:
             m_server->queue("NAMES " + getTextView()->currentChannel());
@@ -571,8 +505,10 @@ void Channel::popupCommand(int id)
         case Konversation::AddNotify:
             for (QStringList::Iterator it=nickList.begin(); it!=nickList.end(); ++it)
             {
+/*
                 if (!Preferences::isNotify(m_server->serverGroupSettings()->id(), (*it)))
                     Preferences::addNotify(m_server->serverGroupSettings()->id(), (*it));
+*/
             }
             break;
     } // switch
@@ -875,8 +811,8 @@ void Channel::sendChannelText(const QString& sendLine)
     // replace aliases and wildcards
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
-        outputAll = m_server->parseWildcards(outputAll,m_server->getNickname(),getName(),getKey(),
-            getSelectedNickList(),QString::null);
+//        outputAll = m_server->parseWildcards(outputAll,m_server->getNickname(),getName(),getKey(),
+//            getSelectedNickList(),QString::null);
     }
 
     // Send all strings, one after another
@@ -884,14 +820,14 @@ void Channel::sendChannelText(const QString& sendLine)
     for(unsigned int index=0;index<outList.count();index++)
     {
         QString output(outList[index]);
-
+/*
         // encoding stuff is done in Server()
-        Konversation::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(),output,getName());
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(),output,getName());
 
         // Is there something we need to display for ourselves?
         if(!result.output.isEmpty())
         {
-            if(result.type == Konversation::Action) appendAction(m_server->getNickname(), result.output);
+            if(result.type == Icecap::Action) appendAction(m_server->getNickname(), result.output);
             else if(result.type == Konversation::Command) appendCommandMessage(result.typeString, result.output);
             else if(result.type == Konversation::Program) appendServerMessage(result.typeString, result.output);
             else if(result.type == Konversation::PrivateMessage) appendQuery(result.typeString, result.output);
@@ -914,6 +850,7 @@ void Channel::sendChannelText(const QString& sendLine)
         {
             m_server->queueList(result.toServerList);
         }
+*/
     } // for
 }
 
@@ -1020,7 +957,8 @@ void Channel::modeButtonClicked(int id,bool on)
 void Channel::quickButtonClicked(const QString &buttonText)
 {
     // parse wildcards (toParse,nickname,channelName,nickList,queryName,parameter)
-    QString out=m_server->parseWildcards(buttonText,m_server->getNickname(),getName(),getKey(),getSelectedNickList(),QString::null);
+//    QString out=m_server->parseWildcards(buttonText,m_server->getNickname(),getName(),getKey(),getSelectedNickList(),QString::null);
+    QString out = "";
 
     // are there any newlines in the definition?
     if(out.find('\n')!=-1)
@@ -1083,25 +1021,26 @@ void Channel::nickRenamed(const QString &oldNick, const NickInfo& nickInfo)
 
     /* Did we change our nick name? */
     QString newNick = nickInfo.getNickname();
-
-    if(newNick == m_server->getNickname()) /* Check newNick because  m_server->getNickname() is already updated to new nick */
+/*
+    if(newNick == m_server->getNickname()) // Check newNick because  m_server->getNickname() is already updated to new nick
     {
         setNickname(newNick);
         appendCommandMessage(i18n("Nick"),i18n("You are now known as %1.").arg(newNick), false, true, true);
     }
     else
     {
-        /* No, must've been someone else */
+        // No, must've been someone else
         appendCommandMessage(i18n("Nick"),i18n("%1 is now known as %2.").arg(oldNick).arg(newNick),false);
     }
 
     nicknameListView->sort();
-
+*/
 }
 
 
 void Channel::joinNickname(ChannelNickPtr channelNick)
 {
+/*
     if(channelNick->getNickname() == m_server->getNickname())
     {
         appendCommandMessage(i18n("Join"),i18n("%1 is the channel and %2 is our hostmask",
@@ -1120,10 +1059,12 @@ void Channel::joinNickname(ChannelNickPtr channelNick)
                              "%1 has joined this channel (%2).").arg(nick).arg(hostname),false, false);
         addNickname(channelNick);
     }
+*/
 }
 
 void Channel::removeNick(ChannelNickPtr channelNick, const QString &reason, bool quit)
 {
+/*
     QString displayReason = reason;
 
     if(!displayReason.isEmpty())
@@ -1191,10 +1132,12 @@ void Channel::removeNick(ChannelNickPtr channelNick, const QString &reason, bool
             kdWarning() << "Channel::kickNick(): Nickname " << channelNick->getNickname() << " not found!"<< endl;
         }
     }
+*/
 }
 
 void Channel::kickNick(ChannelNickPtr channelNick, const ChannelNick &kicker, const QString &reason)
 {
+/*
     QString displayReason = reason;
 
     if(!displayReason.isEmpty())
@@ -1276,6 +1219,7 @@ void Channel::kickNick(ChannelNickPtr channelNick, const ChannelNick &kicker, co
             nicknameList.removeRef(nick);
         }
     }
+*/
 }
 
 Nick* Channel::getNickByName(const QString &lookname)
@@ -1355,6 +1299,7 @@ void Channel::setTopic(const QString &newTopic)
 
 void Channel::setTopic(const QString &nickname, const QString &newTopic) // Overloaded
 {
+/*
     if(nickname == m_server->getNickname())
     {
         appendCommandMessage(i18n("Topic"), i18n("You set the channel topic to \"%1\".").arg(newTopic));
@@ -1369,6 +1314,7 @@ void Channel::setTopic(const QString &nickname, const QString &newTopic) // Over
     topicLine->setText(topic);
 
     emit topicHistoryChanged();
+*/
 }
 
 QStringList Channel::getTopicHistory()
@@ -1394,7 +1340,7 @@ void Channel::updateMode(const QString& sourceNick, char mode, bool plus, const 
 {
     //Note for future expansion: doing m_server->getChannelNick(getName(), sourceNick);  may not return a valid channelNickPtr if the
     //mode is updated by the server.
-
+/*
     QString message(QString::null);
     ChannelNickPtr parameterChannelNick=m_server->getChannelNick(getName(), parameter);
 
@@ -1807,6 +1753,7 @@ void Channel::updateMode(const QString& sourceNick, char mode, bool plus, const 
     }
 
     updateModeWidgets(mode,plus,parameter);
+*/
 }
 
 void Channel::clearModeList()
@@ -2127,7 +2074,7 @@ void Channel::updateStyleSheet()
 void Channel::nicknameComboboxChanged()
 {
     QString newNick=nicknameCombobox->currentText();
-    oldNick=m_server->getNickname();
+//    oldNick=m_server->getNickname();
     if(oldNick!=newNick)
     {
       nicknameCombobox->setCurrentText(oldNick);
@@ -2211,7 +2158,7 @@ void Channel::refreshModeButtons()
 void Channel::cycleChannel()
 {
     closeYourself();
-    m_server->sendJoinCommand(getName());
+//    m_server->sendJoinCommand(getName());
 }
 
 void Channel::autoUserhost()
@@ -2236,7 +2183,7 @@ void Channel::autoUserhost()
             ++it;
         }
 
-        if(!nickString.isEmpty()) m_server->requestUserhost(nickString);
+//        if(!nickString.isEmpty()) m_server->requestUserhost(nickString);
     }
 }
 
@@ -2297,7 +2244,7 @@ void Channel::autoWho()
     }
     if(m_server->getInputFilter()->isWhoRequestUnderProcess(getName()))
         return;
-    m_server->requestWho(getName());
+//    m_server->requestWho(getName());
 }
 
 QString Channel::getTextInLine()
@@ -2331,8 +2278,8 @@ bool Channel::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
-        m_server->closeChannel(getName());
-        m_server->removeChannel(this);
+//        m_server->closeChannel(getName());
+//        m_server->removeChannel(this);
 	Preferences::setSpellChecking(channelInput->checkSpellingEnabled());
         delete this;
         return true;
@@ -2391,7 +2338,7 @@ void Channel::processPendingNicks()
     bool voice = false;
 
     // Remove possible mode characters from nickname and store the resulting mode
-    m_server->mangleNicknameWithModes(nickname, admin, owner, op, halfop, voice);
+//    m_server->mangleNicknameWithModes(nickname, admin, owner, op, halfop, voice);
 
     // TODO: make these an enumeration in KApplication or somewhere, we can use them as well
     unsigned int mode = (admin  ? 16 : 0) +
@@ -2403,6 +2350,7 @@ void Channel::processPendingNicks()
     // Check if nick is already in the nicklist
     if (!getNickByName(nickname))
     {
+/*
         ChannelNickPtr nick = m_server->addNickToJoinedChannelsList(getName(), nickname);
         Q_ASSERT(nick);
         nick->setMode(mode);
@@ -2413,6 +2361,7 @@ void Channel::processPendingNicks()
             m_opsToAdd++;
 
         m_currentIndex++;
+*/
     }
     else
     {
@@ -2448,17 +2397,19 @@ void Channel::processPendingNicks()
 
 void Channel::setChannelEncoding(const QString& encoding) // virtual
 {
-    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
+//    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
 }
 
 QString Channel::getChannelEncoding() // virtual
 {
-    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
+//    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
+    return "UTF-8";
 }
 
 QString Channel::getChannelEncodingDefaultDesc()  // virtual
 {
-    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+//    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
+    return "Unimplemented (UTF-8)";
 }
 
 void Channel::showNicknameBox(bool show)
@@ -2586,6 +2537,7 @@ void Channel::clearBanList()
 
 void Channel::append(const QString& nickname,const QString& message)
 {
+/*
     if(nickname != getServer()->getNickname()) {
         Nick* nick = getNickByName(nickname);
 
@@ -2593,12 +2545,13 @@ void Channel::append(const QString& nickname,const QString& message)
             nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
         }
     }
-
+*/
     ChatWindow::append(nickname, message);
 }
 
 void Channel::appendAction(const QString& nickname,const QString& message, bool usenotifications)
 {
+/*
     if(nickname != getServer()->getNickname()) {
         Nick* nick = getNickByName(nickname);
 
@@ -2606,6 +2559,7 @@ void Channel::appendAction(const QString& nickname,const QString& message, bool 
             nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
         }
     }
+*/
 
     ChatWindow::appendAction(nickname, message, usenotifications);
 }

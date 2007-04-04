@@ -216,7 +216,7 @@ void ChatWindow::setLogfileName(const QString& name)
         else if(m_server)
         {
             // make sure that no path delimiters are in the name
-            logName = QString(m_server->getServerGroup().lower()).append('_').append(name).append(".log").replace('/','_');
+            logName = QString(m_server->serverSettings().server().lower()).append('_').append(name).append(".log").replace('/','_');
         }
 
         // load backlog to show

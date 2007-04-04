@@ -1,4 +1,4 @@
-SUBDIRS = config linkaddressbook blowfish .
+SUBDIRS = config blowfish .
 
 METASOURCES = AUTO
 
@@ -7,9 +7,9 @@ bin_SCRIPTS = icekapircprotocolhandler
 
 icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp \
 	konvisettingsdialog.cpp konversationmainwindow.cpp valuelistviewitem.cpp urlcatcher.cpp \
-	scriptlauncher.cpp rawlog.cpp konvdcop.cpp channellistpanel.cpp konsolepanel.cpp \
+	scriptlauncher.cpp rawlog.cpp channellistpanel.cpp konsolepanel.cpp \
 	identity.cpp statuspanel.cpp topiccombobox.cpp \
-	nicksonline.cpp nicklistviewitem.cpp highlight.cpp \
+	nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \
 	ignore.cpp nicklistview.cpp ircinput.cpp ignorelistviewitem.cpp images.cpp quickbutton.cpp chatwindow.cpp \
 	icecapoutputfilter.cpp \
@@ -24,8 +24,8 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 	quickconnectdialog.cpp serverlistdialog.cpp \
 	icecapquickconnectdialog.cpp icecapquickconnectdialog.h \
 		channelnick.cpp insertchardialog.cpp \
-		irccharsets.cpp editnotifydialog.cpp common.cpp serverison.cpp 	sslsocket.cpp \
-		servergroupsettings.cpp serversettings.cpp servergroupdialog.cpp 	ssllabel.cpp serverdialog.cpp \
+		irccharsets.cpp editnotifydialog.cpp common.cpp sslsocket.cpp \
+		servergroupsettings.cpp icecapserversettings.cpp serversettings.cpp servergroupdialog.cpp 	ssllabel.cpp serverdialog.cpp \
 		channeldialog.cpp identitydialog.cpp topiclabel.cpp 	channeloptionsui.ui \
 		channeloptionsdialog.cpp notificationhandler.cpp joinchannelui.ui 	joinchanneldialog.cpp \
 		emoticon.cpp chatwindowbehaviour_preferences.ui alias_preferencesui.ui \
@@ -37,16 +37,16 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 			theme_preferences.cpp alias_preferences.cpp highlight_preferences.cpp \
 			watchednicknames_preferences.cpp quickbuttons_preferences.cpp nicklistbehavior_preferences.cpp \
 			konviiphelper.cpp tabnotifications_preferences.ui 		multilinetextedit.cpp \
-	serverlistview.cpp nicksonlineitem.cpp searchbarbase.ui 	autoreplace_preferencesui.ui \
+	serverlistview.cpp searchbarbase.ui 	autoreplace_preferencesui.ui \
 	autoreplace_preferences.cpp viewcontainer.cpp viewtree.cpp 	viewtreeitem.cpp servergroupdialogui.ui
 
 icekap_COMPILE_FIRST = config/preferences_base.h
-icekap_LDADD = $(LIB_KIO) $(LIB_KABC) $(LIB_KIMIFACE) linkaddressbook/liblinkaddressbookui.la blowfish/libblowfish.la config/libkonversationconfig.la
+icekap_LDADD = $(LIB_KIO) $(LIB_KIMIFACE) blowfish/libblowfish.la config/libkonversationconfig.la
 
 xdg_apps_DATA = icekap.desktop
 
 # set the include path for X, qt and KDE
-INCLUDES= -Ilinkaddressbook -I$(srcdir)/linkaddressbook -Iblowfish -I$(srcdir)/blowfish\
+INCLUDES= -Iblowfish -I$(srcdir)/blowfish\
           -Iconfig -I$(srcdir)/config $(all_includes)
 # the library search path.
 icekap_LDFLAGS = $(all_libraries) $(KDE_RPATH)
@@ -72,8 +72,8 @@ messages: rc.cpp
 
 noinst_HEADERS = 		 channeldialog.h channeloptionsdialog.h editnotifydialog.h \
 	highlight_preferences.h identitydialog.h insertchardialog.h joinchanneldialog.h \
-	konvisettingspage.h nicklistbehavior_preferences.h nicksonlineitem.h \
-	quickbuttons_preferences.h serverdialog.h servergroupsettings.h serverison.h serverlistdialog.h \
+	konvisettingspage.h nicklistbehavior_preferences.h \
+	quickbuttons_preferences.h serverdialog.h servergroupsettings.h serverlistdialog.h \
 	serversettings.h	servergroupdialog.h topiclabel.h watchednicknames_preferences.h
 
 # User might still have these in src/ instead of src/config, so remove these in that case

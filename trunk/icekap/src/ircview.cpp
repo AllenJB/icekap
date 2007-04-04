@@ -305,15 +305,15 @@ void IRCView::openLink(const QString& url, bool newTab)
     {
         QString channel(url);
         channel.replace("##", "#");
-        m_server->sendJoinCommand(channel);
+//        m_server->sendJoinCommand(channel);
     }
     //FIXME: Don't do user links in DCC Chats to begin with since they don't have a server.
     else if (url.startsWith("#") && m_server && m_server->isConnected())
     {
         QString recipient(url);
         recipient.remove("#");
-        NickInfoPtr nickInfo = m_server->obtainNickInfo(recipient);
-        m_server->addQuery(nickInfo, true /*we initiated*/);
+//        NickInfoPtr nickInfo = m_server->obtainNickInfo(recipient);
+//        m_server->addQuery(nickInfo, true /*we initiated*/);
     }
 }
 
@@ -469,7 +469,7 @@ bool doHighlight, bool parseURL, bool self)
 
     if (m_server)
     {
-        ownNick = m_server->getNickname();
+//        ownNick = m_server->getNickname();
     }
 
     if(doHighlight && (whoSent != ownNick) && !self)
@@ -588,12 +588,12 @@ QString IRCView::createNickLine(const QString& nick, bool encapsulateNick)
     if(Preferences::useColoredNicks() && m_server)
     {
         QString nickColor;
-
+/*
         if (nick != m_server->getNickname())
             nickColor = Preferences::nickColor(m_server->obtainNickInfo(nick)->getNickColor()).name();
         else
             nickColor =  Preferences::nickColor(8).name();
-
+*/
         if(nickColor == "#000000")
         {
             nickColor = "#000001";                    // HACK Working around QTextBrowser's auto link coloring
@@ -935,6 +935,7 @@ void IRCView::doAppend(const QString& newLine, bool important, bool self)
     // to parse wildcards.
     if (!m_autoTextToSend.isEmpty() && m_server)
     {
+/*
         // replace placeholders in autoText
         QString sendText = m_server->parseWildcards(m_autoTextToSend,m_server->getNickname(),
             QString::null, QString::null, QString::null, QString::null);
@@ -942,6 +943,7 @@ void IRCView::doAppend(const QString& newLine, bool important, bool self)
         m_autoTextToSend = QString();
         // send signal only now
         emit autoText(sendText);
+*/
     }
     else
     {
@@ -1209,10 +1211,10 @@ void IRCView::updateNickMenuEntries(QPopupMenu* popup, const QString& nickname)
             popup->setItemEnabled(Konversation::AddNotify, false);
         else if (!m_server->isConnected())
             popup->setItemEnabled(Konversation::AddNotify, false);
-        else if (!Preferences::hasNotifyList(m_server->serverGroupSettings()->id()))
-            popup->setItemEnabled(Konversation::AddNotify, false);
-        else if (Preferences::isNotify(m_server->serverGroupSettings()->id(), nickname))
-            popup->setItemEnabled(Konversation::AddNotify, false);
+//        else if (!Preferences::hasNotifyList(m_server->serverGroupSettings()->id()))
+//            popup->setItemEnabled(Konversation::AddNotify, false);
+//        else if (Preferences::isNotify(m_server->serverGroupSettings()->id(), nickname))
+//            popup->setItemEnabled(Konversation::AddNotify, false);
         else
             popup->setItemEnabled(Konversation::AddNotify, true);
     }
