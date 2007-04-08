@@ -99,17 +99,6 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
         param.pop_front();
         parseIcecapCommand (tag, status, param);
     }
-/*
-    // Server command, if no "!" was found in prefix
-    if((prefix.find('!') == -1) && (prefix != server->getNickname()))
-    {
-        parseServerCommand(prefix, command, parameterList, trailing);
-    }
-    else
-    {
-        parseClientCommand(prefix, command, parameterList, trailing);
-    }
-*/
 }
 
 void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStringList &parameterList)
@@ -133,73 +122,79 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     // I assume this ensures there's a valid server to communicate with
     Q_ASSERT(server); if(!server) return;
 
-    if (tag == "netlist")
+    // Split into key, value pairs around the first occurence of =
+    // TODO: Is there an easier way to do this?
+    // TODO: Should this be moved up to parseLine?
+    // TODO: Better handling for keys that appear multiple times
+    QMap<QString, QString> parameterMap;
+    for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
+        QStringList thisParam = QStringList::split("=", *it);
+        QString key = thisParam.first ();
+        thisParam.pop_front ();
+        QString value = thisParam.join ("=");
+        parameterMap.insert (key, value, TRUE);
+    }
+
+    if (tag == "netlist") {
+        parseNetworkList (tag, status, parameterMap);
+    }
+
+}
+
+/**
+ * @todo Do we still need to handle with getAutomaticRequest?
+ */
+void IcecapInputFilter::parseNetworkList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+{
+    if(getAutomaticRequest("netlist",QString::null)==0)
     {
-        if(getAutomaticRequest("netlist",QString::null)==0)
-        {
-            if (status == "+") {
-                server->appendMessageToFrontmost (i18n ("End of network list"), "End of network list");
-                netlistInProgress = false;
-            }
-            else if (status == ">")
-            {
-                // Split into key, value pairs around the first occurence of =
-                // TODO: Is there an easier way to do this?
-                // TODO: Should this be moved up to the top of this method? Possibly even to parseLine?
-                // TODO: Better handling for keys that appear multiple times
-                QMap<QString, QString> parameterMap;
-                for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
-                    QStringList thisParam = QStringList::split("=", *it);
-                    QString key = thisParam.first ();
-                    thisParam.pop_front ();
-                    QString value = thisParam.join ("=");
-                    parameterMap.insert (key, value, TRUE);
-                }
-
-                QString message;
-                message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["protocol"]).arg (parameterMap["network"]);
-                server->appendMessageToFrontmost (i18n ("Network List"), message);
-
-                // Put it here for now while testing
-                if (parameterMap["protocol"] != "IRC") {
-                    return;
-                }
-
-
-                if (!netlistInProgress) {
-                    server->networkClear();
-                    netlistInProgress = true;
-                }
-
-                server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
-
-            } else {
-                // TODO: Are there any known circumstances that would cause this?
-                server->appendMessageToFrontmost (i18n ("Network List"),
-                    "Network List Error: An unhandled error occurred.");
-            }
+        if (status == "+") {
+            server->appendMessageToFrontmost (i18n ("End of network list"), "End of network list");
+            netlistInProgress = false;
         }
-        else                              // send them to /LIST window
-        {
-            QMap<QString, QString> parameterMap;
-            for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
-                QStringList thisParam = QStringList::split("=", *it);
-                QString key = thisParam.first ();
-                thisParam.pop_front ();
-                QString value = thisParam.join ("=");
-                parameterMap.insert (key, value, TRUE);
-            }
+        else if (status == ">") {
+            QString message;
+            message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["protocol"]).arg (parameterMap["network"]);
+            server->appendMessageToFrontmost (i18n ("Network List"), message);
 
+            // Put it here for now while testing
             if (parameterMap["protocol"] != "IRC") {
                 return;
             }
 
-            Konversation::ServerGroupSettingsPtr network = new Konversation::ServerGroupSettings (parameterMap["network"]);
-            Preferences::addServerGroup (network);
-//            emit addToNetworkList (parameterMap[protocol], parameterMap[network]);
+
+            if (!netlistInProgress) {
+                server->networkClear();
+                netlistInProgress = true;
+            }
+
+            server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
+
+        } else {
+            // TODO: Are there any known circumstances that would cause this?
+            server->appendMessageToFrontmost (i18n ("Network List"),
+                "Network List Error: An unhandled error occurred.");
         }
     }
+    else                              // send them to /LIST window
+    {
+        QMap<QString, QString> parameterMap;
+        for ( QStringList::Iterator it = parameterList.begin(); it != parameterList.end(); ++it ) {
+            QStringList thisParam = QStringList::split("=", *it);
+            QString key = thisParam.first ();
+            thisParam.pop_front ();
+            QString value = thisParam.join ("=");
+            parameterMap.insert (key, value, TRUE);
+        }
 
+        if (parameterMap["protocol"] != "IRC") {
+            return;
+        }
+
+        Konversation::ServerGroupSettingsPtr network = new Konversation::ServerGroupSettings (parameterMap["network"]);
+        Preferences::addServerGroup (network);
+//            emit addToNetworkList (parameterMap[protocol], parameterMap[network]);
+    }
 }
 
 void IcecapInputFilter::parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &_trailing)

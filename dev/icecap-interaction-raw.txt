@@ -1,0 +1,191 @@
+netlist;network list
+netlist;>;id=241;time=1176048093.9;network=Test Network;protocol=IRC
+netlist;+;id=242;time=1176048093.9;
+
+gatewaylist;gateway list
+gatewaylist;+;id=244;time=1176048612.2;
+
+1;network add;network=freenode;protocol=irc
+*;network_init;id=246;time=1176048778.1;network=freenode;protocol=IRC
+1;+;id=247;time=1176048778.1;
+
+2;gateway add;host=irc.freenode.org;network=freenode;port=6667
+*;gateway_init;id=249;time=1176048800.4;network=freenode;host=irc.freenode.org
+2;+;id=250;time=1176048800.4;
+
+3;presence add;network=freenode;mypresence=AllenJB|icecap
+*;local_presence_init;id=252;time=1176048828.9;mypresence=AllenJB|icecap;network=freenode
+3;+;id=253;time=1176048828.9;
+
+4;presence connect;network=freenode;mypresence=AllenJB|icecap
+*;gateway_connecting;id=255;time=1176048852.4;network=freenode;mypresence=AllenJB|icecap;ip=213.92.8.4;port=6667
+4;+;id=256;time=1176048852.4;
+*;gateway_connected;id=257;time=1176048852.7;network=freenode;mypresence=AllenJB|icecap;in_charsets=utf-8 cp1252;out_charset=iso-8859-1;ip=213.92.8.4;port=6667
+*;presence_init;id=258;time=1176048852.7;own;mypresence=AllenJB|icecap;presence=AllenJB|icecap;network=freenode
+*;irc_event;id=259;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;irc_event=notice;data=AUTH :*** Looking up your hostname...;raw
+*;msg;id=260;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Looking up your hostname...;presence=;irc_target=AUTH;no_autoreply
+*;irc_event;id=261;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;irc_event=notice;data=AUTH :*** Checking ident;raw
+*;msg;id=262;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Checking ident;presence=;irc_target=AUTH;no_autoreply
+*;irc_event;id=263;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;irc_event=notice;data=AUTH :*** No identd (auth) response;raw
+*;msg;id=264;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** No identd (auth) response;presence=;irc_target=AUTH;no_autoreply
+*;irc_event;id=265;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;irc_event=notice;data=AUTH :*** Found your hostname;raw
+*;msg;id=266;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Found your hostname;presence=;irc_target=AUTH;no_autoreply
+*;irc_event;id=267;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=001;nick=calvino.freenode.net;data=:Welcome to the freenode IRC Network AllenJB|icecap;raw
+*;gateway_logged_in;id=268;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap
+*;irc_event;id=269;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=002;nick=calvino.freenode.net;data=:Your host is calvino.freenode.net[calvino.freenode.net/6667], running version hyperion-1.0.2b;raw
+*;irc_event;id=270;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;irc_event=notice;data=AllenJB|icecap :*** Your host is calvino.freenode.net[calvino.freenode.net/6667], running version hyperion-1.0.2b;raw
+*;msg;id=271;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;msg=*** Your host is calvino.freenode.net[calvino.freenode.net/6667], running version hyperion-1.0.2b;presence=;irc_target=AllenJB|icecap;no_autoreply
+*;irc_event;id=272;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=003;nick=calvino.freenode.net;data=:This server was created Tue Dec  5 23:42:14 UTC 2006;raw
+*;irc_event;id=273;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=004;nick=calvino.freenode.net;data=calvino.freenode.net hyperion-1.0.2b aAbBcCdDeEfFGhHiIjkKlLmMnNopPQrRsStTuUvVwWxXyYzZ01234569*@ bcdefFhiIklmnoPqstv;raw
+*;irc_event;id=274;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=005;nick=calvino.freenode.net;data=IRCD=dancer CAPAB CHANTYPES=# EXCEPTS INVEX CHANMODES=bdeIq,k,lfJD,cgijLmnPQrRstz CHANLIMIT=#:20 PREFIX=(ov)@+ MAXLIST=bdeI:50 MODES=4 STATUSMSG=@ KNOCK NICKLEN=16 :are supported by this server;raw
+*;irc_event;id=275;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=005;nick=calvino.freenode.net;data=SAFELIST CASEMAPPING=ascii CHANNELLEN=30 TOPICLEN=450 KICKLEN=450 KEYLEN=23 USERLEN=10 HOSTLEN=63 SILENCE=50 :are supported by this server;raw
+*;irc_event;id=276;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=251;nick=calvino.freenode.net;data=:There are 16453 listed and 15602 unlisted users on 25 servers;raw
+*;irc_event;id=277;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=252;nick=calvino.freenode.net;data=43 :flagged staff members;raw
+*;irc_event;id=278;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=254;nick=calvino.freenode.net;data=14938 :channels formed;raw
+*;irc_event;id=279;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=255;nick=calvino.freenode.net;data=:I have 3288 clients and 0 servers;raw
+*;irc_event;id=280;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=265;nick=calvino.freenode.net;data=:Current local  users: 3288  Max: 5139;raw
+*;irc_event;id=281;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=266;nick=calvino.freenode.net;data=:Current global users: 32055  Max: 36657;raw
+*;irc_event;id=282;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=250;nick=calvino.freenode.net;data=:Highest connection count: 5141 (5139 clients) (705079 since server was (re)started);raw
+*;irc_event;id=283;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=375;nick=calvino.freenode.net;data=:- calvino.freenode.net Message of the Day - ;raw
+*;gateway_motd;id=284;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- calvino.freenode.net Message of the Day -
+*;irc_event;id=285;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- Welcome to the freenode IRC server in Milan, Italy. Thanks to;raw
+*;gateway_motd;id=286;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Welcome to the freenode IRC server in Milan, Italy. Thanks to
+*;irc_event;id=287;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- I.Net S.p.A. (http://www.inet.it/) for sponsoring this;raw
+*;gateway_motd;id=288;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- I.Net S.p.A. (http://www.inet.it/) for sponsoring this
+*;irc_event;id=289;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- server.;raw
+*;gateway_motd;id=290;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- server.
+*;irc_event;id=291;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- ;raw
+*;gateway_motd;id=292;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;irc_event;id=293;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- CALVINO, ITALO [1923-1985].  Born in Cuba, Italo Calvino grew;raw
+*;gateway_motd;id=294;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- CALVINO, ITALO [1923-1985].  Born in Cuba, Italo Calvino grew
+*;irc_event;id=295;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- up in San Remo, Italy.  During World War II, he joined the;raw
+*;gateway_motd;id=296;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- up in San Remo, Italy.  During World War II, he joined the
+*;irc_event;id=297;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- partisans during the German occupation and, after writing a;raw
+*;gateway_motd;id=298;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- partisans during the German occupation and, after writing a
+*;irc_event;id=299;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- series of stories which drew on his experiences, he became a;raw
+*;gateway_motd;id=300;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- series of stories which drew on his experiences, he became a
+*;irc_event;id=301;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- journalist. His work included Mr. Palomar, Under the;raw
+*;gateway_motd;id=302;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- journalist. His work included Mr. Palomar, Under the
+*;irc_event;id=303;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- Jaguar Sun, Cosmicomics and t zero.  Calvino made;raw
+*;gateway_motd;id=304;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Jaguar Sun, Cosmicomics and t zero.  Calvino made
+*;irc_event;id=305;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- important contributions to Italian literature in the middle;raw
+*;gateway_motd;id=306;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- important contributions to Italian literature in the middle
+*;irc_event;id=307;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- of the last century.;raw
+*;gateway_motd;id=308;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- of the last century.
+*;irc_event;id=309;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- ;raw
+*;gateway_motd;id=310;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;irc_event;id=311;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- You're using freenode, a service of Peer-Directed Projects;raw
+*;gateway_motd;id=312;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- You're using freenode, a service of Peer-Directed Projects
+*;irc_event;id=313;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- Center (http://freenode.net/pdpc.shtml).;raw
+*;gateway_motd;id=314;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Center (http://freenode.net/pdpc.shtml).
+*;irc_event;id=315;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- ;raw
+*;gateway_motd;id=316;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;irc_event;id=317;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- Freenode runs an open proxy scanner. Your use of the network;raw
+*;gateway_motd;id=318;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Freenode runs an open proxy scanner. Your use of the network
+*;irc_event;id=319;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- indicates your acceptance of this policy. For details on;raw
+*;gateway_motd;id=320;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- indicates your acceptance of this policy. For details on
+*;irc_event;id=321;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- freenode network policy, please take a look at our policy;raw
+*;gateway_motd;id=322;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- freenode network policy, please take a look at our policy
+*;irc_event;id=323;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- page (http://freenode.net/policy.shtml). Thank you for using;raw
+*;gateway_motd;id=324;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- page (http://freenode.net/policy.shtml). Thank you for using
+*;irc_event;id=325;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- the network!;raw
+*;gateway_motd;id=326;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- the network!
+*;irc_event;id=327;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- ;raw
+*;gateway_motd;id=328;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;irc_event;id=329;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- Freenode is a service of Peer-Directed Projects Center, an;raw
+*;gateway_motd;id=330;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Freenode is a service of Peer-Directed Projects Center, an
+*;irc_event;id=331;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- IRS 501(c)(3) not-for-profit organization.  Our yearly;raw
+*;gateway_motd;id=332;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- IRS 501(c)(3) not-for-profit organization.  Our yearly
+*;irc_event;id=333;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- fundraiser will begin soon\. if you'd like to donate early,;raw
+*;gateway_motd;id=334;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- fundraiser will begin soon\. if you'd like to donate early,
+*;irc_event;id=335;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- please see http://freenode.net/pdpc_donations.shtml for more;raw
+*;gateway_motd;id=336;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- please see http://freenode.net/pdpc_donations.shtml for more
+*;irc_event;id=337;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- information.  Thank you for using freenode!;raw
+*;gateway_motd;id=338;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- information.  Thank you for using freenode!
+*;irc_event;id=339;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=372;nick=calvino.freenode.net;data=:- ;raw
+*;gateway_motd;id=340;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;irc_event;id=341;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=376;nick=calvino.freenode.net;data=:End of /MOTD command.;raw
+*;gateway_motd_end;id=342;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap
+*;irc_event;id=343;time=1176048853.6;network=freenode;mypresence=AllenJB|icecap;irc_event=privmsg;nick=freenode-connect;address=freenode@freenode/bot/connect;data=allenjb|icecap :VERSION;raw
+*;irc_ctcp;id=344;time=1176048853.6;network=freenode;mypresence=AllenJB|icecap;name=version;presence=freenode-connect;irc_target=allenjb|icecap
+
+5;channel join;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
+*;channel_init;id=346;time=1176048933;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
+*;channel_connection_init;id=347;time=1176048933;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
+5;+;id=348;time=1176048933;
+*;presence_changed;id=349;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|icecap;address=n=AllenJB|@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com
+*;irc_event;id=350;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;irc_event=join;nick=AllenJB|icecap;address=n=AllenJB|@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com;data=:#allenjb;raw
+*;channel_join;id=351;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;init
+*;channel_presence_added;id=352;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;init;presence=AllenJB|icecap
+*;irc_event;id=353;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;irc_event=mode;nick=calvino.freenode.net;data=#allenjb +ns;raw
+*;channel_changed;id=354;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;init;irc_mode=ns
+*;irc_event;id=355;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=353;nick=calvino.freenode.net;data=@ #allenjb :@AllenJB|icecap ;raw
+*;irc_event;id=356;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;target=AllenJB|icecap;irc_event=366;nick=calvino.freenode.net;data=#allenjb :End of /NAMES list.;raw
+*;channel_changed;id=357;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;initial_presences_added
+*;irc_event;id=358;time=1176048933.9;network=freenode;mypresence=AllenJB|icecap;target=allenjb|icecap;irc_event=477;nick=calvino.freenode.net;data=#allenjb :[freenode-info] if you need to send private messages, please register: http://freenode.net/faq.shtml#privmsg;raw
+
+6;msg;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;msg=hello world
+*;presence_status_changed;id=361;time=1176048986.7;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|icecap;idle_started=1176048986
+6;>;time=1176048986.7;id=360
+6;+;id=363;time=1176048997.7;
+
+*;irc_event;id=364;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;irc_event=join;nick=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo;data=:#allenjb;raw
+*;presence_init;id=365;time=1176049025.6;mypresence=AllenJB|icecap;presence=AllenJB|2;network=freenode
+*;presence_changed;id=366;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo
+*;channel_presence_added;id=367;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;presence=AllenJB|2
+
+7;presence status;network=freenode;mypresence=AllenJB|icecap;name=AllenJB|2
+7;-;args;time=1176049047.7;
+
+7;presence status;network=freenode;mypresence=AllenJB|icecap;name=AllenJB|icecap
+7;-;args;time=1176049080.7;
+
+preslist;presence list
+preslist;>;id=371;time=1176049152.3;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
+preslist;+;id=372;time=1176049152.3;
+
+*;irc_event;id=373;time=1176049166.8;network=freenode;mypresence=AllenJB|icecap;irc_event=ping;data=:calvino.freenode.net;raw
+
+chanlist;channel list
+chanlist;>;id=375;time=1176049177.1;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;joined
+chanlist;+;id=376;time=1176049177.1;
+
+netlist;network list
+netlist;>;id=378;time=1176049214.1;network=Test Network;protocol=IRC
+netlist;>;id=379;time=1176049214.1;network=freenode;protocol=IRC
+netlist;+;id=380;time=1176049214.1;
+
+gatelist;gateway list
+gatelist;>;id=382;time=1176049231;network=freenode;host=irc.freenode.org
+gatelist;+;id=383;time=1176049231;
+
+*;irc_event;id=384;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;irc_event=privmsg;nick=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo;data=#allenjb :hello;raw
+*;msg;id=385;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;msg=hello;presence=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo
+*;presence_status_changed;id=386;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|2;idle_started=1176049295
+
+
+*;client_connected;id=388;time=1176049498.5;
+
+*;client_command;id=389;time=1176049515.4;tag=netlist;command=network list
+*;client_command_reply;id=390;time=1176049515.4;tag=netlist;command=network list;network=Test Network;protocol=IRC
+*;client_command_reply;id=391;time=1176049515.4;tag=netlist;command=network list;network=freenode;protocol=IRC
+*;client_command_reply;id=392;time=1176049515.4;tag=netlist;command=network list
+
+*;client_command;id=393;time=1176049522.1;tag=preslist;command=presence list
+*;client_command_reply;id=394;time=1176049522.1;tag=preslist;command=presence list;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
+*;client_command_reply;id=395;time=1176049522.1;tag=preslist;command=presence list
+
+*;irc_event;id=396;time=1176049529;network=freenode;mypresence=AllenJB|icecap;irc_event=ping;data=:calvino.freenode.net;raw
+
+*;client_command;id=397;time=1176049537.1;tag=chanlist;command=channel list
+*;client_command_reply;id=398;time=1176049537.1;tag=chanlist;command=channel list;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;joined
+*;client_command_reply;id=399;time=1176049537.1;tag=chanlist;command=channel list
+
+pd;presence disconnect;network=freenode;mypresence=allenjb|icecap
+pd;-;notfound;time=1176049656.5;
+
+pd;presence disconnect;network=freenode;mypresence=AllenJB|icecap
+*;gateway_disconnected;id=402;time=1176049680.3;network=freenode;mypresence=AllenJB|icecap
+
+--- ERK! A bug?!?
+Connection closed by foreign host.
