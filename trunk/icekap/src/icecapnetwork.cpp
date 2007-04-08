@@ -58,7 +58,7 @@ namespace Icecap
 
     bool Network::operator== (Network compareTo)
     {
-        return ( (protocol == compareTo.protocol) && (name == compareTo.name) );
+        return (name == compareTo.name);
     }
 
     bool Network::isNull ()

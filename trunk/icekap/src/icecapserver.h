@@ -108,20 +108,20 @@ class IcecapServer : public QObject
         void networkAdd (const Icecap::Network& network);
         void networkAdd (const QString& protocol, const QString& name);
         void networkRemove (const Icecap::Network& network);
-        void networkRemove (const QString& protocol, const QString& name);
-        Icecap::Network network (const QString& protocol, const QString& name);
+        void networkRemove (const QString& name);
+        Icecap::Network network (const QString& name);
         QValueList<Icecap::Network> getNetworkList ();
         void networkListDisplay ();
 
         void mypresenceAdd (const Icecap::MyPresence& mypresence);
         void mypresenceAdd (const QString& name);
         void mypresenceAdd (const QString& name, const Icecap::Network& network);
-        void mypresenceAdd (const QString& name, const QString& netProtocol, const QString& networkName);
+        void mypresenceAdd (const QString& name, const QString& networkName);
         void mypresenceRemove (const Icecap::MyPresence& mypresence);
-        void mypresenceRemove (const QString& name, const QString& netProtocol, const QString& networkName);
+        void mypresenceRemove (const QString& name, const QString& networkName);
         void mypresenceRemove (const QString& name, const Icecap::Network& network);
         Icecap::MyPresence mypresence (const QString& name, const Icecap::Network& network);
-        Icecap::MyPresence mypresence (const QString& name, const QString& netProtocol, const QString& networkName);
+        Icecap::MyPresence mypresence (const QString& name, const QString& networkName);
 
     signals:
         /// will be connected to KonversationApplication::removeServer()
