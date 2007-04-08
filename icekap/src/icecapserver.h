@@ -15,6 +15,8 @@
 #ifndef ICECAPSERVER_H
 #define ICECAPSERVER_H
 
+#include <qptrlist.h>
+#include <qvaluelist.h>
 #include <qtimer.h>
 #include <qdict.h>
 
@@ -30,6 +32,8 @@
 #include "icecapoutputfilter.h"
 #include "sslsocket.h"
 #include "icecapserversettings.h"
+#include "icecapnetwork.h"
+#include "icecapmypresence.h"
 
 class StatusPanel;
 class Identity;
@@ -100,11 +104,32 @@ class IcecapServer : public QObject
 
         ChannelListPanel* addChannelListPanel();
 
+        void networkClear ();
+        void networkAdd (const Icecap::Network& network);
+        void networkAdd (const QString& protocol, const QString& name);
+        void networkRemove (const Icecap::Network& network);
+        void networkRemove (const QString& protocol, const QString& name);
+        Icecap::Network network (const QString& protocol, const QString& name);
+        QValueList<Icecap::Network> getNetworkList ();
+        void networkListDisplay ();
+
+        void mypresenceAdd (const Icecap::MyPresence& mypresence);
+        void mypresenceAdd (const QString& name);
+        void mypresenceAdd (const QString& name, const Icecap::Network& network);
+        void mypresenceAdd (const QString& name, const QString& netProtocol, const QString& networkName);
+        void mypresenceRemove (const Icecap::MyPresence& mypresence);
+        void mypresenceRemove (const QString& name, const QString& netProtocol, const QString& networkName);
+        void mypresenceRemove (const QString& name, const Icecap::Network& network);
+        Icecap::MyPresence mypresence (const QString& name, const Icecap::Network& network);
+        Icecap::MyPresence mypresence (const QString& name, const QString& netProtocol, const QString& networkName);
+
     signals:
-        void deleted(IcecapServer* myself);       /// will be connected to KonversationApplication::removeServer()
+        /// will be connected to KonversationApplication::removeServer()
+        void deleted(IcecapServer* myself);
 
         /// Emitted when the server gains/loses connection.
-        void serverOnline(bool state);            /// will be connected to all server dependant tabs
+        /// will be connected to all server dependant tabs
+        void serverOnline(bool state);
 
         void sslInitFailure();
         void sslConnected(IcecapServer* server);
@@ -149,7 +174,7 @@ class IcecapServer : public QObject
         void sslError(const QString& reason);
         void connectionEstablished(const QString& ownHost);
 
-		void closeChannelListPanel();
+        void closeChannelListPanel();
 
     protected:
         // constants
@@ -181,9 +206,11 @@ class IcecapServer : public QObject
         QTimer reconnectTimer;
         QTimer incomingTimer;
         QTimer outgoingTimer;
-        QTimer unlockTimer;                       // timeout waiting for server to send initial messages
+        // timeout waiting for server to send initial messages
+        QTimer unlockTimer;
 
-        int timerInterval;                        // flood protection
+        // flood protection
+        int timerInterval;
 
         QCString inputBufferIncomplete;
         QStringList inputBuffer;
@@ -208,5 +235,12 @@ class IcecapServer : public QObject
 
         /// Used to lock incomingTimer while processing message.
         bool m_processingIncoming;
+
+        QValueList<Icecap::Network> networkList;
+        QValueList<Icecap::MyPresence> mypresenceList;
+
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

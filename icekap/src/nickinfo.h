@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 #include <qdatetime.h>
 #include <ksharedptr.h>
+#include <qvaluelist.h>
 
 class IcecapServer;
 class QTimer;

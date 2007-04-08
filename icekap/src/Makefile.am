@@ -6,8 +6,9 @@ bin_PROGRAMS = icekap
 bin_SCRIPTS = icekapircprotocolhandler
 
 icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp \
-	konvisettingsdialog.cpp konversationmainwindow.cpp valuelistviewitem.cpp urlcatcher.cpp \
-	scriptlauncher.cpp rawlog.cpp channellistpanel.cpp konsolepanel.cpp \
+	konvisettingsdialog.cpp konversationmainwindow.cpp valuelistviewitem.cpp \
+	icecappresence.cpp icecapchannel.cpp icecapgateway.cpp icecapnetwork.cpp icecapmypresence.cpp \
+	urlcatcher.cpp scriptlauncher.cpp rawlog.cpp channellistpanel.cpp konsolepanel.cpp \
 	identity.cpp statuspanel.cpp topiccombobox.cpp \
 	nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \

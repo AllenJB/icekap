@@ -871,6 +871,131 @@ void IcecapServer::connectToNewServer(const QString& server, const QString& port
     konvApp->quickConnectToServer(server, port,"", "", password);
 }
 
+void IcecapServer::networkClear ()
+{
+    networkList.clear ();
+}
+
+QValueList<Icecap::Network> IcecapServer::getNetworkList ()
+{
+    return networkList;
+}
+
+void IcecapServer::networkListDisplay ()
+{
+    appendMessageToFrontmost ("NetList", "Network List (Local Copy):");
+    QValueList<Icecap::Network>::const_iterator end = networkList.end();
+    for( QValueListConstIterator<Icecap::Network> it( networkList.begin() ); it != end; ++it ) {
+        Icecap::Network current = *it;
+        appendMessageToFrontmost ("NetList", "Network: "+ current.getProtocol() +" - "+ current.getName());
+/*
+        if ( (current.getName() == name) && (current.getProtocol() == protocol) ) {
+            return current;
+        }
+*/
+    }
+    appendMessageToFrontmost("NetList", "End of Network List (Local Copy)");
+}
+
+Icecap::Network IcecapServer::network (const QString& protocol, const QString& name)
+{
+    QValueList<Icecap::Network>::const_iterator end = networkList.end();
+    for( QValueListConstIterator<Icecap::Network> it( networkList.begin() ); it != end; ++it ) {
+        Icecap::Network current = *it;
+        if ( (current.getName() == name) && (current.getProtocol() == protocol) ) {
+            return current;
+        }
+    }
+    // Return a "null" Presence
+    // TODO: Is there a better way?
+    return Icecap::Network();
+}
+
+void IcecapServer::networkAdd (const Icecap::Network& network)
+{
+    networkList.append (network);
+}
+
+void IcecapServer::networkAdd (const QString& protocol, const QString& name)
+{
+    networkList.append (Icecap::Network (protocol, name));
+}
+
+void IcecapServer::networkRemove (const Icecap::Network& network)
+{
+    networkList.remove (network);
+}
+
+void IcecapServer::networkRemove (const QString& protocol, const QString& name)
+{
+    networkList.remove (network (protocol, name));
+}
+
+Icecap::MyPresence IcecapServer::mypresence (const QString& name, const Icecap::Network& network)
+{
+    QValueList<Icecap::MyPresence>::const_iterator end = mypresenceList.end();
+    for( QValueListConstIterator<Icecap::MyPresence> it( mypresenceList.begin() ); it != end; ++it ) {
+        Icecap::MyPresence current = *it;
+        if ((current.getName() == name) && (current.getNetwork() == network)) {
+            return current;
+        }
+    }
+    // Return a "null" Presence
+    // TODO: Is there a better way?
+    return Icecap::MyPresence();
+/*
+    QPtrListIterator<MyPresence> it( mypresenceList );
+    MyPresence* current;
+    while ( (current = it.current()) != 0 ) {
+        ++it;
+        if ((current.name() == name) && (current.network() == network)) {
+            break;
+        }
+    }
+    return current;
+*/
+}
+
+Icecap::MyPresence IcecapServer::mypresence (const QString& name, const QString& netProtocol, const QString& networkName)
+{
+    return mypresence (name, network (netProtocol, networkName));
+}
+
+void IcecapServer::mypresenceAdd (const Icecap::MyPresence& mypresence)
+{
+    mypresenceList.append (mypresence);
+}
+
+void IcecapServer::mypresenceAdd (const QString& name)
+{
+    mypresenceList.append (Icecap::MyPresence (name));
+}
+
+void IcecapServer::mypresenceAdd (const QString& name, const QString& netProtocol, const QString& networkName)
+{
+    mypresenceList.append (Icecap::MyPresence (name, network (netProtocol, networkName)));
+}
+
+void IcecapServer::mypresenceAdd (const QString& name, const Icecap::Network& network)
+{
+    mypresenceList.append (Icecap::MyPresence (name, network));
+}
+
+void IcecapServer::mypresenceRemove (const Icecap::MyPresence& mypresence)
+{
+    mypresenceList.remove (mypresence);
+}
+
+void IcecapServer::mypresenceRemove (const QString& name, const Icecap::Network& network)
+{
+    mypresenceList.remove (mypresence (name, network));
+}
+
+void IcecapServer::mypresenceRemove (const QString& name, const QString& netProtocol, const QString& networkName)
+{
+    mypresenceRemove (name, network (netProtocol, networkName));
+}
+
 #include "icecapserver.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;

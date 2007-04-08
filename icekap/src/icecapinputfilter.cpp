@@ -41,6 +41,7 @@
 IcecapInputFilter::IcecapInputFilter()
 {
     m_connecting = false;
+    netlistInProgress = false;
 }
 
 IcecapInputFilter::~IcecapInputFilter()
@@ -138,6 +139,7 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         {
             if (status == "+") {
                 server->appendMessageToFrontmost (i18n ("End of network list"), "End of network list");
+                netlistInProgress = false;
             }
             else if (status == ">")
             {
@@ -163,14 +165,18 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
                     return;
                 }
 
-                Konversation::ServerGroupSettingsPtr network = new Konversation::ServerGroupSettings (parameterMap["network"]);
-                Preferences::addServerGroup (network);
-                static_cast<KonversationApplication*>(kapp)->saveOptions(true);
-//                emit serverGroupsChanged();
+
+                if (!netlistInProgress) {
+                    server->networkClear();
+                    netlistInProgress = true;
+                }
+
+                server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
 
             } else {
                 // TODO: Are there any known circumstances that would cause this?
-                server->appendMessageToFrontmost (i18n ("Network List Error"), "Network List: An unhandled error occurred.");
+                server->appendMessageToFrontmost (i18n ("Network List"),
+                    "Network List Error: An unhandled error occurred.");
             }
         }
         else                              // send them to /LIST window

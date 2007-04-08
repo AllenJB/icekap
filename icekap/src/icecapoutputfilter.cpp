@@ -233,6 +233,22 @@ namespace Icecap
 
         QString line=inputLine.lower();
 
+        if (line.startsWith (commandChar +"netlist")) {
+            result.toServer = "netlist;network list";
+            result.output = "netlist;network list";
+            result.typeString = i18n("NetList");
+            result.type = Program;
+/*
+            result.toServer = "netlist;network list";
+            result.output = "";
+            result.type = "action";
+*/
+        }
+        else if (line.startsWith (commandChar +"nl")) {
+            m_server->networkListDisplay ();
+
+        } else
+
         // Action?
         if(line.startsWith(commandChar+"me ") && !destination.isEmpty())
         {
