@@ -233,20 +233,10 @@ namespace Icecap
 
         QString line=inputLine.lower();
 
-        if (line.startsWith (commandChar +"netlist")) {
-            result.toServer = "netlist;network list";
-            result.output = "netlist;network list";
-            result.typeString = i18n("NetList");
-            result.type = Program;
-/*
-            result.toServer = "netlist;network list";
-            result.output = "";
-            result.type = "action";
-*/
-        }
-        else if (line.startsWith (commandChar +"nl")) {
-            m_server->networkListDisplay ();
-
+        if (line.startsWith (commandChar +"network")) {
+            QString parameter = inputLine.section(' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseNetwork (parameter);
         } else
 
         // Action?
@@ -349,6 +339,60 @@ namespace Icecap
 
         return result;
     }
+
+
+    OutputFilterResult IcecapOutputFilter::parseNetwork (const QString& parameter)
+    {
+        OutputFilterResult result;
+        if (parameter == "list")
+        {
+            result.toServer = "netlist;network list";
+//            result.output = "netlist;network list";
+//            result.typeString = i18n("NetList");
+            result.type = Command;
+        }
+        else if (parameter == "display")
+        {
+            m_server->networkListDisplay ();
+        }
+        else if (parameter.startsWith ("add "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 3) {
+                result.output = "Usage: /network (list|display|add|del) [protocol] [name]";
+                result.type = Program;
+                return result;
+            }
+            QString protocol = parameterList[1];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = "netadd;network add;protocol="+ protocol +";network="+ network;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("del "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 3) {
+                result.output = "Usage: /network (list|display|add|del) [protocol] [name]";
+                result.type = Program;
+                return result;
+            }
+            QString protocol = parameterList[1];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = "netdel;network remove;protocol="+ protocol +";network="+ network;
+            result.type = Command;
+        }
+        else
+        {
+            result.output = "Usage: /network (list|display|add|del) [protocol] [name]";
+            result.type = Program;
+        }
+        return result;
+    }
+
 
     OutputFilterResult IcecapOutputFilter::parseOp(const QString &parameter)
     {

@@ -44,17 +44,21 @@ namespace Icecap
 
     struct OutputFilterResult
     {
+        /// What will be seen in the IRCView
         QString output;
+        /// What will be seen in the IRCView (multiline)
         QStringList outputList;
+        /// What will be sent to the server
         QString toServer;
+        /// What will be sent to the server (multiline)
         QStringList toServerList;
+        /// Prefix string. eg. "-->" or "***"
         QString typeString;
+        /// Type of output
         MessageType type;
     };
 
 
-//    class IcecapOutputFilter : public GenericOutputFilter, public QObject
-//    class IcecapOutputFilter : public GenericOutputFilter
     class IcecapOutputFilter : public QObject
     {
         Q_OBJECT
@@ -95,6 +99,8 @@ namespace Icecap
             OutputFilterResult execUnban(const QString& mask,const QString& channels);
 
         protected:
+            OutputFilterResult parseNetwork (const QString& parameter);
+
             OutputFilterResult parseMsg(const QString& myNick,const QString& parameter, bool focusQueryWindow);
             OutputFilterResult parseSMsg(const QString& parameter);
             OutputFilterResult parseDescribe(const QString& parameter);
@@ -151,7 +157,7 @@ namespace Icecap
             OutputFilterResult info(const QString& check);
             OutputFilterResult error(const QString& check);
 
-	    QString addNickToEmptyNickList(const QString& nick, const QString& parameter);
+            QString addNickToEmptyNickList(const QString& nick, const QString& parameter);
 
         private:
             QString destination;
@@ -161,3 +167,6 @@ namespace Icecap
     };
 }
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:
