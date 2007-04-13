@@ -60,7 +60,7 @@ class IcecapServer : public QObject
         /** Constructor used for a 'fast connect' to a server.
          *  The details are passed in.  Used for example when the user does "/server irc.somewhere.net"
          */
-        IcecapServer(ViewContainer* viewContainer, const QString& hostName,const QString& port,
+        IcecapServer(ViewContainer* viewContainer, const QString& name, const QString& hostName,const QString& port,
             const QString& password, const bool& useSSL=false);
         ~IcecapServer();
 

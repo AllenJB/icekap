@@ -139,7 +139,8 @@ class KonversationApplication : public KUniqueApplication
             const QString& password="",
             const bool& useSSL=false
             );
-        void quickConnectToIcecapServer(const QString& hostName,
+        void quickConnectToIcecapServer(const QString& name,
+            const QString& hostName,
             const QString& port = "1027",
             const QString& password="",
             const bool& useSSL=false

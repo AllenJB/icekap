@@ -26,6 +26,9 @@ namespace Icecap
             explicit IcecapServerSettings(const QString& server);
 //            ~IcecapServerSettings();
 
+            void setName (const QString& name) { m_name = name; }
+            QString name() const { return m_name; }
+
             void setServer(const QString& server) { m_server = server; }
             QString server() const { return m_server; }
 
@@ -41,6 +44,7 @@ namespace Icecap
             bool operator== (const IcecapServerSettings& settings) const;
 
         private:
+            QString m_name;
             QString m_server;
             int m_port;
             QString m_password;
@@ -50,3 +54,6 @@ namespace Icecap
 
 }
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:
