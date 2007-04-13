@@ -25,6 +25,18 @@ namespace Icecap
         autoconnect = false;
     }
 
+    MyPresence::MyPresence (const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
+    {
+        name = newName;
+        network = newNetwork;
+        connected = parameterMap.contains ("connected");
+        autoconnect = parameterMap.contains ("autoconnect");
+        if (parameterMap.contains ("presence"))
+        {
+            presence = parameterMap["presence"];
+        }
+    }
+
     void MyPresence::setName (const QString& newName)
     {
         name = newName;
@@ -45,6 +57,11 @@ namespace Icecap
         autoconnect = newStatus;
     }
 
+    void MyPresence::setPresence (QString& presenceName)
+    {
+        presence = presenceName;
+    }
+
     Channel MyPresence::channel (const QString& channelName)
     {
         QValueList<Channel>::const_iterator end = channelList.end();
@@ -57,18 +74,6 @@ namespace Icecap
         // Return a "null" Presence
         // TODO: Is there a better way?
         return Channel();
-
-/*
-        QPtrListIterator<Channel> it( channelList );
-        Channel* current;
-        while ( (current = it.current()) != 0 ) {
-            ++it;
-            if (current.name() == channelName) {
-                break;
-            }
-        }
-        return current;
-*/
     }
 
     void MyPresence::channelAdd (const Channel& channel)
@@ -81,6 +86,11 @@ namespace Icecap
         channelList.append (Channel (channelName));
     }
 
+    void MyPresence::channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap)
+    {
+        channelList.append (Channel (channelName, parameterMap));
+    }
+
     void MyPresence::channelRemove (const Channel& channel)
     {
         channelList.remove (channel);
@@ -89,6 +99,11 @@ namespace Icecap
     void MyPresence::channelRemove (const QString& channelName)
     {
         channelList.remove (channel (channelName));
+    }
+
+    void MyPresence::channelClear ()
+    {
+        channelList.clear ();
     }
 
     bool MyPresence::operator== (MyPresence compareTo)

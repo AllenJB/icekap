@@ -19,6 +19,7 @@
 #include <qvaluelist.h>
 #include <qtimer.h>
 #include <qdict.h>
+#include <qmap.h>
 
 #include <qdeepcopy.h>
 
@@ -117,11 +118,15 @@ class IcecapServer : public QObject
         void mypresenceAdd (const QString& name);
         void mypresenceAdd (const QString& name, const Icecap::Network& network);
         void mypresenceAdd (const QString& name, const QString& networkName);
+        void mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap);
         void mypresenceRemove (const Icecap::MyPresence& mypresence);
         void mypresenceRemove (const QString& name, const QString& networkName);
         void mypresenceRemove (const QString& name, const Icecap::Network& network);
+        // TODO: These may need to return a pointer / reference
         Icecap::MyPresence mypresence (const QString& name, const Icecap::Network& network);
         Icecap::MyPresence mypresence (const QString& name, const QString& networkName);
+        void presenceListDisplay ();
+        void mypresenceClear ();
 
     signals:
         /// will be connected to KonversationApplication::removeServer()

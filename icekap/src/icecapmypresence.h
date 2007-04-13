@@ -10,6 +10,7 @@
 
 #include <qvaluelist.h>
 #include <qstring.h>
+#include <qmap.h>
 
 #include "icecapchannel.h"
 #include "icecapnetwork.h"
@@ -23,29 +24,35 @@ namespace Icecap
             MyPresence (): name(0) {}
             MyPresence (const QString& newName);
             MyPresence (const QString& newName, const Network& newNetwork);
+            MyPresence (const QString& newName, const Network& newNetwork, const QMap<QString, QString>& parameterMap);
 //            ~MyPresence ();
 
             QString getName () { return name; }
             Network getNetwork () { return network; }
             bool getConnected () { return connected; }
             bool getAutoconnect () { return autoconnect; }
+            QString getPresence () { return presence; }
 
             void setName (const QString& newName);
             void setNetwork (const Network& newNetwork);
             void setConnected (bool newStatus);
             void setAutoconnect (bool newStatus);
+            void setPresence (QString& presenceName);
 
             Channel channel (const QString& channelName);
             void channelAdd (const Channel& channel);
             void channelAdd (const QString& channelName);
+            void channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap);
             void channelRemove (const Channel& channel);
             void channelRemove (const QString& channelName);
+            void channelClear ();
 
             bool operator== (MyPresence compareTo);
             bool isNull ();
 
         private:
             QString name;
+            QString presence;
             bool connected;
             bool autoconnect;
             QValueList<Channel> channelList;
