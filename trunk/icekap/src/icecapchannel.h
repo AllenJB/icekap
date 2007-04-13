@@ -12,6 +12,7 @@
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qvaluelist.h>
+#include <qmap.h>
 
 #include "icecappresence.h"
 
@@ -23,6 +24,7 @@ namespace Icecap
         public:
             Channel (): name(0) {}
             Channel (const QString& newName);
+            Channel (const QString& newName, const QMap<QString, QString>& parameterMap);
 //            ~Channel ();
 
             QString getName () { return name; }

@@ -14,7 +14,12 @@ namespace Icecap
     {
         name = newName;
         connected = false;
-//        presenceList = QPtrList<Presence> ();
+    }
+
+    Channel::Channel (const QString& newName, const QMap<QString, QString>& parameterMap)
+    {
+        name = newName;
+        connected = parameterMap.contains ("joined");
     }
 
     void Channel::setName (const QString& newName)

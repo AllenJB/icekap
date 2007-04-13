@@ -42,6 +42,7 @@ IcecapInputFilter::IcecapInputFilter()
 {
     m_connecting = false;
     netlistInProgress = false;
+    prslistInProgress = false;
 }
 
 IcecapInputFilter::~IcecapInputFilter()
@@ -139,6 +140,26 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         server->networkRemove (parameterMap["network"]);
         server->appendStatusMessage (i18n("Network"), "Network deleted: "+ parameterMap["network"]);
     }
+    else if (eventName == "local_presence_init")
+    {
+        server->mypresenceAdd (parameterMap ["mypresence"], parameterMap["network"]);
+        server->appendStatusMessage (i18n("Presence"), "Presence added: ["+ parameterMap["mypresence"] +"] "+ parameterMap["network"]);
+    }
+    else if (eventName == "local_presence_deinit")
+    {
+        server->mypresenceRemove (parameterMap ["mypresence"], parameterMap["network"]);
+        server->appendStatusMessage (i18n("Presence"), "Presence deleted: ["+ parameterMap["mypresence"] +"] "+ parameterMap["network"]);
+    }
+    else if (eventName == "channel_init")
+    {
+        server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd (parameterMap["channel"]);
+        server->appendStatusMessage ( i18n("Channel"), "Channel added: "+ parameterMap["channel"] +" to presence: "+ parameterMap["mypresence"] +" on network: "+ parameterMap["network"]);
+    }
+    else if (eventName == "channel_deinit")
+    {
+        server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd (parameterMap["channel"]);
+        server->appendStatusMessage ( i18n("Channel"), "Channel deleted: "+ parameterMap["channel"] +" from presence: "+ parameterMap["mypresence"] +" on network: "+ parameterMap["network"]);
+    }
 }
 
 void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList)
@@ -156,7 +177,10 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         QStringList thisParam = QStringList::split("=", *it);
         QString key = thisParam.first ();
         thisParam.pop_front ();
-        QString value = thisParam.join ("=");
+        QString value = key;
+        if (thisParam.size () > 0) {
+            value = thisParam.join ("=");
+        }
         parameterMap.insert (key, value, TRUE);
     }
 
@@ -170,6 +194,33 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     else if (tag == "netdel")
     {
         parseNetworkDel (tag, status, parameterMap);
+    }
+    else
+
+    if (tag == "prslist")
+    {
+        parsePresenceList (tag, status, parameterMap);
+    }
+    else if (tag == "prsadd")
+    {
+        parsePresenceAdd (tag, status, parameterMap);
+    }
+    else if (tag == "prsdel")
+    {
+        parsePresenceDel (tag, status, parameterMap);
+    } else
+
+    if (tag == "chlist")
+    {
+        parseChannelList (tag, status, parameterMap);
+    }
+    else if (tag == "chadd")
+    {
+        parseChannelAdd (tag, status, parameterMap);
+    }
+    else if (tag == "chdel")
+    {
+        parseChannelDel (tag, status, parameterMap);
     }
 
 }
@@ -230,6 +281,128 @@ void IcecapInputFilter::parseNetworkDel (const QString& tag, const QString& stat
             "Network Del: Error: An unhandled error occurred.");
     }
 }
+
+
+/**
+ * @todo Do we still need to handle with getAutomaticRequest? I think so but we'll need to change the handling.
+ */
+void IcecapInputFilter::parsePresenceList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+{
+    if (status == "+") {
+        prslistInProgress = false;
+        if (getAutomaticRequest ("prslist", QString::null) == 0)
+        {
+            server->appendMessageToFrontmost (i18n ("Presence List"), "End of presence list");
+        }
+    }
+    else if (status == ">") {
+        if (getAutomaticRequest ("prslist", QString::null) == 0)
+        {
+            QString message;
+            message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameterMap["mypresence"]).arg (parameterMap["network"]);
+            server->appendMessageToFrontmost (i18n ("Presence List"), message);
+        }
+
+        if (!prslistInProgress) {
+            server->mypresenceClear ();
+            prslistInProgress = true;
+        }
+
+        // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
+        // It's simpler than trying to handle all the possibilities here I think
+        server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
+    } else {
+        // TODO: Are there any known circumstances that would cause this?
+        server->appendMessageToFrontmost (i18n ("Presence List"),
+            "Presence List Error: An unhandled error occurred.");
+    }
+}
+
+void IcecapInputFilter::parsePresenceAdd (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        server->appendMessageToFrontmost (i18n ("Presence"), "Presence added successfully.");
+    }
+    else
+    {
+        server->appendMessageToFrontmost (i18n ("Presence"),
+            "Presence Add: Error: An unhandled error occurred.");
+    }
+}
+
+void IcecapInputFilter::parsePresenceDel (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        server->appendMessageToFrontmost (i18n ("Presence"), "Presence deleted successfully.");
+    }
+    else
+    {
+        server->appendMessageToFrontmost (i18n ("Presence"),
+            "Presence Del: Error: An unhandled error occurred.");
+    }
+}
+
+
+/**
+ * @todo Do we still need to handle with getAutomaticRequest? I think so but we'll need to change the handling.
+ */
+void IcecapInputFilter::parseChannelList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+{
+    if (status == "+") {
+        prslistInProgress = false;
+        if (getAutomaticRequest ("chlist", QString::null) == 0)
+        {
+            server->appendMessageToFrontmost (i18n ("Channel List"), "End of channel list");
+        }
+    }
+    else if (status == ">") {
+        if (getAutomaticRequest ("chlist", QString::null) == 0)
+        {
+            QString message;
+            message = i18n ("%1 Network: %2 Presence: %3", "%1 Network: %2 Presence: %3").arg(parameterMap["channel"]).arg (parameterMap["network"]).arg (parameterMap["mypresence"]);
+            server->appendMessageToFrontmost (i18n ("Presence List"), message);
+        }
+
+        if (!chlistInProgress) {
+            server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelClear ();
+            chlistInProgress = true;
+        }
+
+        // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
+        // It's simpler than trying to handle all the possibilities here I think
+        server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd(parameterMap["channel"], parameterMap);
+    } else {
+        // TODO: Are there any known circumstances that would cause this?
+        server->appendMessageToFrontmost (i18n ("Channel List"),
+            "Channel List Error: An unhandled error occurred.");
+    }
+}
+
+void IcecapInputFilter::parseChannelAdd (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        server->appendMessageToFrontmost (i18n ("Channel"), "Channel added successfully.");
+    }
+    else
+    {
+        server->appendMessageToFrontmost (i18n ("Channel"),
+            "Channel Add: Error: An unhandled error occurred.");
+    }
+}
+
+// TODO: Does this even exist?
+void IcecapInputFilter::parseChannelDel (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        server->appendMessageToFrontmost (i18n ("Channel"), "Channel deleted successfully.");
+    }
+    else
+    {
+        server->appendMessageToFrontmost (i18n ("Channel"),
+            "Channel Del: Error: An unhandled error occurred.");
+    }
+}
+
 
 void IcecapInputFilter::parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &_trailing)
 {

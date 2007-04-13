@@ -233,11 +233,25 @@ namespace Icecap
 
         QString line=inputLine.lower();
 
-        if (line.startsWith (commandChar +"network")) {
+        if (line.startsWith (commandChar +"network"))
+        {
             QString parameter = inputLine.section(' ', 1);
             parameter = parameter.stripWhiteSpace();
             result = parseNetwork (parameter);
-        } else
+        }
+        else if (line.startsWith (commandChar +"presence"))
+        {
+            QString parameter = inputLine.section(' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseMyPresence (parameter);
+        }
+        else if (line.startsWith (commandChar +"channel"))
+        {
+            QString parameter = inputLine.section (' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseChannel (parameter);
+        }
+        else
 
         // Action?
         if(line.startsWith(commandChar+"me ") && !destination.isEmpty())
@@ -341,14 +355,62 @@ namespace Icecap
     }
 
 
+    OutputFilterResult IcecapOutputFilter::parseMyPresence (const QString& parameter)
+    {
+        OutputFilterResult result;
+        if (parameter == "list")
+        {
+            result.toServer = "prslist;presence list";
+            result.type = Command;
+        }
+        else if (parameter == "display")
+        {
+            m_server->presenceListDisplay ();
+        }
+        else if (parameter.startsWith ("add "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 3) {
+                result.output = "Usage: /presence (list|display|add|del) [name] [network]";
+                result.type = Program;
+                return result;
+            }
+            QString myp = parameterList[1];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = "prsadd;presence add;mypresence="+ myp +";network="+ network;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("del "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 3) {
+                result.output = "Usage: /presence (list|display|add|del) [name] [network]";
+                result.type = Program;
+                return result;
+            }
+            QString myp = parameterList[1];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = "prsdel;presence remove;mypresence="+ myp +";network="+ network;
+            result.type = Command;
+        }
+        else
+        {
+            result.output = "Usage: /presence (list|display|add|del) [name] [network]";
+            result.type = Program;
+        }
+        return result;
+    }
+
     OutputFilterResult IcecapOutputFilter::parseNetwork (const QString& parameter)
     {
         OutputFilterResult result;
         if (parameter == "list")
         {
             result.toServer = "netlist;network list";
-//            result.output = "netlist;network list";
-//            result.typeString = i18n("NetList");
             result.type = Command;
         }
         else if (parameter == "display")
@@ -388,6 +450,65 @@ namespace Icecap
         else
         {
             result.output = "Usage: /network (list|display|add|del) [protocol] [name]";
+            result.type = Program;
+        }
+        return result;
+    }
+
+
+    OutputFilterResult IcecapOutputFilter::parseChannel (const QString& parameter)
+    {
+        QString command = "channel";
+        QString cmd = "ch";
+        QString usage = "Usage: /"+ command +" (list|display|add|del) [channel] [mypresence] [network]";
+
+        OutputFilterResult result;
+        if (parameter == "list")
+        {
+            result.toServer = cmd +"list;"+ command +" list";
+            result.type = Command;
+        }
+        else if (parameter == "display")
+        {
+            m_server->networkListDisplay ();
+        }
+        else if (parameter.startsWith ("add "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 4) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString channel = parameterList[1];
+            QString mypresence = parameterList[2];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = cmd +"add;"+ command +" add;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("del "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 4) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString channel = parameterList[1];
+            QString mypresence = parameterList[2];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = cmd +"del;"+ command +" remove;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
+            result.type = Command;
+        }
+        else
+        {
+            result.output = usage;
             result.type = Program;
         }
         return result;

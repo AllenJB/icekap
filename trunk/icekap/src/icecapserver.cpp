@@ -945,6 +945,11 @@ Icecap::MyPresence IcecapServer::mypresence (const QString& name, const QString&
     return mypresence (name, network (networkName));
 }
 
+void IcecapServer::mypresenceClear ()
+{
+    mypresenceList.clear ();
+}
+
 void IcecapServer::mypresenceAdd (const Icecap::MyPresence& mypresence)
 {
     mypresenceList.append (mypresence);
@@ -958,6 +963,21 @@ void IcecapServer::mypresenceAdd (const QString& name)
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName)
 {
     mypresenceList.append (Icecap::MyPresence (name, network (networkName)));
+}
+
+void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap)
+{
+    mypresenceList.append (Icecap::MyPresence (name, network (networkName)));
+    Icecap::MyPresence myp = mypresence (name, networkName);
+    if (parameterMap.contains ("autoconnect")) {
+        myp.setAutoconnect (true);
+    }
+    if (parameterMap.contains ("connected")) {
+        myp.setConnected (true);
+    }
+    if (parameterMap.contains ("presence")) {
+        myp.setPresence (parameterMap["presence"]);
+    }
 }
 
 void IcecapServer::mypresenceAdd (const QString& name, const Icecap::Network& network)
@@ -978,6 +998,17 @@ void IcecapServer::mypresenceRemove (const QString& name, const Icecap::Network&
 void IcecapServer::mypresenceRemove (const QString& name, const QString& networkName)
 {
     mypresenceRemove (name, network (networkName));
+}
+
+void IcecapServer::presenceListDisplay ()
+{
+    appendMessageToFrontmost ("Presence", "Presence List (Local Copy):");
+    QValueList<Icecap::MyPresence>::const_iterator end = mypresenceList.end();
+    for( QValueListConstIterator<Icecap::MyPresence> it( mypresenceList.begin() ); it != end; ++it ) {
+        Icecap::MyPresence current = *it;
+        appendMessageToFrontmost ("Presence", "Presence: "+ current.getName() +" - "+ current.getNetwork().getName ());
+    }
+    appendMessageToFrontmost("Presence", "End of Presence List (Local Copy)");
 }
 
 #include "icecapserver.moc"

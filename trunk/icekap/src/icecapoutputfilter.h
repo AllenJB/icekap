@@ -100,6 +100,8 @@ namespace Icecap
 
         protected:
             OutputFilterResult parseNetwork (const QString& parameter);
+            OutputFilterResult parseMyPresence (const QString& parameter);
+            OutputFilterResult parseChannel (const QString& parameter);
 
             OutputFilterResult parseMsg(const QString& myNick,const QString& parameter, bool focusQueryWindow);
             OutputFilterResult parseSMsg(const QString& parameter);
