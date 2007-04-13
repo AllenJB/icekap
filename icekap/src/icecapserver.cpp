@@ -49,11 +49,11 @@
 // TODO: Implement support for icecap authorisation (when it supports authorisation itself)
 // TODO: Implement support for SSL connections
 
-IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& hostName,
-const QString& port, const QString& password, const bool& useSSL)
+IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
     quickConnect = true;
 
+    m_server.setName (name);
     m_server.setServer(hostName);
     m_server.setPort(port.toInt());
     m_server.setPassword(password);

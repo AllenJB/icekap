@@ -32,7 +32,8 @@ class IcecapQuickConnectDialog : public KDialogBase
         ~IcecapQuickConnectDialog();
 
         signals:
-        void connectClicked(const QString& hostName,
+        void connectClicked(const QString& name,
+            const QString& hostName,
             const QString& port,
             const QString& password,
             const bool& useSSL
@@ -42,6 +43,7 @@ class IcecapQuickConnectDialog : public KDialogBase
         void slotOk();
 
     protected:
+        KLineEdit*  nameInput;
         KLineEdit*  hostNameInput;
         KLineEdit*  portInput;
 //        KLineEdit*  passwordInput;
@@ -49,3 +51,6 @@ class IcecapQuickConnectDialog : public KDialogBase
 //        QCheckBox*      sslCheckBox;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

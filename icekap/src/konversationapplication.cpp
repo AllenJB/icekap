@@ -477,7 +477,7 @@ void KonversationApplication::quickConnectToServer(const QString& hostName, cons
 */
 }
 
-void KonversationApplication::quickConnectToIcecapServer(const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
+void KonversationApplication::quickConnectToIcecapServer(const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
     //used for the quick connect dialog and /server command
 
@@ -487,7 +487,7 @@ void KonversationApplication::quickConnectToIcecapServer(const QString& hostName
     if (!identity || !validateIdentity(identity))
         return;
 
-    IcecapServer* newServer = new IcecapServer(mainWindow->getViewContainer(), hostName, port, password, useSSL);
+    IcecapServer* newServer = new IcecapServer(mainWindow->getViewContainer(), name, hostName, port, password, useSSL);
 
     connect(mainWindow,SIGNAL (startNotifyTimer(int)),newServer,SLOT (startNotifyTimer(int)) );
     connect(mainWindow,SIGNAL (quitServer()),newServer,SLOT (quitServer()) );
@@ -1052,7 +1052,7 @@ void KonversationApplication::openQuickConnectDialog()
 void KonversationApplication::openIcecapQuickConnectDialog()
 {
     icecapQuickConnectDialog = new IcecapQuickConnectDialog(mainWindow);
-    connect(icecapQuickConnectDialog, SIGNAL(connectClicked(const QString&, const QString&, const QString&, const bool&)),this, SLOT(quickConnectToIcecapServer(const QString&, const QString&, const QString&, const bool&)));
+    connect(icecapQuickConnectDialog, SIGNAL(connectClicked(const QString&, const QString&, const QString&, const QString&, const bool&)),this, SLOT(quickConnectToIcecapServer(const QString&, const QString&, const QString&, const QString&, const bool&)));
     icecapQuickConnectDialog->show();
 }
 

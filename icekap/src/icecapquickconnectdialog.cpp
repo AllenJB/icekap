@@ -34,6 +34,13 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     layout->setSpacing(spacingHint());
     layout->setColStretch(1, 10);
 
+    QLabel* nameLabel = new QLabel(i18n("&Server name:"), page);
+    QString nameWT = i18n("Enter a name for the server here.");
+    QWhatsThis::add(nameLabel, nameWT);
+    nameInput = new KLineEdit("Icecap Server", page);
+    QWhatsThis::add(nameInput, nameWT);
+    nameLabel->setBuddy(nameInput);
+
     QLabel* hostNameLabel = new QLabel(i18n("&Server host:"), page);
     QString hostNameWT = i18n("Enter the host of the server here.");
     QWhatsThis::add(hostNameLabel, hostNameWT);
@@ -65,16 +72,20 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     sslCheckBox = new QCheckBox(page, "sslCheckBox");
     sslCheckBox->setText(i18n("&Use SSL"));
 */
-    layout->addWidget(hostNameLabel, 0, 0);
-    layout->addWidget(hostNameInput, 0, 1);
-    layout->addWidget(portLabel, 0, 2);
-    layout->addWidget(portInput, 0, 3);
+    layout->addWidget (nameLabel, 0, 0);
+    layout->addWidget (nameInput, 0, 1);
 
-    layout->addWidget(nickLabel, 1, 0);
-    layout->addWidget(nickInput, 1, 1);
+    layout->addWidget(hostNameLabel, 0, 2);
+    layout->addWidget(hostNameInput, 0, 3);
+
+    layout->addWidget(portLabel, 0, 4);
+    layout->addWidget(portInput, 0, 5);
+
+    layout->addWidget(nickLabel, 1, 2);
+    layout->addWidget(nickInput, 1, 3);
 /*
-    layout->addWidget(passwordLabel, 1, 2);
-    layout->addWidget(passwordInput, 1, 3);
+    layout->addWidget(passwordLabel, 1, 4);
+    layout->addWidget(passwordInput, 1, 5);
 
     layout->addWidget(sslCheckBox, 2, 0);
 */
@@ -93,7 +104,8 @@ void IcecapQuickConnectDialog::slotOk()
         !portInput->text().isEmpty() &&
         !nickInput->text().isEmpty())
     {
-        emit connectClicked(hostNameInput->text().stripWhiteSpace(),
+        emit connectClicked(nameInput->text().stripWhiteSpace(),
+            hostNameInput->text().stripWhiteSpace(),
             portInput->text(),
             "", // passwords not implemented
             false);
@@ -102,3 +114,6 @@ void IcecapQuickConnectDialog::slotOk()
 }
 
 #include "icecapquickconnectdialog.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:
