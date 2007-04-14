@@ -65,24 +65,28 @@ class IcecapServer : public QObject
         ~IcecapServer();
 
         QString getServerName() const { return m_server.name(); };
-
-        Icecap::IcecapServerSettings serverSettings() const { return m_server; }
         QString name() const { return m_server.name(); }
 
-        bool getUseSSL() const;
+        Icecap::IcecapServerSettings serverSettings() const { return m_server; }
+
+        bool getUseSSL() const { return m_server.SSLEnabled(); }
         QString getSSLInfo() const;
 
-        int getPort() const;
+        int getPort() const { return m_server.port (); }
 
         /** This returns true when we have a socket connection.
          *	Not necessarily 'online' and ready for commands.
          *  @see connected()
          */
         bool isConnected() const;
-        bool isConnecting() const;
+        bool isConnecting() const { return connecting; }
 
-        IcecapInputFilter* getInputFilter();
-        Icecap::IcecapOutputFilter* getOutputFilter();
+        /** This returns true when we are 'online' - ready to take commands, join channels and so on.
+         */
+        bool connected() const  { return alreadyConnected; }
+
+        IcecapInputFilter* getInputFilter() { return &inputFilter; }
+        Icecap::IcecapOutputFilter* getOutputFilter() { return outputFilter; }
 
         void appendStatusMessage(const QString& type,const QString& message);
         void appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL = true);
@@ -90,15 +94,11 @@ class IcecapServer : public QObject
         void dcopRaw(const QString& command);
         void dcopInfo(const QString& string);
 
-        ChannelListPanel* getChannelListPanel() const;
+        ChannelListPanel* getChannelListPanel() const { return channelListPanel; }
 
         StatusPanel* getStatusView() const { return statusView; }
 
-        /** This returns true when we are 'online' - ready to take commands, join channels and so on.
-         */
-        bool connected() const;
-
-        ViewContainer* getViewContainer() const;
+        ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
 
         // Blowfish stuff
         QCString getKeyForRecipient(const QString& recipient) const;
@@ -106,13 +106,13 @@ class IcecapServer : public QObject
 
         ChannelListPanel* addChannelListPanel();
 
-        void networkClear ();
+        void networkClear () { networkList.clear (); }
         void networkAdd (const Icecap::Network& network);
         void networkAdd (const QString& protocol, const QString& name);
         void networkRemove (const Icecap::Network& network);
         void networkRemove (const QString& name);
         Icecap::Network network (const QString& name);
-        QValueList<Icecap::Network> getNetworkList ();
+        QValueList<Icecap::Network> getNetworkList () { return networkList; }
         void networkListDisplay ();
 
         void mypresenceAdd (const Icecap::MyPresence& mypresence);
@@ -127,7 +127,7 @@ class IcecapServer : public QObject
         Icecap::MyPresence mypresence (const QString& name, const Icecap::Network& network);
         Icecap::MyPresence mypresence (const QString& name, const QString& networkName);
         void presenceListDisplay ();
-        void mypresenceClear ();
+        void mypresenceClear () { mypresenceList.clear(); }
 
     signals:
         /// will be connected to KonversationApplication::removeServer()
@@ -162,10 +162,9 @@ class IcecapServer : public QObject
         void showSSLDialog();
 
     protected slots:
-
         void connectionSuccess();
-        void lockSending();
-        void unlockSending();
+        void lockSending() { sendUnlocked = false; }
+        void unlockSending() { sendUnlocked = true; }
         void incoming();
         void processIncomingData();
         void send();
@@ -195,7 +194,7 @@ class IcecapServer : public QObject
         /// Connect to the signals used in this class.
         void connectSignals();
 
-        void setViewContainer(ViewContainer* newViewContainer);
+        void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
 
         unsigned int reconnectCounter;
 

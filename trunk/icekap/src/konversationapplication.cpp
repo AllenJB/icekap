@@ -511,7 +511,7 @@ IcecapServer* KonversationApplication::getServerByName(const QString& name)
 
     while(lookServer)
     {
-        if(lookServer->getServerName()==name) return lookServer;
+        if(lookServer->name()==name) return lookServer;
         lookServer=serverList.next();
     }
 
@@ -522,7 +522,7 @@ void KonversationApplication::removeServer(IcecapServer* server)
 {
     serverList.setAutoDelete(false);              // don't delete items when they are removed
     if(!serverList.remove(server))
-        kdDebug() << "Could not remove " << server->getServerName() << endl;
+        kdDebug() << "Could not remove " << server->name() << endl;
 }
 
 void KonversationApplication::readOptions()
