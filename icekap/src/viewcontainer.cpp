@@ -1904,9 +1904,9 @@ void ViewContainer::closeUrlCatcher()
     }
 }
 
-StatusPanel* ViewContainer::addStatusView(IcecapServer* server)
+IcecapStatusPanel* ViewContainer::addStatusView(IcecapServer* server)
 {
-    StatusPanel* statusView=new StatusPanel(m_tabWidget);
+    IcecapStatusPanel* statusView=new IcecapStatusPanel(m_tabWidget);
 
     // first set up internal data ...
     statusView->setServer(server);
