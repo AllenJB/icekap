@@ -64,9 +64,10 @@ class IcecapServer : public QObject
             const QString& password, const bool& useSSL=false);
         ~IcecapServer();
 
-        QString getServerName() const { return "unimplemented"; };
+        QString getServerName() const { return m_server.name(); };
 
         Icecap::IcecapServerSettings serverSettings() const { return m_server; }
+        QString name() const { return m_server.name(); }
 
         bool getUseSSL() const;
         QString getSSLInfo() const;

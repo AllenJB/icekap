@@ -210,14 +210,9 @@ void StatusPanel::setName(const QString& newName)
 
 void StatusPanel::updateName()
 {
-/*
-    if (getServer()->serverGroupSettings())
-    {
-        QString newName = getServer()->serverGroupSettings()->name();
-        setName(newName);
-        setLogfileName(newName.lower());
-    }
-*/
+    QString newName = getServer()->name();
+    setName (newName);
+    setLogfileName (newName.lower());
 }
 
 void StatusPanel::sendFileMenu()
@@ -319,7 +314,7 @@ void StatusPanel::changeNickname(const QString& newNickname)
 void StatusPanel::emitUpdateInfo()
 {
 //    QString info = m_server->getServerGroup();
-	QString info = "unimplemented";
+    QString info = m_server->name();
 
     emit updateInfo(info);
 }
@@ -338,14 +333,14 @@ void StatusPanel::setChannelEncoding(const QString& encoding)
 QString StatusPanel::getChannelEncoding()         // virtual
 {
 //    return Preferences::channelEncoding(m_server->getServerGroup(), ":server");
-	return "utf8";
+    return "utf8";
 }
 
                                                   // virtual
 QString StatusPanel::getChannelEncodingDefaultDesc()
 {
 //    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
-	return "Unimplemented (utf8)";
+    return "Unimplemented (utf8)";
 }
 
 //Used to disable functions when not connected
@@ -381,3 +376,6 @@ void StatusPanel::setIdentity(const Identity *newIdentity)
 }
 
 #include "statuspanel.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:
