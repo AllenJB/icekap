@@ -77,7 +77,7 @@ IcecapServer::~IcecapServer()
     }
 
     closeRawLog();
-//    closeChannelListPanel();
+    closeChannelListPanel();
 
     // notify KonversationApplication that this server is gone
     emit deleted(this);
@@ -99,8 +99,6 @@ void IcecapServer::init(ViewContainer* viewContainer)
     timerInterval = 1;
 
 // TODO: Implement support for named icecap servers
-    setName ("Quick Connect Server");
-//    setName (m_server.name());
     setViewContainer(viewContainer);
     statusView = getViewContainer()->addStatusView(this);
 
@@ -159,22 +157,12 @@ void IcecapServer::connectSignals()
 
 }
 
-int IcecapServer::getPort() const
-{
-    return m_server.port();
-}
-
 bool IcecapServer::isConnected() const
 {
     if (!m_socket)
         return false;
 
     return (m_socket->state() == KNetwork::KClientSocketBase::Connected);
-}
-
-bool IcecapServer::isConnecting() const
-{
-    return connecting;
 }
 
 void IcecapServer::connectToServer()
@@ -422,16 +410,6 @@ void IcecapServer::processIncomingData()
             incomingTimer.start(0);
         }
     }
-}
-
-void IcecapServer::unlockSending()
-{
-    sendUnlocked=true;
-}
-
-void IcecapServer::lockSending()
-{
-    sendUnlocked=false;
 }
 
 void IcecapServer::incoming()
@@ -760,16 +738,6 @@ void IcecapServer::appendMessageToFrontmost(const QString& type,const QString& m
     getViewContainer()->appendToFrontmost(type,message, statusView, parseURL);
 }
 
-IcecapInputFilter* IcecapServer::getInputFilter()
-{
-    return &inputFilter;
-}
-
-Icecap::IcecapOutputFilter* IcecapServer::getOutputFilter()
-{
-    return outputFilter;
-}
-
 void IcecapServer::addRawLog(bool show)
 {
     if (!rawLog)
@@ -801,11 +769,6 @@ ChannelListPanel* IcecapServer::addChannelListPanel()
     return channelListPanel;
 }
 
-ChannelListPanel* IcecapServer::getChannelListPanel() const
-{
-    return channelListPanel;
-}
-
 void IcecapServer::closeChannelListPanel()
 {
     if(channelListPanel)
@@ -815,29 +778,9 @@ void IcecapServer::closeChannelListPanel()
     }
 }
 
-void IcecapServer::setViewContainer(ViewContainer* newViewContainer)
-{
-    m_viewContainerPtr = newViewContainer;
-}
-
-ViewContainer* IcecapServer::getViewContainer() const
-{
-    return m_viewContainerPtr;
-}
-
-bool IcecapServer::getUseSSL() const
-{
-    return m_server.SSLEnabled();
-}
-
 QString IcecapServer::getSSLInfo() const
 {
     return static_cast<SSLSocket*>(m_socket)->details();
-}
-
-bool IcecapServer::connected() const
-{
-    return alreadyConnected;
 }
 
 void IcecapServer::reconnect()
@@ -870,16 +813,6 @@ void IcecapServer::connectToNewServer(const QString& server, const QString& port
 {
     KonversationApplication *konvApp = static_cast<KonversationApplication*>(KApplication::kApplication());
     konvApp->quickConnectToServer(server, port,"", "", password);
-}
-
-void IcecapServer::networkClear ()
-{
-    networkList.clear ();
-}
-
-QValueList<Icecap::Network> IcecapServer::getNetworkList ()
-{
-    return networkList;
 }
 
 void IcecapServer::networkListDisplay ()
@@ -944,11 +877,6 @@ Icecap::MyPresence IcecapServer::mypresence (const QString& name, const Icecap::
 Icecap::MyPresence IcecapServer::mypresence (const QString& name, const QString& networkName)
 {
     return mypresence (name, network (networkName));
-}
-
-void IcecapServer::mypresenceClear ()
-{
-    mypresenceList.clear ();
 }
 
 void IcecapServer::mypresenceAdd (const Icecap::MyPresence& mypresence)

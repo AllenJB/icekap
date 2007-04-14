@@ -568,7 +568,7 @@
         <choice name="Bottom" />
         <choice name="Left" />
       </choices>
-      <default>Bottom</default>
+      <default>Left</default>
     </entry>
     <entry key="UseClickableNicks" type="Bool">
       <default>true</default>

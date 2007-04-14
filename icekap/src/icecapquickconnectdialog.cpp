@@ -101,8 +101,7 @@ IcecapQuickConnectDialog::~IcecapQuickConnectDialog()
 void IcecapQuickConnectDialog::slotOk()
 {
     if(!hostNameInput->text().isEmpty() &&
-        !portInput->text().isEmpty() &&
-        !nickInput->text().isEmpty())
+        !portInput->text().isEmpty())
     {
         emit connectClicked(nameInput->text().stripWhiteSpace(),
             hostNameInput->text().stripWhiteSpace(),
