@@ -30,7 +30,7 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     QWidget* page = new QWidget(this);
     setMainWidget(page);
 
-    QGridLayout* layout = new QGridLayout(page, 2, 4);
+    QGridLayout* layout = new QGridLayout(page, 4, 4);
     layout->setSpacing(spacingHint());
     layout->setColStretch(1, 10);
 
@@ -41,7 +41,7 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     QWhatsThis::add(nameInput, nameWT);
     nameLabel->setBuddy(nameInput);
 
-    QLabel* hostNameLabel = new QLabel(i18n("&Server host:"), page);
+    QLabel* hostNameLabel = new QLabel(i18n("Server &host:"), page);
     QString hostNameWT = i18n("Enter the host of the server here.");
     QWhatsThis::add(hostNameLabel, hostNameWT);
     hostNameInput = new KLineEdit("127.0.0.1", page);
@@ -54,14 +54,14 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     portInput = new KLineEdit("1027", page );
     QWhatsThis::add(portInput, portWT);
     portLabel->setBuddy(portInput);
-
+/*
     QLabel* nickLabel = new QLabel(i18n("&Nick:"), page);
     QString nickWT = i18n("The nick you want to use.");
     QWhatsThis::add(nickLabel, nickWT);
     nickInput = new KLineEdit(Preferences::nickname(0), page);
     QWhatsThis::add(nickInput, nickWT);
     nickLabel->setBuddy(nickInput);
-/*
+
     QLabel* passwordLabel = new QLabel(i18n("P&assword:"), page);
     QString passwordWT = i18n("If the Icecap server requires a password, enter it here (most servers do not require a password.)");
     QWhatsThis::add(passwordLabel, passwordWT);
@@ -75,19 +75,19 @@ KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
     layout->addWidget (nameLabel, 0, 0);
     layout->addWidget (nameInput, 0, 1);
 
-    layout->addWidget(hostNameLabel, 0, 2);
-    layout->addWidget(hostNameInput, 0, 3);
+    layout->addWidget(hostNameLabel, 1, 0);
+    layout->addWidget(hostNameInput, 1, 1);
 
-    layout->addWidget(portLabel, 0, 4);
-    layout->addWidget(portInput, 0, 5);
-
-    layout->addWidget(nickLabel, 1, 2);
-    layout->addWidget(nickInput, 1, 3);
+    layout->addWidget(portLabel, 1, 2);
+    layout->addWidget(portInput, 1, 3);
 /*
-    layout->addWidget(passwordLabel, 1, 4);
-    layout->addWidget(passwordInput, 1, 5);
+    layout->addWidget(nickLabel, 2, 0);
+    layout->addWidget(nickInput, 2, 1);
 
-    layout->addWidget(sslCheckBox, 2, 0);
+    layout->addWidget(passwordLabel, 2, 2);
+    layout->addWidget(passwordInput, 2, 3);
+
+    layout->addWidget(sslCheckBox, 3, 0);
 */
     hostNameInput->setFocus();
 

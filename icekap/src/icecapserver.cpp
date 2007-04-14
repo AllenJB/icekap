@@ -65,7 +65,7 @@ IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, co
 IcecapServer::~IcecapServer()
 {
     //send queued messages
-    kdDebug() << "IcecapServer::~IcecapServer(" << getServerName() << ")" << endl;
+    kdDebug() << "IcecapServer::~IcecapServer(" << name() << ")" << endl;
     // Send out the last messages (usually the /QUIT)
     send();
 
@@ -100,6 +100,7 @@ void IcecapServer::init(ViewContainer* viewContainer)
 
 // TODO: Implement support for named icecap servers
     setName ("Quick Connect Server");
+//    setName (m_server.name());
     setViewContainer(viewContainer);
     statusView = getViewContainer()->addStatusView(this);
 

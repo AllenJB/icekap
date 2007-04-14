@@ -47,7 +47,7 @@ class IcecapQuickConnectDialog : public KDialogBase
         KLineEdit*  hostNameInput;
         KLineEdit*  portInput;
 //        KLineEdit*  passwordInput;
-        KLineEdit*  nickInput;
+//        KLineEdit*  nickInput;
 //        QCheckBox*      sslCheckBox;
 };
 #endif
