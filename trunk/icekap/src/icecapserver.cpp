@@ -35,7 +35,7 @@
 #include "konversationapplication.h"
 #include "irccharsets.h"
 #include "viewcontainer.h"
-#include "statuspanel.h"
+#include "icecapstatuspanel.h"
 #include "rawlog.h"
 #include "channellistpanel.h"
 #include "common.h"
@@ -367,6 +367,10 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
     {
         kdDebug() << "alreadyConnected == true! How did that happen?" << endl;
     }
+
+    queue ("netlist;network list");
+    queue ("prslist;presence list");
+    queue ("chlist;channel list");
 }
 
 QCString IcecapServer::getKeyForRecipient(const QString& recipient) const

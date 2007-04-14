@@ -19,6 +19,7 @@
 #include "konversationmainwindow.h"
 #include "common.h"
 #include "icecapserver.h"
+#include "icecapstatuspanel.h"
 
 class QSplitter;
 
@@ -114,7 +115,7 @@ class ViewContainer : public QObject
         void addUrlCatcher();
         void closeUrlCatcher();
 
-        StatusPanel* addStatusView(IcecapServer* server);
+        IcecapStatusPanel* addStatusView(IcecapServer* server);
         RawLog* addRawLog(IcecapServer* server);
         void disconnectFrontServer();
         void reconnectFrontServer();

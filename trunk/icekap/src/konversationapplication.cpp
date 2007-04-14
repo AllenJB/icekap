@@ -128,7 +128,7 @@ int KonversationApplication::newInstance()
         emit appearanceChanged();
         mainWindow->show();
 
-        if (Preferences::showServerList()) mainWindow->openServerList();
+//        if (Preferences::showServerList()) mainWindow->openServerList();
 
         // handle autoconnect on startup
         Konversation::ServerGroupList serverGroups = Preferences::serverGroupList();

@@ -36,7 +36,7 @@
 #include "icecapnetwork.h"
 #include "icecapmypresence.h"
 
-class StatusPanel;
+class IcecapStatusPanel;
 class Identity;
 class RawLog;
 class ChannelListPanel;
@@ -96,7 +96,7 @@ class IcecapServer : public QObject
 
         ChannelListPanel* getChannelListPanel() const { return channelListPanel; }
 
-        StatusPanel* getStatusView() const { return statusView; }
+        IcecapStatusPanel* getStatusView() const { return statusView; }
 
         ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
 
@@ -128,6 +128,10 @@ class IcecapServer : public QObject
         Icecap::MyPresence mypresence (const QString& name, const QString& networkName);
         void presenceListDisplay ();
         void mypresenceClear () { mypresenceList.clear(); }
+
+        void requestNetworkList ();
+        void requestMypresenceList ();
+        void requestChannelList ();
 
     signals:
         /// will be connected to KonversationApplication::removeServer()
@@ -224,7 +228,7 @@ class IcecapServer : public QObject
         IcecapInputFilter inputFilter;
         Icecap::IcecapOutputFilter* outputFilter;
 
-        StatusPanel* statusView;
+        IcecapStatusPanel* statusView;
         RawLog* rawLog;
         ChannelListPanel* channelListPanel;
 

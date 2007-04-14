@@ -16,6 +16,7 @@
 #define STATUSPANEL_H
 
 #include "chatwindow.h"
+#include "icecapstatuspanel.h"
 
 #include <qstring.h>
 
@@ -31,7 +32,7 @@ class QComboBox;
 class IRCInput;
 class NickChangeDialog;
 
-class StatusPanel : public ChatWindow
+class StatusPanel : public IcecapStatusPanel
 {
     Q_OBJECT
 
@@ -39,23 +40,11 @@ class StatusPanel : public ChatWindow
         explicit StatusPanel(QWidget* parent);
         ~StatusPanel();
 
-        virtual void setName(const QString& newName);
-
-        virtual QString getTextInLine();
-        virtual bool closeYourself();
-        virtual bool canBeFrontView();
-        virtual bool searchView();
-
         virtual void setChannelEncoding(const QString& encoding);
         virtual QString getChannelEncoding();
         virtual QString getChannelEncodingDefaultDesc();
-        virtual void emitUpdateInfo();
 
         virtual void setIdentity(const Identity *newIdentity);
-
-        virtual bool isInsertSupported() { return true; }
-
-        virtual void setNotificationsEnabled(bool enable);
 
     signals:
         void sendFile();
@@ -64,35 +53,25 @@ class StatusPanel : public ChatWindow
         void setNickname(const QString& newNickname);
         virtual void indicateAway(bool show);
         void showNicknameBox(bool show);
-        void updateAppearance();
-        virtual void appendInputText(const QString&);
-        void updateName();
+        void updateAppearanceExtra();
 
     protected slots:
         void sendFileMenu();
-        void statusTextEntered();
-        void sendStatusText(const QString& line);
-        // connected to IRCInput::textPasted() - used for large/multiline pastes
-        void textPasted(const QString& text);
         void changeNickname(const QString& newNickname);
         void nicknameComboboxChanged();
         //Used to disable functions when not connected
         virtual void serverOnline(bool online);
 
     protected:
-
-        /** Called from ChatWindow adjustFocus */
-        virtual void childAdjustFocus();
-
         bool awayChanged;
         bool awayState;
 
         void showEvent(QShowEvent* event);
 
         QComboBox* nicknameCombobox;
-        QLabel* awayLabel;
-        IRCInput* statusInput;
-        QCheckBox* logCheckBox;
         QString oldNick;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

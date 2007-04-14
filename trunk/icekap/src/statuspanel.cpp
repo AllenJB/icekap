@@ -31,18 +31,14 @@
 #include "ircviewbox.h"
 #include "icecapserver.h"
 
-StatusPanel::StatusPanel(QWidget* parent) : ChatWindow(parent)
+StatusPanel::StatusPanel(QWidget* parent) : IcecapStatusPanel (parent)
 {
-    setType(ChatWindow::Status);
+//    IcecapStatusPanel (parent);
 
     setChannelEncodingSupported(true);
 
     awayChanged=false;
     awayState=false;
-
-    // set up text view, will automatically take care of logging
-    IRCViewBox* ircBox = new IRCViewBox(this, 0); // Server will be set later in setServer()
-    setTextView(ircBox->ircView());
 
     QHBox* commandLineBox=new QHBox(this);
     commandLineBox->setSpacing(spacing());
@@ -55,30 +51,15 @@ StatusPanel::StatusPanel(QWidget* parent) : ChatWindow(parent)
 
     awayLabel=new QLabel(i18n("(away)"),commandLineBox);
     awayLabel->hide();
+
     statusInput=new IRCInput(commandLineBox);
-
-    getTextView()->installEventFilter(statusInput);
-    statusInput->installEventFilter(this);
-
-    setLog(Preferences::log());
-
-    connect(getTextView(),SIGNAL (gotFocus()),statusInput,SLOT (setFocus()) );
-
-    connect(getTextView(), SIGNAL(updateTabNotification(Konversation::TabNotifyType)),
-        this, SLOT(activateTabNotification(Konversation::TabNotifyType)));
-    connect(getTextView(),SIGNAL (sendFile()),this,SLOT (sendFileMenu()) );
-    connect(getTextView(),SIGNAL (autoText(const QString&)),this,SLOT (sendStatusText(const QString&)) );
-
-    connect(statusInput,SIGNAL (submit()),this,SLOT(statusTextEntered()) );
-    connect(statusInput,SIGNAL (textPasted(const QString&)),this,SLOT(textPasted(const QString&)) );
-    connect(getTextView(), SIGNAL(textPasted(bool)), statusInput, SLOT(paste(bool)));
 
     connect(nicknameCombobox,SIGNAL (activated(int)),this,SLOT(nicknameComboboxChanged()));
     Q_ASSERT(nicknameCombobox->lineEdit());       //it should be editedable.  if we design it so it isn't, remove these lines.
     if(nicknameCombobox->lineEdit())
         connect(nicknameCombobox->lineEdit(), SIGNAL (lostFocus()),this,SLOT(nicknameComboboxChanged()));
 
-    updateAppearance();
+    updateAppearanceExtra();
 }
 
 StatusPanel::~StatusPanel()
@@ -90,129 +71,20 @@ void StatusPanel::setNickname(const QString& newNickname)
     nicknameCombobox->setCurrentText(newNickname);
 }
 
-void StatusPanel::childAdjustFocus()
+void StatusPanel::updateAppearanceExtra()
 {
-    statusInput->setFocus();
-}
-
-void StatusPanel::sendStatusText(const QString& sendLine)
-{
-    // create a work copy
-    QString outputAll(sendLine);
-    // replace aliases and wildcards
-/*
-    if(m_server->getOutputFilter()->replaceAliases(outputAll))
-    {
-        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
-    }
-*/
-
-    // Send all strings, one after another
-    QStringList outList=QStringList::split('\n',outputAll);
-    for(unsigned int index=0;index<outList.count();index++)
-    {
-        QString output(outList[index]);
-
-        // encoding stuff is done in Server()
-        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse("", output, QString::null);
-
-        if(!result.output.isEmpty())
-        {
-            appendServerMessage(result.typeString, result.output);
-        }
-        m_server->queue(result.toServer);
-    } // for
-}
-
-void StatusPanel::statusTextEntered()
-{
-    QString line=statusInput->text();
-    statusInput->clear();
-
-    if(line.lower()==Preferences::commandChar()+"clear") textView->clear();
-    else
-    {
-        if(line.length()) sendStatusText(line);
-    }
-}
-
-void StatusPanel::textPasted(const QString& text)
-{
-    if(m_server)
-    {
-        QStringList multiline=QStringList::split('\n',text);
-        for(unsigned int index=0;index<multiline.count();index++)
-        {
-            QString line=multiline[index];
-            QString cChar(Preferences::commandChar());
-            // make sure that lines starting with command char get escaped
-            if(line.startsWith(cChar)) line=cChar+line;
-            sendStatusText(line);
-        }
-    }
-}
-
-void StatusPanel::updateAppearance()
-{
-    QColor fg;
-    QColor bg;
-    if(Preferences::inputFieldsBackgroundColor())
-    {
-        fg=Preferences::color(Preferences::ChannelMessage);
-        bg=Preferences::color(Preferences::TextViewBackground);
-    }
-    else
-    {
-        fg=colorGroup().foreground();
-        bg=colorGroup().base();
-    }
-
-    statusInput->unsetPalette();
-    statusInput->setPaletteForegroundColor(fg);
-    statusInput->setPaletteBackgroundColor(bg);
-
-    getTextView()->unsetPalette();
-
-    if(Preferences::showBackgroundImage())
-    {
-        getTextView()->setViewBackground(Preferences::color(Preferences::TextViewBackground),
-            Preferences::backgroundImage());
-    }
-    else
-    {
-        getTextView()->setViewBackground(Preferences::color(Preferences::TextViewBackground),
-            QString::null);
-    }
-
     if (Preferences::customTextFont())
     {
-        getTextView()->setFont(Preferences::textFont());
-        statusInput->setFont(Preferences::textFont());
         nicknameCombobox->setFont(Preferences::textFont());
     }
     else
     {
-        getTextView()->setFont(KGlobalSettings::generalFont());
-        statusInput->setFont(KGlobalSettings::generalFont());
         nicknameCombobox->setFont(KGlobalSettings::generalFont());
     }
 
     showNicknameBox(Preferences::showNicknameBox());
 
     ChatWindow::updateAppearance();
-}
-
-void StatusPanel::setName(const QString& newName)
-{
-    ChatWindow::setName(newName);
-    setLogfileName(newName.lower());
-}
-
-void StatusPanel::updateName()
-{
-    QString newName = getServer()->name();
-    setName (newName);
-    setLogfileName (newName.lower());
 }
 
 void StatusPanel::sendFileMenu()
@@ -248,51 +120,6 @@ void StatusPanel::showEvent(QShowEvent*)
     }
 }
 
-QString StatusPanel::getTextInLine() { return statusInput->text(); }
-
-bool StatusPanel::canBeFrontView()        { return true; }
-bool StatusPanel::searchView()       { return true; }
-
-void StatusPanel::setNotificationsEnabled(bool enable)
-{
-//    m_server->serverGroupSettings()->setNotificationsEnabled(enable);
-    m_notificationsEnabled = enable;
-}
-
-bool StatusPanel::closeYourself()
-{
-    int result;
-
-    //FIXME: Show "Do you really want to close ..." warnings in
-    // disconnected state instead of closing directly. Can't do
-    // that due to string freeze at the moment.
-    if (!m_server->isConnected())
-    {
-        result = KMessageBox::Continue;
-    }
-    else
-    {
-        result = KMessageBox::warningContinueCancel(
-            this,
-            i18n("Do you want to disconnect from '%1'?").arg(m_server->getServerName()),
-            i18n("Disconnect From Server"),
-            i18n("Disconnect"),
-            "QuitServerTab");
-    }
-
-    if(result==KMessageBox::Continue)
-    {
-//        m_server->serverGroupSettings()->setNotificationsEnabled(notificationsEnabled());
-        m_server->quitServer();
-        //Why are these separate?  why would deleting the server not quit it? FIXME
-        delete m_server;
-        m_server=0;
-        deleteLater();                            //NO NO!  Deleting the server should delete this! FIXME
-        return true;
-    }
-    return false;
-}
-
 void StatusPanel::nicknameComboboxChanged()
 {
     QString newNick=nicknameCombobox->currentText();
@@ -309,19 +136,6 @@ void StatusPanel::nicknameComboboxChanged()
 void StatusPanel::changeNickname(const QString& newNickname)
 {
     m_server->queue("NICK "+newNickname);
-}
-
-void StatusPanel::emitUpdateInfo()
-{
-//    QString info = m_server->getServerGroup();
-    QString info = m_server->name();
-
-    emit updateInfo(info);
-}
-
-void StatusPanel::appendInputText(const QString& text)
-{
-    statusInput->setText(statusInput->text() + text);
 }
 
                                                   // virtual
