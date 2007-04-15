@@ -1,0 +1,81 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="icekap" version="42">
+
+	<MenuBar>
+		<Menu name="file">
+			<Action name="icecap_quick_connect_dialog" />
+<!--
+			<Separator />
+			<Action name="open_server_list" />
+			<Action name="quick_connect_dialog" />
+			<Separator />
+			<Action name="disconnect_server" />
+			<Action name="reconnect_server" />
+			<Separator />
+			<Action name="join_channel" />
+			<Separator />
+			<Action name="toggle_away" />
+-->
+		</Menu>
+		<Menu name="edit">
+			<Action name="clear_window" />
+			<Action name="clear_tabs" />
+			<Separator />
+			<Action name="hide_nicknamelist" />
+		</Menu>
+		<Menu name="insert">
+			<Text>&amp;Insert</Text>
+			<Action name="irc_colors" />
+			<Action name="insert_remember_line" />
+			<Action name="insert_character" />
+		</Menu>
+		<Menu name="bookmarks">
+			<Text>&amp;Bookmarks</Text>
+		</Menu>
+		<Menu name="settings">
+			<Action name="identities_dialog" append="save_merge" />
+		</Menu>
+		<Menu name="windows" append="settings_merge">
+			<Text>&amp;Window</Text>
+			<Action name="previous_tab" />
+			<Action name="next_tab" />
+			<Separator />
+			<Action name="move_tab_left" />
+			<Action name="move_tab_right" />
+			<Action name="close_tab" />
+			<Action name="close_queries" />
+			<Separator />
+			<Action name="open_nicksonline_window" />
+			<Action name="open_url_catcher" />
+			<Action name="open_konsole" />
+			<Separator />
+			<Action name="open_channel_list" />
+			<Action name="open_logfile" />
+			<Action name="channel_settings" />
+		</Menu>
+	</MenuBar>
+
+	<ToolBar fullWidth="true" hidden="true" name="mainToolBar">
+		<Action name="open_server_list" />
+		<Action name="quick_connect_dialog" />
+		<Separator />
+		<Action name="toggle_away" />
+		<Separator />
+		<Action name="irc_colors" />
+	</ToolBar>
+
+	<Menu name="tabContextMenu">
+		<Action name="tab_notifications" />
+		<Action name="tab_encoding" />
+		<Separator />
+		<Action name="switch_to_tab" />
+		<Separator />
+		<Action name="move_tab_left" />
+		<Action name="move_tab_right" />
+		<Action name="close_tab" />
+		<Separator />
+		<ActionList name="server_actions" />
+	</Menu>
+
+</kpartgui>
+
