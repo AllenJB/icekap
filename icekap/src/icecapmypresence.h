@@ -14,6 +14,7 @@
 
 #include "icecapchannel.h"
 #include "icecapnetwork.h"
+#include "statuspanel.h"
 
 namespace Icecap
 {
@@ -21,17 +22,17 @@ namespace Icecap
     class MyPresence
     {
         public:
-            MyPresence (): name(0) {}
-            MyPresence (const QString& newName);
-            MyPresence (const QString& newName, const Network& newNetwork);
-            MyPresence (const QString& newName, const Network& newNetwork, const QMap<QString, QString>& parameterMap);
+            MyPresence (): m_name(0) {}
+            MyPresence (ViewContainer* viewContainer, const QString& newName);
+            MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork);
+            MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork, const QMap<QString, QString>& parameterMap);
 //            ~MyPresence ();
 
-            QString getName () { return name; }
-            Network getNetwork () { return network; }
-            bool getConnected () { return connected; }
-            bool getAutoconnect () { return autoconnect; }
-            QString getPresence () { return presence; }
+            QString name () { return m_name; }
+            Network network () { return m_network; }
+            bool connected () { return m_connected; }
+            bool autoconnect () { return m_autoconnect; }
+            QString presence () { return m_presence; }
 
             void setName (const QString& newName);
             void setNetwork (const Network& newNetwork);
@@ -50,13 +51,21 @@ namespace Icecap
             bool operator== (MyPresence compareTo);
             bool isNull ();
 
+            void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
+            ViewContainer* viewContainer () { return m_viewContainerPtr; }
+
         private:
-            QString name;
-            QString presence;
-            bool connected;
-            bool autoconnect;
+            void init ();
+
+            QString m_name;
+            QString m_presence;
+            bool m_connected;
+            bool m_autoconnect;
             QValueList<Channel> channelList;
-            Network network;
+            Network m_network;
+
+            ViewContainer* m_viewContainerPtr;
+            StatusPanel* statusView;
     };
 
 }

@@ -869,7 +869,7 @@ Icecap::MyPresence IcecapServer::mypresence (const QString& name, const Icecap::
     QValueList<Icecap::MyPresence>::const_iterator end = mypresenceList.end();
     for( QValueListConstIterator<Icecap::MyPresence> it( mypresenceList.begin() ); it != end; ++it ) {
         Icecap::MyPresence current = *it;
-        if ((current.getName() == name) && (current.getNetwork() == network)) {
+        if ((current.name() == name) && (current.network() == network)) {
             return current;
         }
     }
@@ -890,32 +890,22 @@ void IcecapServer::mypresenceAdd (const Icecap::MyPresence& mypresence)
 
 void IcecapServer::mypresenceAdd (const QString& name)
 {
-    mypresenceList.append (Icecap::MyPresence (name));
+    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name));
 }
 
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName)
 {
-    mypresenceList.append (Icecap::MyPresence (name, network (networkName)));
+    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName)));
 }
 
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap)
 {
-    mypresenceList.append (Icecap::MyPresence (name, network (networkName)));
-    Icecap::MyPresence myp = mypresence (name, networkName);
-    if (parameterMap.contains ("autoconnect")) {
-        myp.setAutoconnect (true);
-    }
-    if (parameterMap.contains ("connected")) {
-        myp.setConnected (true);
-    }
-    if (parameterMap.contains ("presence")) {
-        myp.setPresence (parameterMap["presence"]);
-    }
+    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap));
 }
 
 void IcecapServer::mypresenceAdd (const QString& name, const Icecap::Network& network)
 {
-    mypresenceList.append (Icecap::MyPresence (name, network));
+    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network));
 }
 
 void IcecapServer::mypresenceRemove (const Icecap::MyPresence& mypresence)
@@ -939,7 +929,7 @@ void IcecapServer::presenceListDisplay ()
     QValueList<Icecap::MyPresence>::const_iterator end = mypresenceList.end();
     for( QValueListConstIterator<Icecap::MyPresence> it( mypresenceList.begin() ); it != end; ++it ) {
         Icecap::MyPresence current = *it;
-        appendMessageToFrontmost ("Presence", "Presence: "+ current.getName() +" - "+ current.getNetwork().getName ());
+        appendMessageToFrontmost ("Presence", "Presence: "+ current.name() +" - "+ current.network().getName ());
     }
     appendMessageToFrontmost("Presence", "End of Presence List (Local Copy)");
 }

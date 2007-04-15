@@ -360,7 +360,7 @@ void IcecapInputFilter::parseChannelList (const QString &tag, const QString &sta
         {
             QString message;
             message = i18n ("%1 Network: %2 Presence: %3", "%1 Network: %2 Presence: %3").arg(parameterMap["channel"]).arg (parameterMap["network"]).arg (parameterMap["mypresence"]);
-            server->appendMessageToFrontmost (i18n ("Presence List"), message);
+            server->appendMessageToFrontmost (i18n ("Channel List"), message);
         }
 
         if (!chlistInProgress) {

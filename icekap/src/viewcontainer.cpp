@@ -1916,7 +1916,7 @@ IcecapStatusPanel* ViewContainer::addStatusView(IcecapServer* server)
     // Get group name for tab if available
 //    QString label = server->getServerGroup();
 	QString label = "";
-    if (label.isEmpty()) label = server->getServerName();
+    if (label.isEmpty()) label = server->name();
     statusView->setName(label);
 
     QObject::connect(server, SIGNAL(sslInitFailure()), this, SIGNAL(removeStatusBarSSLLabel()));
@@ -1932,6 +1932,35 @@ IcecapStatusPanel* ViewContainer::addStatusView(IcecapServer* server)
     // make sure that m_frontServer gets set on adding the first status panel, too,
     // since there won't be a switchView happening
     if (!m_frontServer) m_frontServer = server;
+
+    return statusView;
+}
+
+StatusPanel* ViewContainer::addStatusView(Icecap::MyPresence* server)
+{
+    StatusPanel* statusView=new StatusPanel(m_tabWidget);
+
+    // first set up internal data ...
+//    statusView->setServer(server);
+//    statusView->setIdentity(server->getIdentity());
+//    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
+
+    // Get group name for tab if available
+//    QString label = server->getServerGroup();
+	QString label = "";
+    if (label.isEmpty()) label = server->name();
+    statusView->setName(label);
+
+    // ... then put it into the tab widget, otherwise we'd have a race with server member
+    addView(statusView,label);
+
+    connect(m_window, SIGNAL(prefsChanged()), statusView, SLOT(updateName()));
+    connect(statusView, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
+//    connect(server, SIGNAL(awayState(bool)), statusView, SLOT(indicateAway(bool)) );
+
+    // make sure that m_frontServer gets set on adding the first status panel, too,
+    // since there won't be a switchView happening
+//    if (!m_frontServer) m_frontServer = server;
 
     return statusView;
 }

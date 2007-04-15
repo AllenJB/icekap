@@ -70,6 +70,8 @@ class StatusPanel : public IcecapStatusPanel
 
         QComboBox* nicknameCombobox;
         QString oldNick;
+
+        StatusPanel* statusPanel;
 };
 #endif
 
