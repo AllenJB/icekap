@@ -194,7 +194,7 @@ namespace Icecap
 
     OutputFilterResult IcecapOutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
     {
-//        setCommandChar();
+        setCommandChar();
 //        commandChar = "/";
 
         OutputFilterResult result;
