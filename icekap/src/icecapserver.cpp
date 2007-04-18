@@ -41,6 +41,7 @@
 #include "common.h"
 #include "notificationhandler.h"
 #include "blowfish.h"
+#include "texteventhandler.h"
 
 #include <config.h>
 // TODO: Remove unnecessary / unsupported crap from constructor
@@ -58,6 +59,8 @@ IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, co
     m_server.setPort(port.toInt());
     m_server.setPassword(password);
     m_server.setSSLEnabled(useSSL);
+
+    textEventHnd = new TextEventHandler (this);
 
     init (viewContainer);
 }
@@ -98,7 +101,6 @@ void IcecapServer::init(ViewContainer* viewContainer)
 
     timerInterval = 1;
 
-// TODO: Implement support for named icecap servers
     setViewContainer(viewContainer);
     statusView = getViewContainer()->addStatusView(this);
 
@@ -368,8 +370,11 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
         kdDebug() << "alreadyConnected == true! How did that happen?" << endl;
     }
 
+    inputFilter.setAutomaticRequest ("netlist", true);
     queue ("netlist;network list");
+    inputFilter.setAutomaticRequest ("prslist", true);
     queue ("prslist;presence list");
+    inputFilter.setAutomaticRequest ("chlist", true);
     queue ("chlist;channel list");
 }
 
@@ -643,20 +648,6 @@ void IcecapServer::send()
         //Lets cache the uppercase command so we don't miss or reiterate too much
         QString outboundCommand(outputLineSplit[0].upper());
 
-        // remember the first arg of /WHO to identify responses
-        if(!outputLineSplit.isEmpty() && outboundCommand=="WHO")
-        {
-            if(outputLineSplit.count()>=2)
-                inputFilter.addWhoRequest(outputLineSplit[1]);
-            else // no argument (servers recognize it as "*")
-                inputFilter.addWhoRequest("*");
-        }
-        // Don't reconnect if we WANT to quit
-        else if(outboundCommand=="QUIT")
-        {
-            deliberateQuit = true;
-        }
-
         // wrap server socket into a stream
         QTextStream serverStream;
 
@@ -825,7 +816,7 @@ void IcecapServer::networkListDisplay ()
     QValueList<Icecap::Network>::const_iterator end = networkList.end();
     for( QValueListConstIterator<Icecap::Network> it( networkList.begin() ); it != end; ++it ) {
         Icecap::Network current = *it;
-        appendMessageToFrontmost ("Network", "Network: "+ current.getProtocol() +" - "+ current.getName());
+        appendMessageToFrontmost ("Network", "Network: "+ current.protocol() +" - "+ current.name());
     }
     appendMessageToFrontmost("Network", "End of Network List (Local Copy)");
 }
@@ -835,7 +826,7 @@ Icecap::Network IcecapServer::network (const QString& name)
     QValueList<Icecap::Network>::const_iterator end = networkList.end();
     for( QValueListConstIterator<Icecap::Network> it( networkList.begin() ); it != end; ++it ) {
         Icecap::Network current = *it;
-        if (current.getName() == name) {
+        if (current.name() == name) {
             return current;
         }
     }
@@ -883,30 +874,43 @@ Icecap::MyPresence IcecapServer::mypresence (const QString& name, const QString&
     return mypresence (name, network (networkName));
 }
 
-void IcecapServer::mypresenceAdd (const Icecap::MyPresence& mypresence)
+void IcecapServer::mypresenceAdd (Icecap::MyPresence& mypresence)
 {
+//    mypresence.setOutputFilter ( outputFilter );
+    mypresence.setServer (this);
+    mypresence.setIcecapServerName (m_server.name());
     mypresenceList.append (mypresence);
 }
-
+/*
 void IcecapServer::mypresenceAdd (const QString& name)
 {
-    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name));
+//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name));
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name);
+    mypresenceAdd (myp);
 }
-
+*/
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName)
 {
-    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName)));
+//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName)));
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network (networkName));
+    mypresenceAdd (myp);
 }
+
 
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap)
 {
-    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap));
+//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap));
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap);
+    mypresenceAdd (myp);
 }
-
+/*
 void IcecapServer::mypresenceAdd (const QString& name, const Icecap::Network& network)
 {
-    mypresenceList.append (Icecap::MyPresence (m_viewContainerPtr, name, network));
+//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network));
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network);
+    mypresenceAdd (myp);
 }
+*/
 
 void IcecapServer::mypresenceRemove (const Icecap::MyPresence& mypresence)
 {
@@ -929,9 +933,14 @@ void IcecapServer::presenceListDisplay ()
     QValueList<Icecap::MyPresence>::const_iterator end = mypresenceList.end();
     for( QValueListConstIterator<Icecap::MyPresence> it( mypresenceList.begin() ); it != end; ++it ) {
         Icecap::MyPresence current = *it;
-        appendMessageToFrontmost ("Presence", "Presence: "+ current.name() +" - "+ current.network().getName ());
+        appendMessageToFrontmost ("Presence", "Presence: "+ current.name() +" - "+ current.network().name ());
     }
     appendMessageToFrontmost("Presence", "End of Presence List (Local Copy)");
+}
+
+TextEventHandler* IcecapServer::getTextEventHandler ()
+{
+    return textEventHnd;
 }
 
 #include "icecapserver.moc"

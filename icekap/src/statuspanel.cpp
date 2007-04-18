@@ -31,10 +31,8 @@
 #include "ircviewbox.h"
 #include "icecapserver.h"
 
-StatusPanel::StatusPanel(QWidget* parent) : IcecapStatusPanel (parent)
+StatusPanel::StatusPanel(QWidget* parent) : IcecapStatusPanel (parent, true)
 {
-//    IcecapStatusPanel (parent);
-
     setChannelEncodingSupported(true);
 
     awayChanged=false;
@@ -54,12 +52,25 @@ StatusPanel::StatusPanel(QWidget* parent) : IcecapStatusPanel (parent)
 
     statusInput=new IRCInput(commandLineBox);
 
+    getTextView()->installEventFilter(statusInput);
+    statusInput->installEventFilter(this);
+
+    setLog(Preferences::log());
+
+    connect(getTextView(),SIGNAL (autoText(const QString&)),this,SLOT (sendStatusText(const QString&)) );
+    connect(statusInput,SIGNAL (submit()),this,SLOT(statusTextEntered()) );
+
+    connect(statusInput,SIGNAL (textPasted(const QString&)),this,SLOT(textPasted(const QString&)) );
+    connect(getTextView(), SIGNAL(textPasted(bool)), statusInput, SLOT(paste(bool)));
+
+    connect(getTextView(),SIGNAL (gotFocus()),statusInput,SLOT (setFocus()) );
+
     connect(nicknameCombobox,SIGNAL (activated(int)),this,SLOT(nicknameComboboxChanged()));
     Q_ASSERT(nicknameCombobox->lineEdit());       //it should be editedable.  if we design it so it isn't, remove these lines.
     if(nicknameCombobox->lineEdit())
         connect(nicknameCombobox->lineEdit(), SIGNAL (lostFocus()),this,SLOT(nicknameComboboxChanged()));
 
-    updateAppearanceExtra();
+    updateAppearance();
 }
 
 StatusPanel::~StatusPanel()
@@ -71,15 +82,49 @@ void StatusPanel::setNickname(const QString& newNickname)
     nicknameCombobox->setCurrentText(newNickname);
 }
 
-void StatusPanel::updateAppearanceExtra()
+void StatusPanel::updateAppearance()
 {
-    if (Preferences::customTextFont())
+    QColor fg;
+    QColor bg;
+    if(Preferences::inputFieldsBackgroundColor())
     {
-        nicknameCombobox->setFont(Preferences::textFont());
+        fg=Preferences::color(Preferences::ChannelMessage);
+        bg=Preferences::color(Preferences::TextViewBackground);
     }
     else
     {
+        fg=colorGroup().foreground();
+        bg=colorGroup().base();
+    }
+
+    statusInput->unsetPalette();
+    statusInput->setPaletteForegroundColor(fg);
+    statusInput->setPaletteBackgroundColor(bg);
+
+    getTextView()->unsetPalette();
+
+    if(Preferences::showBackgroundImage())
+    {
+        getTextView()->setViewBackground(Preferences::color(Preferences::TextViewBackground),
+            Preferences::backgroundImage());
+    }
+    else
+    {
+        getTextView()->setViewBackground(Preferences::color(Preferences::TextViewBackground),
+            QString::null);
+    }
+
+    if (Preferences::customTextFont())
+    {
+        getTextView()->setFont(Preferences::textFont());
+        nicknameCombobox->setFont(Preferences::textFont());
+        statusInput->setFont(Preferences::textFont());
+    }
+    else
+    {
+        getTextView()->setFont(KGlobalSettings::generalFont());
         nicknameCombobox->setFont(KGlobalSettings::generalFont());
+        statusInput->setFont(KGlobalSettings::generalFont());
     }
 
     showNicknameBox(Preferences::showNicknameBox());
@@ -187,6 +232,60 @@ void StatusPanel::setIdentity(const Identity *newIdentity)
     ChatWindow::setIdentity(newIdentity);
     nicknameCombobox->clear();
     nicknameCombobox->insertStringList(newIdentity->getNicknameList());
+}
+
+void StatusPanel::emitUpdateInfo()
+{
+//    QString info = mypresencename();
+//    emit updateInfo(info);
+}
+
+void StatusPanel::setMyPresence (Icecap::MyPresence* p_mypresence)
+{
+    mypresence = p_mypresence;
+}
+
+void StatusPanel::statusTextEntered()
+{
+    QString line=statusInput->text();
+    statusInput->clear();
+
+    if(line.lower()==Preferences::commandChar()+"clear") textView->clear();
+    else
+    {
+        if(line.length()) sendStatusText(line);
+    }
+}
+
+void StatusPanel::sendStatusText(const QString& sendLine)
+{
+    // create a work copy
+    QString outputAll(sendLine);
+    // replace aliases and wildcards
+/*
+    if(m_server->getOutputFilter()->replaceAliases(outputAll))
+    {
+        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
+    }
+*/
+
+    // Send all strings, one after another
+    QStringList outList=QStringList::split('\n',outputAll);
+    for(unsigned int index=0;index<outList.count();index++)
+    {
+        QString output(outList[index]);
+
+        // encoding stuff is done in Server()
+        // TODO: Need to fix this bit - it's causing a crash currently
+//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse("", output, QString::null);
+        Icecap::OutputFilterResult result = mypresence->getOutputFilter()->parse("", output, QString::null);
+
+        if(!result.output.isEmpty())
+        {
+            appendServerMessage(result.typeString, result.output);
+        }
+        m_server->queue(result.toServer);
+    } // for
 }
 
 #include "statuspanel.moc"

@@ -7,13 +7,13 @@ bin_SCRIPTS = icekapircprotocolhandler
 
 icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp \
 	konvisettingsdialog.cpp konversationmainwindow.cpp valuelistviewitem.cpp \
-	icecappresence.cpp icecapchannel.cpp icecapgateway.cpp icecapnetwork.cpp icecapmypresence.cpp \
+	icecapoutputfilter.cpp \
+	texteventhandler.cpp icecappresence.cpp icecapchannel.cpp icecapgateway.cpp icecapnetwork.cpp icecapmypresence.cpp \
 	urlcatcher.cpp scriptlauncher.cpp rawlog.cpp channellistpanel.cpp konsolepanel.cpp \
 	identity.cpp icecapstatuspanel.cpp statuspanel.cpp topiccombobox.cpp \
 	nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \
 	ignore.cpp nicklistview.cpp ircinput.cpp ignorelistviewitem.cpp images.cpp quickbutton.cpp chatwindow.cpp \
-	icecapoutputfilter.cpp \
 	query.cpp konversationapplication.cpp nick.cpp \
 	icecapinputfilter.cpp \
 	channel.cpp ircview.cpp icecapserver.cpp main.cpp \

@@ -12,19 +12,19 @@ namespace Icecap
 
     Network::Network (const QString& newProtocol, const QString& newName)
     {
-        protocol = newProtocol;
-        name = newName;
-        connected = false;
+        m_protocol = newProtocol;
+        m_name = newName;
+        m_connected = false;
     }
 
     void Network::setName (const QString& newName)
     {
-        name = newName;
+        m_name = newName;
     }
 
     void Network::setConnected (bool newStatus)
     {
-        connected = newStatus;
+        m_connected = newStatus;
     }
 
     Gateway Network::gateway (const QString& hostname, int port)
@@ -54,16 +54,6 @@ namespace Icecap
     void Network::gatewayRemove (const Gateway& gateway)
     {
         gatewayList.remove (gateway);
-    }
-
-    bool Network::operator== (Network compareTo)
-    {
-        return (name == compareTo.name);
-    }
-
-    bool Network::isNull ()
-    {
-        return name.isNull();
     }
 
 }

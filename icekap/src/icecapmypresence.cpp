@@ -7,6 +7,9 @@
 
 #include "icecapmypresence.h"
 #include "viewcontainer.h"
+#include "statuspanel.h"
+// #include "icecapoutputfilter.h"
+#include "icecapserver.h"
 
 namespace Icecap
 {
@@ -48,6 +51,7 @@ namespace Icecap
     void MyPresence::init ()
     {
         statusView = m_viewContainerPtr->addStatusView(this);
+        statusView->setMyPresence (this);
     }
 
     void MyPresence::setName (const QString& newName)
@@ -127,6 +131,11 @@ namespace Icecap
     bool MyPresence::isNull ()
     {
         return m_name.isNull();
+    }
+
+    IcecapOutputFilter* MyPresence::getOutputFilter ()
+    {
+        return m_server->getOutputFilter ();
     }
 
 }

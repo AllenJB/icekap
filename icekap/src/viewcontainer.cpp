@@ -1916,7 +1916,7 @@ IcecapStatusPanel* ViewContainer::addStatusView(IcecapServer* server)
     // Get group name for tab if available
 //    QString label = server->getServerGroup();
 	QString label = "";
-    if (label.isEmpty()) label = server->name();
+    if (label.isEmpty()) label = server->getServerName();
     statusView->setName(label);
 
     QObject::connect(server, SIGNAL(sslInitFailure()), this, SIGNAL(removeStatusBarSSLLabel()));
@@ -1946,9 +1946,8 @@ StatusPanel* ViewContainer::addStatusView(Icecap::MyPresence* server)
 //    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
 
     // Get group name for tab if available
-//    QString label = server->getServerGroup();
-	QString label = "";
-    if (label.isEmpty()) label = server->name();
+    QString label = "";
+    if (label.isEmpty()) label = server->getServerName();
     statusView->setName(label);
 
     // ... then put it into the tab widget, otherwise we'd have a race with server member
@@ -2273,3 +2272,6 @@ void ViewContainer::closeNicksOnlinePanel()
 }
 
 #include "viewcontainer.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

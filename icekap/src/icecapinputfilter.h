@@ -19,11 +19,13 @@
 
 #include "ignore.h"
 #include "servergroupsettings.h"
+// #include "texteventhandler.h"
 
 /*
   @author Dario Abatianni
 */
 
+class TextEventHandler;
 class IcecapServer;
 class QWidget;
 class Query;
@@ -39,34 +41,20 @@ class IcecapInputFilter : public QObject
         void setServer(IcecapServer* newServer);
         void parseLine(const QString &line);
 
-        void reset();                             // reset AutomaticRequest, WhoRequestList
+        // reset AutomaticRequest, WhoRequestList
+        void reset();
 
         // use this when the client does automatics, like userhost for finding hostmasks
-        void setAutomaticRequest(const QString& command, const QString& name, bool yes);
-        int getAutomaticRequest(const QString& command, const QString& name);
-        void addWhoRequest(const QString& name);  // called from Server::send()
-                                                  // to avoid duplicate requests
-        bool isWhoRequestUnderProcess(const QString& name);
+        void setAutomaticRequest(const QString& command, bool yes);
+        int getAutomaticRequest(const QString& command);
+
         void setLagMeasuring(bool yes);
         bool getLagMeasuring();
 
     signals:
         void welcome(const QString& ownHost);
-        void notifyResponse(const QString &nicksOnline);
-                                                  // will be connected to Server::userhost()
-        void userhost(const QString& nick,const QString& hostmask,bool away,bool ircOp);
-                                                  // will be connected to Server::setTopicAuthor()
-        void topicAuthor(const QString& channel,const QString& author);
-        void endOfWho(const QString& target);     // for scheduling auto /WHO
-        void addChannelListPanel();
-        void addToChannelList(const QString& channel,int users,const QString& topic);
-        void invitation(const QString& nick,const QString& channel);
-        void away();
-        void unAway();
 
     protected:
-        void parseClientCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing);
-        void parseServerCommand(const QString &prefix, const QString &command, const QStringList &parameterList, const QString &trailing);
         void parseModes(const QString &sourceNick, const QStringList &parameterList);
         void parseIcecapEvent (const QString &eventName, const QStringList &parameterList);
         void parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList);
@@ -87,8 +75,8 @@ class IcecapInputFilter : public QObject
         bool isIgnore(const QString &pattern, Ignore::Type type);
 
         IcecapServer* server;
-            // automaticRequest[command][channel or nick]=count
-        QMap< QString, QMap<QString,int> > automaticRequest;
+            // automaticRequest[command]=count
+        QMap< QString, int > automaticRequest;
         QStringList whoRequestList;
         int lagMeasuring;
 
@@ -103,6 +91,8 @@ class IcecapInputFilter : public QObject
         bool netlistInProgress;
         bool prslistInProgress;
         bool chlistInProgress;
+
+        TextEventHandler* textEventHnd;
 };
 #endif
 
