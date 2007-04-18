@@ -188,10 +188,10 @@
       </default>
     </configurations>
     <run>
-      <mainprogram>/home/allen/svn/icekap/trunk/icekap/src/icekap</mainprogram>
+      <mainprogram>/home/allen/svn/icekap/branches/genericserver/icekap/src/icekap</mainprogram>
       <programargs/>
       <globaldebugarguments/>
-      <globalcwd>/home/allen/svn/icekap/trunk</globalcwd>
+      <globalcwd>/home/allen/svn/icekap/branches/genericserver</globalcwd>
       <useglobalprogram>true</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>false</autocompile>
@@ -217,7 +217,7 @@
   </kdevdocumentation>
   <ctagspart>
     <customArguments/>
-    <customTagfilePath>/home/allen/svn/icekap/trunk/tags</customTagfilePath>
+    <customTagfilePath>/home/allen/svn/icekap/branches/genericserver/tags</customTagfilePath>
     <activeTagsFiles/>
   </ctagspart>
 </kdevelop>

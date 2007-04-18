@@ -14,10 +14,17 @@
 
 #include "icecapchannel.h"
 #include "icecapnetwork.h"
-#include "statuspanel.h"
+// #include "statuspanel.h"
+#include "icecapoutputfilter.h"
+// #include "icecapserver.h"
+
+class StatusPanel;
+class ViewContainer;
+class IcecapServer;
 
 namespace Icecap
 {
+//    class OutputFilter;
 
     class MyPresence
     {
@@ -33,12 +40,17 @@ namespace Icecap
             bool connected () { return m_connected; }
             bool autoconnect () { return m_autoconnect; }
             QString presence () { return m_presence; }
+            QString getServerName() const { return m_network.name(); }
+            IcecapServer* server() { return m_server; }
+            QString icecapServerName () { return m_serverName; }
 
             void setName (const QString& newName);
             void setNetwork (const Network& newNetwork);
             void setConnected (bool newStatus);
             void setAutoconnect (bool newStatus);
             void setPresence (QString& presenceName);
+            void setServer (IcecapServer* newServer) { m_server = newServer; }
+            void setIcecapServerName (const QString serverName) { m_serverName = serverName; }
 
             Channel channel (const QString& channelName);
             void channelAdd (const Channel& channel);
@@ -54,6 +66,12 @@ namespace Icecap
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
 
+//            OutputFilter* outputFilter () { return m_outputFilter; }
+//            void setOutputFilter (const OutputFilter& outputFilter) { m_outputFilter = outputFilter; }
+            IcecapOutputFilter* getOutputFilter();
+
+            IcecapServer* m_server;
+
         private:
             void init ();
 
@@ -63,9 +81,11 @@ namespace Icecap
             bool m_autoconnect;
             QValueList<Channel> channelList;
             Network m_network;
+            QString m_serverName;
 
             ViewContainer* m_viewContainerPtr;
             StatusPanel* statusView;
+//            OutputFilter m_outputFilter;
     };
 
 }

@@ -15,10 +15,11 @@
 #ifndef STATUSPANEL_H
 #define STATUSPANEL_H
 
+#include <qstring.h>
+
 #include "chatwindow.h"
 #include "icecapstatuspanel.h"
-
-#include <qstring.h>
+#include "icecapmypresence.h"
 
 /*
   @author Dario Abatianni
@@ -44,7 +45,11 @@ class StatusPanel : public IcecapStatusPanel
         virtual QString getChannelEncoding();
         virtual QString getChannelEncodingDefaultDesc();
 
+        virtual void emitUpdateInfo();
+
         virtual void setIdentity(const Identity *newIdentity);
+
+        void setMyPresence (Icecap::MyPresence* p_mypresence);
 
     signals:
         void sendFile();
@@ -53,7 +58,7 @@ class StatusPanel : public IcecapStatusPanel
         void setNickname(const QString& newNickname);
         virtual void indicateAway(bool show);
         void showNicknameBox(bool show);
-        void updateAppearanceExtra();
+        void updateAppearance();
 
     protected slots:
         void sendFileMenu();
@@ -61,6 +66,8 @@ class StatusPanel : public IcecapStatusPanel
         void nicknameComboboxChanged();
         //Used to disable functions when not connected
         virtual void serverOnline(bool online);
+        void statusTextEntered();
+        void sendStatusText(const QString& sendLine);
 
     protected:
         bool awayChanged;
@@ -72,6 +79,8 @@ class StatusPanel : public IcecapStatusPanel
         QString oldNick;
 
         StatusPanel* statusPanel;
+
+        Icecap::MyPresence* mypresence;
 };
 #endif
 

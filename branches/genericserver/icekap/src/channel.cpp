@@ -2242,8 +2242,8 @@ void Channel::autoWho()
         scheduleAutoWho();
         return;
     }
-    if(m_server->getInputFilter()->isWhoRequestUnderProcess(getName()))
-        return;
+//    if(m_server->getInputFilter()->isWhoRequestUnderProcess(getName()))
+//        return;
 //    m_server->requestWho(getName());
 }
 

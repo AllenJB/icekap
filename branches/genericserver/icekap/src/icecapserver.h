@@ -35,7 +35,9 @@
 #include "icecapserversettings.h"
 #include "icecapnetwork.h"
 #include "icecapmypresence.h"
+// #include "texteventhandler.h"
 
+class TextEventHandler;
 class IcecapStatusPanel;
 class Identity;
 class RawLog;
@@ -115,9 +117,9 @@ class IcecapServer : public QObject
         QValueList<Icecap::Network> getNetworkList () { return networkList; }
         void networkListDisplay ();
 
-        void mypresenceAdd (const Icecap::MyPresence& mypresence);
-        void mypresenceAdd (const QString& name);
-        void mypresenceAdd (const QString& name, const Icecap::Network& network);
+        void mypresenceAdd (Icecap::MyPresence& mypresence);
+//        void mypresenceAdd (const QString& name);
+//        void mypresenceAdd (const QString& name, const Icecap::Network& network);
         void mypresenceAdd (const QString& name, const QString& networkName);
         void mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap);
         void mypresenceRemove (const Icecap::MyPresence& mypresence);
@@ -132,6 +134,8 @@ class IcecapServer : public QObject
         void requestNetworkList ();
         void requestMypresenceList ();
         void requestChannelList ();
+
+        TextEventHandler* getTextEventHandler ();
 
     signals:
         /// will be connected to KonversationApplication::removeServer()
@@ -248,6 +252,7 @@ class IcecapServer : public QObject
         QValueList<Icecap::Network> networkList;
         QValueList<Icecap::MyPresence> mypresenceList;
 
+        TextEventHandler* textEventHnd;
 };
 #endif
 

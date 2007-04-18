@@ -166,14 +166,14 @@ gatelist;+;id=383;time=1176049231;
 
 *;client_connected;id=388;time=1176049498.5;
 
-	*;client_command;id=389;time=1176049515.4;tag=netlist;command=network list
-	*;client_command_reply;id=390;time=1176049515.4;tag=netlist;command=network list;network=Test Network;protocol=IRC
-	*;client_command_reply;id=391;time=1176049515.4;tag=netlist;command=network list;network=freenode;protocol=IRC
-	*;client_command_reply;id=392;time=1176049515.4;tag=netlist;command=network list
+*;client_command;id=389;time=1176049515.4;tag=netlist;command=network list
+*;client_command_reply;id=390;time=1176049515.4;tag=netlist;command=network list;network=Test Network;protocol=IRC
+*;client_command_reply;id=391;time=1176049515.4;tag=netlist;command=network list;network=freenode;protocol=IRC
+*;client_command_reply;id=392;time=1176049515.4;tag=netlist;command=network list
 
-	*;client_command;id=393;time=1176049522.1;tag=preslist;command=presence list
-	*;client_command_reply;id=394;time=1176049522.1;tag=preslist;command=presence list;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
-	*;client_command_reply;id=395;time=1176049522.1;tag=preslist;command=presence list
+*;client_command;id=393;time=1176049522.1;tag=preslist;command=presence list
+*;client_command_reply;id=394;time=1176049522.1;tag=preslist;command=presence list;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
+*;client_command_reply;id=395;time=1176049522.1;tag=preslist;command=presence list
 
 *;irc_event;id=396;time=1176049529;network=freenode;mypresence=AllenJB|icecap;irc_event=ping;data=:calvino.freenode.net;raw
 
@@ -227,6 +227,7 @@ cp;+;id=2514;time=1176414534;
 1. channel remove on a channel currently joined
 2. presence deinit / remove when joined, with and without a channel open
 3. network remove with a presence joined, with and without a channel open
+4. Gateway deinit
 
 --- ERK! A bug?!?
 Connection closed by foreign host.
