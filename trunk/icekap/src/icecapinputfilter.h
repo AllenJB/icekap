@@ -59,17 +59,17 @@ class IcecapInputFilter : public QObject
         void parseIcecapEvent (const QString &eventName, const QStringList &parameterList);
         void parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList);
 
-        void parseNetworkAdd  (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parseNetworkList (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parseNetworkDel  (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
+        void parseNetworkAdd  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseNetworkList (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseNetworkDel  (const QString& status, QMap<QString, QString>& parameterMap);
 
-        void parsePresenceAdd  (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parsePresenceList (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parsePresenceDel  (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
+        void parsePresenceAdd  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parsePresenceList (const QString& status, QMap<QString, QString>& parameterMap);
+        void parsePresenceDel  (const QString& status, QMap<QString, QString>& parameterMap);
 
-        void parseChannelAdd   (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parseChannelList  (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
-        void parseChannelDel   (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap);
+        void parseChannelAdd   (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseChannelList  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseChannelDel   (const QString& status, QMap<QString, QString>& parameterMap);
 
         bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);

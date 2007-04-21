@@ -70,10 +70,15 @@ int main(int argc, char* argv[])
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     KonversationApplication app;
 
+/*
+    TODO: Allow connecting to icecap servers from the commandline.
     if(args->isSet("server"))
         app.delayedConnectToServer(args->getOption("server"), args->getOption("port"),
             args->getOption("channel"), args->getOption("nick"),
             args->getOption("password"), args->isSet("ssl"));
-
+*/
     return app.exec();
 }
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

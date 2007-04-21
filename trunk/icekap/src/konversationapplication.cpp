@@ -47,7 +47,6 @@ KonversationApplication::KonversationApplication()
 : KUniqueApplication(true, true, true)
 {
     mainWindow = 0;
-    quickConnectDialog = 0;
     m_connectDelayed=false;
 }
 
@@ -62,6 +61,7 @@ KonversationApplication::~KonversationApplication()
 //    delete identDCOP;
 }
 
+/*
 void KonversationApplication::delayedConnectToServer(const QString& hostname, const QString& port, const QString& channel,
 const QString& nick, const QString& password,
 const bool& useSSL)
@@ -74,13 +74,13 @@ const bool& useSSL)
     m_useSSL=useSSL;
     m_connectDelayed=true;
 }
+*/
 
 int KonversationApplication::newInstance()
 {
     if(!mainWindow)
     {
         // make sure all vars are initialized properly
-        quickConnectDialog = 0;
 
         // Sound object used to play sound...
         m_sound = new Konversation::Sound(this);
@@ -130,7 +130,8 @@ int KonversationApplication::newInstance()
 
 //        if (Preferences::showServerList()) mainWindow->openServerList();
 
-        // handle autoconnect on startup
+        // TODO: handle autoconnect on startup for icecap servers
+/*
         Konversation::ServerGroupList serverGroups = Preferences::serverGroupList();
 
         if (!m_connectDelayed)
@@ -142,6 +143,7 @@ int KonversationApplication::newInstance()
         }
         else
             quickConnectToServer(m_hostName, m_port, m_channel, m_nick, m_password, m_useSSL);
+*/
 
         // prepare dcop interface
 /*
@@ -304,6 +306,7 @@ bool KonversationApplication::validateIdentity(IdentityPtr identity, bool intera
     return true;
 }
 
+/*
 IcecapServer* KonversationApplication::connectToServerGroup(const QString& serverGroup)
 {
     int serverGroupId = Preferences::serverGroupIdByName(serverGroup);
@@ -316,7 +319,6 @@ IcecapServer* KonversationApplication::connectToServer(int serverGroupId, Konver
 
     // Check if a server window with same name and port is already open
     IcecapServer* lookServer = serverList.first();
-/*
     IcecapServer* existingServer = 0;
 
     while (lookServer)
@@ -438,14 +440,11 @@ IcecapServer* KonversationApplication::connectToServer(int serverGroupId, Konver
     serverList.append(newServer);
 
     return newServer;
-*/
-    return lookServer;
 }
 
 void KonversationApplication::quickConnectToServer(const QString& hostName, const QString& port, const QString& channel, const QString& nick, const QString& password, const bool& useSSL)
 {
     //used for the quick connect dialog and /server command
-/*
     IdentityPtr identity;
     Konversation::ServerGroupSettingsPtr serverGroupOfServer;
 
@@ -474,8 +473,8 @@ void KonversationApplication::quickConnectToServer(const QString& hostName, cons
     connect(newServer, SIGNAL(awayInsertRememberLine(IcecapServer*)), mainWindow, SIGNAL(insertRememberLine(IcecapServer*)));
 
     serverList.append(newServer);
-*/
 }
+*/
 
 void KonversationApplication::quickConnectToIcecapServer(const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
@@ -1042,13 +1041,6 @@ void KonversationApplication::clearUrlList()
     urlList.clear();
 }
 
-void KonversationApplication::openQuickConnectDialog()
-{
-    quickConnectDialog = new QuickConnectDialog(mainWindow);
-    connect(quickConnectDialog, SIGNAL(connectClicked(const QString&, const QString&, const QString&, const bool&)),this, SLOT(quickConnectToServer(const QString&, const QString&, const QString&, const bool&)));
-    quickConnectDialog->show();
-}
-
 void KonversationApplication::openIcecapQuickConnectDialog()
 {
     icecapQuickConnectDialog = new IcecapQuickConnectDialog(mainWindow);
@@ -1095,17 +1087,17 @@ void KonversationApplication::sendMultiServerCommand(const QString& command, con
 */
 }
 
+/*
 void KonversationApplication::dcopConnectToServer(const QString& url, int port, const QString& channel,
 const QString& password)
 {
     IcecapServer* server = getServerByName(url);
-/*
     if(server)
         server->sendJoinCommand(channel);
     else
-*/
         quickConnectToServer(url, QString::number(port), password);
 }
+*/
 
 Konversation::Sound* KonversationApplication::sound()
 {

@@ -116,6 +116,8 @@ class KonversationApplication : public KUniqueApplication
 
         int newInstance();
 
+        // TODO: delayed connect for icecap servers (used when connecting from the commandline)
+/*
         void delayedConnectToServer(const QString& hostName,
             const QString& port = "6667",
             const QString& channel="",
@@ -123,6 +125,7 @@ class KonversationApplication : public KUniqueApplication
             const QString& password="",
             const bool& useSSL=false
             );
+*/
 
     signals:
         void catchUrl(const QString& who,const QString& url);
@@ -130,15 +133,11 @@ class KonversationApplication : public KUniqueApplication
         void closeServerList();
 
     public slots:
+/*
+        TODO: Rewrite these 2 functions for icecap servers
         IcecapServer* connectToServerGroup(const QString& serverGroup);
         IcecapServer* connectToServer(int serverGroupId, Konversation::ServerSettings quickServer = Konversation::ServerSettings());
-        void quickConnectToServer(const QString& hostName,
-            const QString& port = "6667",
-            const QString& channel="",
-            const QString& nick = Preferences::nickname(0),
-            const QString& password="",
-            const bool& useSSL=false
-            );
+*/
         void quickConnectToIcecapServer(const QString& name,
             const QString& hostName,
             const QString& port = "1027",
@@ -154,11 +153,11 @@ class KonversationApplication : public KUniqueApplication
         void toggleAway();
         bool emitDCOPSig(const QString& appId, const QString& objId, const QString& signal, QByteArray& data);
 
-        void dcopConnectToServer(const QString& url, int port, const QString& channel, const QString& password);
+// TODO: Rewrite dcopConnectToServer for icecap servers
+//        void dcopConnectToServer(const QString& url, int port, const QString& channel, const QString& password);
 
     protected slots:
         void openIcecapQuickConnectDialog();
-        void openQuickConnectDialog();
         void removeServer(IcecapServer* server);
 
         void dcopMultiServerRaw(const QString &command);
@@ -174,7 +173,6 @@ class KonversationApplication : public KUniqueApplication
 //        KonvIdentDCOP* identDCOP;
         KonversationMainWindow* mainWindow;
         Konversation::Sound* m_sound;
-        QuickConnectDialog* quickConnectDialog;
         IcecapQuickConnectDialog* icecapQuickConnectDialog;
         Images* m_images;
 

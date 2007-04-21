@@ -14,16 +14,18 @@
 namespace Icecap
 {
 
-    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName)
+    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName)
     {
+        m_server = server;
         m_name = newName;
         m_connected = false;
         m_autoconnect = false;
         m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork)
+    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork)
     {
+        m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = false;
@@ -31,8 +33,9 @@ namespace Icecap
         m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
+    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
     {
+        m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = parameterMap.contains ("connected");
@@ -42,16 +45,18 @@ namespace Icecap
             m_presence = parameterMap["presence"];
         }
         m_viewContainerPtr = viewContainer;
-/*
-        if (m_connected)
-        {
+        if (m_connected) {
             init ();
         }
-*/
     }
 
     void MyPresence::init ()
     {
+/*
+        if (!m_connected) {
+            return;
+        }
+*/
         statusView = m_viewContainerPtr->addStatusView(this);
         statusView->setMyPresence (this);
         statusView->setServer (m_server);
@@ -135,13 +140,13 @@ namespace Icecap
     {
         return m_name.isNull();
     }
-
+/*
     IcecapOutputFilter* MyPresence::getOutputFilter ()
     {
         IcecapOutputFilter* retVal = m_server->getOutputFilter ();
         return retVal;
     }
-
+*/
 }
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;

@@ -603,7 +603,7 @@ void KonversationMainWindow::openURL(const QString& url, const QString& /*title*
     QString channel = urlN.section('/',1,1);
     QString password;
 
-    KonversationApplication::instance()->quickConnectToServer(host,port,channel,"",password);
+//    KonversationApplication::instance()->quickConnectToServer(host,port,channel,"",password);
 }
 
 QString KonversationMainWindow::currentURL(bool passNetwork)

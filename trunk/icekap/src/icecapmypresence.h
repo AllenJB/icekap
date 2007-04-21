@@ -15,7 +15,7 @@
 #include "icecapchannel.h"
 #include "icecapnetwork.h"
 // #include "statuspanel.h"
-#include "icecapoutputfilter.h"
+// #include "icecapoutputfilter.h"
 // #include "icecapserver.h"
 
 class StatusPanel;
@@ -30,9 +30,9 @@ namespace Icecap
     {
         public:
             MyPresence (): m_name(0) {}
-            MyPresence (ViewContainer* viewContainer, const QString& newName);
-            MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork);
-            MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork, const QMap<QString, QString>& parameterMap);
+            MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName);
+            MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork);
+            MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork, const QMap<QString, QString>& parameterMap);
 //            ~MyPresence ();
 
             QString name () { return m_name; }
@@ -42,15 +42,15 @@ namespace Icecap
             QString presence () { return m_presence; }
             QString getServerName() const { return m_network.name(); }
             IcecapServer* server() { return m_server; }
-            QString icecapServerName () { return m_serverName; }
+//            QString icecapServerName () { return m_serverName; }
 
             void setName (const QString& newName);
             void setNetwork (const Network& newNetwork);
             void setConnected (bool newStatus);
             void setAutoconnect (bool newStatus);
             void setPresence (QString& presenceName);
-            void setServer (IcecapServer* server) { m_server = server; }
-            void setIcecapServerName (const QString serverName) { m_serverName = serverName; }
+//            void setServer (IcecapServer* server) { m_server = server; }
+//            void setIcecapServerName (const QString serverName) { m_serverName = serverName; }
 
             Channel channel (const QString& channelName);
             void channelAdd (const Channel& channel);
@@ -66,13 +66,13 @@ namespace Icecap
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
 
-            void init ();
-
-//            OutputFilter* outputFilter () { return m_outputFilter; }
-//            void setOutputFilter (const OutputFilter& outputFilter) { m_outputFilter = outputFilter; }
-            IcecapOutputFilter* getOutputFilter();
+////            OutputFilter* outputFilter () { return m_outputFilter; }
+////            void setOutputFilter (const OutputFilter& outputFilter) { m_outputFilter = outputFilter; }
+//            IcecapOutputFilter* getOutputFilter();
 
         private:
+            void init ();
+
             IcecapServer* m_server;
 
             QString m_name;
@@ -81,7 +81,7 @@ namespace Icecap
             bool m_autoconnect;
             QValueList<Channel> channelList;
             Network m_network;
-            QString m_serverName;
+//            QString m_serverName;
 
             ViewContainer* m_viewContainerPtr;
             StatusPanel* statusView;

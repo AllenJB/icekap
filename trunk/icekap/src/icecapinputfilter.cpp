@@ -187,47 +187,47 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     }
 
     if (tag == "netlist") {
-        parseNetworkList (tag, status, parameterMap);
+        parseNetworkList (status, parameterMap);
     }
     else if (tag == "netadd")
     {
-        parseNetworkAdd (tag, status, parameterMap);
+        parseNetworkAdd (status, parameterMap);
     }
     else if (tag == "netdel")
     {
-        parseNetworkDel (tag, status, parameterMap);
+        parseNetworkDel (status, parameterMap);
     }
     else
 
     if (tag == "prslist")
     {
-        parsePresenceList (tag, status, parameterMap);
+        parsePresenceList (status, parameterMap);
     }
     else if (tag == "prsadd")
     {
-        parsePresenceAdd (tag, status, parameterMap);
+        parsePresenceAdd (status, parameterMap);
     }
     else if (tag == "prsdel")
     {
-        parsePresenceDel (tag, status, parameterMap);
+        parsePresenceDel (status, parameterMap);
     } else
 
     if (tag == "chlist")
     {
-        parseChannelList (tag, status, parameterMap);
+        parseChannelList (status, parameterMap);
     }
     else if (tag == "chadd")
     {
-        parseChannelAdd (tag, status, parameterMap);
+        parseChannelAdd (status, parameterMap);
     }
     else if (tag == "chdel")
     {
-        parseChannelDel (tag, status, parameterMap);
+        parseChannelDel (status, parameterMap);
     }
 
 }
 
-void IcecapInputFilter::parseNetworkList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, QString> &parameterMap)
 {
     if (status == "+") {
         netlistInProgress = false;
@@ -252,7 +252,7 @@ void IcecapInputFilter::parseNetworkList (const QString &tag, const QString &sta
     }
 }
 
-void IcecapInputFilter::parseNetworkAdd (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parseNetworkAdd (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent("network_add", parameterMap);
@@ -261,7 +261,7 @@ void IcecapInputFilter::parseNetworkAdd (const QString& tag, const QString& stat
     }
 }
 
-void IcecapInputFilter::parseNetworkDel (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parseNetworkDel (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent ("network_del", parameterMap);
@@ -271,7 +271,7 @@ void IcecapInputFilter::parseNetworkDel (const QString& tag, const QString& stat
 }
 
 
-void IcecapInputFilter::parsePresenceList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, QString> &parameterMap)
 {
     if (status == "+") {
         prslistInProgress = false;
@@ -297,7 +297,7 @@ void IcecapInputFilter::parsePresenceList (const QString &tag, const QString &st
     }
 }
 
-void IcecapInputFilter::parsePresenceAdd (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parsePresenceAdd (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent("presence_add", parameterMap);
@@ -306,7 +306,7 @@ void IcecapInputFilter::parsePresenceAdd (const QString& tag, const QString& sta
     }
 }
 
-void IcecapInputFilter::parsePresenceDel (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parsePresenceDel (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent("presence_del", parameterMap);
@@ -316,7 +316,7 @@ void IcecapInputFilter::parsePresenceDel (const QString& tag, const QString& sta
 }
 
 
-void IcecapInputFilter::parseChannelList (const QString &tag, const QString &status, QMap<QString, QString> &parameterMap)
+void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, QString> &parameterMap)
 {
     if (status == "+") {
         prslistInProgress = false;
@@ -342,7 +342,7 @@ void IcecapInputFilter::parseChannelList (const QString &tag, const QString &sta
     }
 }
 
-void IcecapInputFilter::parseChannelAdd (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parseChannelAdd (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent("channel_add", parameterMap);
@@ -352,7 +352,7 @@ void IcecapInputFilter::parseChannelAdd (const QString& tag, const QString& stat
 }
 
 // TODO: Does this even exist?
-void IcecapInputFilter::parseChannelDel (const QString& tag, const QString& status, QMap<QString, QString>& parameterMap)
+void IcecapInputFilter::parseChannelDel (const QString& status, QMap<QString, QString>& parameterMap)
 {
     if (status == "+") {
         textEventHnd->processEvent("channel_del", parameterMap);
