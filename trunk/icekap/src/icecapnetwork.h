@@ -20,13 +20,13 @@ namespace Icecap
     class Network
     {
         public:
-            Network (): protocol(0), name(0) {}
+            Network (): m_protocol(0), m_name(0) {}
             Network (const QString& newProtocol, const QString& newName);
 //            ~Network ();
 
-            QString getProtocol () { return protocol; }
-            QString getName () { return name; }
-            bool getConnected () { return connected; }
+            QString protocol () const { return m_protocol; }
+            QString name () const { return m_name; }
+            bool connected () { return m_connected; }
 
             void setName (const QString& newName);
             void setConnected (bool newStatus);
@@ -36,13 +36,13 @@ namespace Icecap
             void gatewayRemove (const Gateway& gateway);
             void gatewayRemove (const QString& hostname, int port);
 
-            bool operator== (Network compareTo);
-            bool isNull ();
+            bool operator== (Network compareTo) { return (m_name == compareTo.m_name); }
+            bool isNull () { return m_name.isNull(); }
 
         private:
-            QString protocol;
-            QString name;
-            bool connected;
+            QString m_protocol;
+            QString m_name;
+            bool m_connected;
             QValueList<Gateway> gatewayList;
 
     };

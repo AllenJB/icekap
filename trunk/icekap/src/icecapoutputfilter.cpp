@@ -195,6 +195,7 @@ namespace Icecap
     OutputFilterResult IcecapOutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
     {
         setCommandChar();
+//        commandChar = "/";
 
         OutputFilterResult result;
         destination=name;
@@ -502,6 +503,7 @@ namespace Icecap
     // Accessors
 
     void IcecapOutputFilter::setCommandChar() { commandChar=Preferences::commandChar(); }
+//    void IcecapOutputFilter::setCommandChar() { commandChar="/"; }
 
     OutputFilterResult IcecapOutputFilter::usage(const QString& string)
     {

@@ -31,37 +31,43 @@
 #include "ircviewbox.h"
 #include "icecapserver.h"
 
-IcecapStatusPanel::IcecapStatusPanel(QWidget* parent) : ChatWindow(parent)
+IcecapStatusPanel::IcecapStatusPanel(QWidget* parent, bool p_isPresenceStatus) : ChatWindow(parent)
 {
+    isPresenceStatus = p_isPresenceStatus;
+
     setType(ChatWindow::Status);
 
     // set up text view, will automatically take care of logging
     IRCViewBox* ircBox = new IRCViewBox(this, 0); // Server will be set later in setServer()
     setTextView(ircBox->ircView());
 
-    QHBox* commandLineBox=new QHBox(this);
-    commandLineBox->setSpacing(spacing());
-    commandLineBox->setMargin(0);
+    if (! isPresenceStatus) {
+        QHBox* commandLineBox=new QHBox(this);
+        commandLineBox->setSpacing(spacing());
+        commandLineBox->setMargin(0);
 
-    statusInput=new IRCInput(commandLineBox);
+        statusInput=new IRCInput(commandLineBox);
 
-    getTextView()->installEventFilter(statusInput);
-    statusInput->installEventFilter(this);
+        getTextView()->installEventFilter(statusInput);
+        statusInput->installEventFilter(this);
+    }
 
     setLog(Preferences::log());
 
-    connect(getTextView(),SIGNAL (gotFocus()),statusInput,SLOT (setFocus()) );
 
     connect(getTextView(), SIGNAL(updateTabNotification(Konversation::TabNotifyType)),
         this, SLOT(activateTabNotification(Konversation::TabNotifyType)));
-    connect(getTextView(),SIGNAL (sendFile()),this,SLOT (sendFileMenu()) );
-    connect(getTextView(),SIGNAL (autoText(const QString&)),this,SLOT (sendStatusText(const QString&)) );
+//    connect(getTextView(),SIGNAL (sendFile()),this,SLOT (sendFileMenu()) );
+    if (! isPresenceStatus) {
+        connect(getTextView(),SIGNAL (autoText(const QString&)),this,SLOT (sendStatusText(const QString&)) );
+        connect(getTextView(),SIGNAL (gotFocus()),statusInput,SLOT (setFocus()) );
 
-    connect(statusInput,SIGNAL (submit()),this,SLOT(statusTextEntered()) );
-    connect(statusInput,SIGNAL (textPasted(const QString&)),this,SLOT(textPasted(const QString&)) );
-    connect(getTextView(), SIGNAL(textPasted(bool)), statusInput, SLOT(paste(bool)));
+        connect(statusInput,SIGNAL (submit()),this,SLOT(statusTextEntered()) );
+        connect(statusInput,SIGNAL (textPasted(const QString&)),this,SLOT(textPasted(const QString&)) );
+        connect(getTextView(), SIGNAL(textPasted(bool)), statusInput, SLOT(paste(bool)));
 
-    updateAppearance();
+        updateAppearance();
+    }
 }
 
 IcecapStatusPanel::~IcecapStatusPanel()
