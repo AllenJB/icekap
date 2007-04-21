@@ -23,6 +23,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
+#include <kspy.h>
+
 #include "channel.h"
 #include "statuspanel.h"
 #include "konversationapplication.h"
@@ -251,6 +253,7 @@ void StatusPanel::statusTextEntered()
     statusInput->clear();
 
     if(line.lower()==Preferences::commandChar()+"clear") textView->clear();
+    else if (line.lower()==Preferences::commandChar()+"kspy") KSpy::invoke();
     else
     {
         if(line.length()) sendStatusText(line);
@@ -268,6 +271,10 @@ void StatusPanel::sendStatusText(const QString& sendLine)
         outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
     }
 */
+//    Icecap::IcecapOutputFilter* outputFilter = mypresence->getOutputFilter ();
+    Icecap::IcecapOutputFilter* outputFilter = m_server->getOutputFilter ();
+//    Icecap::IcecapOutputFilter* outputFilter = mypresence->server()->getOutputFilter ();
+
 
     // Send all strings, one after another
     QStringList outList=QStringList::split('\n',outputAll);
@@ -278,7 +285,7 @@ void StatusPanel::sendStatusText(const QString& sendLine)
         // encoding stuff is done in Server()
         // TODO: Need to fix this bit - it's causing a crash currently
 //        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse("", output, QString::null);
-        Icecap::OutputFilterResult result = mypresence->getOutputFilter()->parse("", output, QString::null);
+        Icecap::OutputFilterResult result = outputFilter->parse("", output, QString::null);
 
         if(!result.output.isEmpty())
         {

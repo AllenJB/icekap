@@ -879,6 +879,7 @@ void IcecapServer::mypresenceAdd (Icecap::MyPresence& mypresence)
 //    mypresence.setOutputFilter ( outputFilter );
     mypresence.setServer (this);
     mypresence.setIcecapServerName (m_server.name());
+    mypresence.init ();
     mypresenceList.append (mypresence);
 }
 /*
@@ -941,6 +942,12 @@ void IcecapServer::presenceListDisplay ()
 TextEventHandler* IcecapServer::getTextEventHandler ()
 {
     return textEventHnd;
+}
+
+Icecap::IcecapOutputFilter* IcecapServer::getOutputFilter ()
+{
+    Icecap::IcecapOutputFilter* retVal = outputFilter;
+    return retVal;
 }
 
 #include "icecapserver.moc"
