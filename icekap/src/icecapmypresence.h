@@ -49,7 +49,7 @@ namespace Icecap
             void setConnected (bool newStatus);
             void setAutoconnect (bool newStatus);
             void setPresence (QString& presenceName);
-            void setServer (IcecapServer* newServer) { m_server = newServer; }
+            void setServer (IcecapServer* server) { m_server = server; }
             void setIcecapServerName (const QString serverName) { m_serverName = serverName; }
 
             Channel channel (const QString& channelName);
@@ -66,14 +66,14 @@ namespace Icecap
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
 
+            void init ();
+
 //            OutputFilter* outputFilter () { return m_outputFilter; }
 //            void setOutputFilter (const OutputFilter& outputFilter) { m_outputFilter = outputFilter; }
             IcecapOutputFilter* getOutputFilter();
 
-            IcecapServer* m_server;
-
         private:
-            void init ();
+            IcecapServer* m_server;
 
             QString m_name;
             QString m_presence;

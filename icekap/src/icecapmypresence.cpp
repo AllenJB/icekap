@@ -42,16 +42,19 @@ namespace Icecap
             m_presence = parameterMap["presence"];
         }
         m_viewContainerPtr = viewContainer;
+/*
         if (m_connected)
         {
             init ();
         }
+*/
     }
 
     void MyPresence::init ()
     {
         statusView = m_viewContainerPtr->addStatusView(this);
         statusView->setMyPresence (this);
+        statusView->setServer (m_server);
     }
 
     void MyPresence::setName (const QString& newName)
@@ -135,7 +138,8 @@ namespace Icecap
 
     IcecapOutputFilter* MyPresence::getOutputFilter ()
     {
-        return m_server->getOutputFilter ();
+        IcecapOutputFilter* retVal = m_server->getOutputFilter ();
+        return retVal;
     }
 
 }

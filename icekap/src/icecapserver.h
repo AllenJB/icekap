@@ -88,7 +88,7 @@ class IcecapServer : public QObject
         bool connected() const  { return alreadyConnected; }
 
         IcecapInputFilter* getInputFilter() { return &inputFilter; }
-        Icecap::IcecapOutputFilter* getOutputFilter() { return outputFilter; }
+        Icecap::IcecapOutputFilter* getOutputFilter();
 
         void appendStatusMessage(const QString& type,const QString& message);
         void appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL = true);
