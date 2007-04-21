@@ -6,60 +6,80 @@
 */
 
 #include "icecapmypresence.h"
+#include "viewcontainer.h"
+#include "statuspanel.h"
+// #include "icecapoutputfilter.h"
+#include "icecapserver.h"
 
 namespace Icecap
 {
 
-    MyPresence::MyPresence (const QString& newName)
+    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName)
     {
-        name = newName;
-        connected = false;
-        autoconnect = false;
+        m_name = newName;
+        m_connected = false;
+        m_autoconnect = false;
+        m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (const QString& newName, const Network& newNetwork)
+    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork)
     {
-        name = newName;
-        network = newNetwork;
-        connected = false;
-        autoconnect = false;
+        m_name = newName;
+        m_network = newNetwork;
+        m_connected = false;
+        m_autoconnect = false;
+        m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
+    MyPresence::MyPresence (ViewContainer* viewContainer, const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
     {
-        name = newName;
-        network = newNetwork;
-        connected = parameterMap.contains ("connected");
-        autoconnect = parameterMap.contains ("autoconnect");
+        m_name = newName;
+        m_network = newNetwork;
+        m_connected = parameterMap.contains ("connected");
+        m_autoconnect = parameterMap.contains ("autoconnect");
         if (parameterMap.contains ("presence"))
         {
-            presence = parameterMap["presence"];
+            m_presence = parameterMap["presence"];
         }
+        m_viewContainerPtr = viewContainer;
+/*
+        if (m_connected)
+        {
+            init ();
+        }
+*/
+    }
+
+    void MyPresence::init ()
+    {
+        statusView = m_viewContainerPtr->addStatusView(this);
+        statusView->setMyPresence (this);
+        statusView->setServer (m_server);
     }
 
     void MyPresence::setName (const QString& newName)
     {
-        name = newName;
+        m_name = newName;
     }
 
     void MyPresence::setNetwork (const Network& newNetwork)
     {
-        network = newNetwork;
+        m_network = newNetwork;
     }
 
     void MyPresence::setConnected (bool newStatus)
     {
-        connected = newStatus;
+        m_connected = newStatus;
     }
 
     void MyPresence::setAutoconnect (bool newStatus)
     {
-        autoconnect = newStatus;
+        m_autoconnect = newStatus;
     }
 
     void MyPresence::setPresence (QString& presenceName)
     {
-        presence = presenceName;
+        m_presence = presenceName;
     }
 
     Channel MyPresence::channel (const QString& channelName)
@@ -108,12 +128,18 @@ namespace Icecap
 
     bool MyPresence::operator== (MyPresence compareTo)
     {
-        return ( (name == compareTo.name) && (network == compareTo.network) );
+        return ( (m_name == compareTo.m_name) && (m_network == compareTo.m_network) );
     }
 
     bool MyPresence::isNull ()
     {
-        return name.isNull();
+        return m_name.isNull();
+    }
+
+    IcecapOutputFilter* MyPresence::getOutputFilter ()
+    {
+        IcecapOutputFilter* retVal = m_server->getOutputFilter ();
+        return retVal;
     }
 
 }

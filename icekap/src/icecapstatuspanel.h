@@ -35,7 +35,8 @@ class IcecapStatusPanel : public ChatWindow
     Q_OBJECT
 
     public:
-        explicit IcecapStatusPanel(QWidget* parent);
+//        explicit IcecapStatusPanel(QWidget* parent);
+		explicit IcecapStatusPanel(QWidget* parent, bool p_isPresenceStatus = false);
         ~IcecapStatusPanel();
 
         virtual void setName(const QString& newName);
@@ -73,5 +74,7 @@ class IcecapStatusPanel : public ChatWindow
         QLabel* awayLabel;
         IRCInput* statusInput;
         QCheckBox* logCheckBox;
+
+		bool isPresenceStatus;
 };
 #endif

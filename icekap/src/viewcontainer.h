@@ -19,6 +19,7 @@
 #include "konversationmainwindow.h"
 #include "common.h"
 #include "icecapserver.h"
+#include "statuspanel.h"
 #include "icecapstatuspanel.h"
 
 class QSplitter;
@@ -116,6 +117,7 @@ class ViewContainer : public QObject
         void closeUrlCatcher();
 
         IcecapStatusPanel* addStatusView(IcecapServer* server);
+        StatusPanel* addStatusView (Icecap::MyPresence* server);
         RawLog* addRawLog(IcecapServer* server);
         void disconnectFrontServer();
         void reconnectFrontServer();
@@ -193,3 +195,6 @@ class ViewContainer : public QObject
 };
 
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:
