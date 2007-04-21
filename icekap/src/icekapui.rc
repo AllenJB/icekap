@@ -2,7 +2,7 @@
 <kpartgui name="icekap" version="42">
 
 	<MenuBar>
-		<Menu name="connection">
+		<Menu name="file">
 			<Action name="icecap_quick_connect_dialog" />
 <!--
 			<Separator />

@@ -804,11 +804,13 @@ void IcecapServer::disconnect()
     }
 }
 
+/*
 void IcecapServer::connectToNewServer(const QString& server, const QString& port, const QString& password)
 {
     KonversationApplication *konvApp = static_cast<KonversationApplication*>(KApplication::kApplication());
     konvApp->quickConnectToServer(server, port,"", "", password);
 }
+*/
 
 void IcecapServer::networkListDisplay ()
 {
@@ -877,41 +879,25 @@ Icecap::MyPresence IcecapServer::mypresence (const QString& name, const QString&
 void IcecapServer::mypresenceAdd (Icecap::MyPresence& mypresence)
 {
 //    mypresence.setOutputFilter ( outputFilter );
-    mypresence.setServer (this);
-    mypresence.setIcecapServerName (m_server.name());
-    mypresence.init ();
+//    mypresence.setServer (this);
+//    mypresence.setIcecapServerName (m_server.name());
+//    mypresence.init ();
     mypresenceList.append (mypresence);
 }
-/*
-void IcecapServer::mypresenceAdd (const QString& name)
-{
-//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name));
-    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name);
-    mypresenceAdd (myp);
-}
-*/
+
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName)
 {
-//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName)));
-    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network (networkName));
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, this, name, network (networkName));
     mypresenceAdd (myp);
 }
 
 
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap)
 {
-//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap));
-    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network (networkName), parameterMap);
+    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, this, name, network (networkName), parameterMap);
     mypresenceAdd (myp);
 }
-/*
-void IcecapServer::mypresenceAdd (const QString& name, const Icecap::Network& network)
-{
-//    mypresenceAdd (Icecap::MyPresence (m_viewContainerPtr, name, network));
-    Icecap::MyPresence myp = Icecap::MyPresence (m_viewContainerPtr, name, network);
-    mypresenceAdd (myp);
-}
-*/
+
 
 void IcecapServer::mypresenceRemove (const Icecap::MyPresence& mypresence)
 {

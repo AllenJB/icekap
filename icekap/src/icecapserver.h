@@ -118,8 +118,6 @@ class IcecapServer : public QObject
         void networkListDisplay ();
 
         void mypresenceAdd (Icecap::MyPresence& mypresence);
-//        void mypresenceAdd (const QString& name);
-//        void mypresenceAdd (const QString& name, const Icecap::Network& network);
         void mypresenceAdd (const QString& name, const QString& networkName);
         void mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap);
         void mypresenceRemove (const Icecap::MyPresence& mypresence);
@@ -166,7 +164,7 @@ class IcecapServer : public QObject
 
         void reconnect();
         void disconnect();
-        void connectToNewServer(const QString& server, const QString& port, const QString& password);
+//        void connectToNewServer(const QString& server, const QString& port, const QString& password);
         void showSSLDialog();
 
     protected slots:
