@@ -36,7 +36,7 @@ namespace Icecap
             void gatewayRemove (const Gateway& gateway);
             void gatewayRemove (const QString& hostname, int port);
 
-            bool operator== (Network compareTo) { return (m_name == compareTo.m_name); }
+            bool operator== (Network* compareTo) { return (m_name == compareTo->name()); }
             bool isNull () { return m_name.isNull(); }
 
         private:

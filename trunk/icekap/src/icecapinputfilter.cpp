@@ -154,13 +154,26 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     }
     else if (eventName == "channel_init")
     {
-        server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd (parameterMap["channel"]);
+        server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd (parameterMap["channel"]);
         textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "channel_deinit")
     {
-        server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd (parameterMap["channel"]);
+        server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelRemove (parameterMap["channel"]);
         textEventHnd->processEvent (eventName, parameterMap);
+    }
+    else if (eventName == "gateway_connecting")
+    {
+        server->mypresence(parameterMap["mypresence"], parameterMap["network"])->setState (Icecap::SSConnecting);
+        textEventHnd->processEvent(eventName, parameterMap);
+    }
+    else if ((eventName == "gateway_disconnected") || (eventName == "gateway_motd") || (eventName == "gateway_motd_end"))
+    {
+        textEventHnd->processEvent(eventName, parameterMap);
+    }
+    else if (eventName == "msg")
+    {
+        textEventHnd->processEvent(eventName, parameterMap);
     }
 }
 
@@ -244,6 +257,7 @@ void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, Q
                 netlistInProgress = true;
             }
 
+            textEventHnd->processEvent("network_list", parameterMap);
             server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
         }
     } else {
@@ -289,6 +303,7 @@ void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, 
             }
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
+            textEventHnd->processEvent("presence_list", parameterMap);
             server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
         }
     } else {
@@ -329,12 +344,13 @@ void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, Q
             textEventHnd->processEvent("channel_list", parameterMap);
         } else {
             if (!chlistInProgress) {
-                server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelClear ();
+                server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelClear ();
                 chlistInProgress = true;
             }
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
-            server->mypresence (parameterMap["mypresence"], parameterMap["network"]).channelAdd(parameterMap["channel"], parameterMap);
+            textEventHnd->processEvent("channel_list", parameterMap);
+            server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd(parameterMap["channel"], parameterMap);
         }
     } else {
         // TODO: Are there any known circumstances that would cause this?

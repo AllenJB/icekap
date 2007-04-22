@@ -291,6 +291,13 @@ void StatusPanel::sendStatusText(const QString& sendLine)
         {
             appendServerMessage(result.typeString, result.output);
         }
+        else if (!result.outputList.isEmpty ())
+        {
+            QStringList::const_iterator end = result.outputList.end();
+            for ( QStringList::ConstIterator it = result.outputList.begin(); it != end; ++it ) {
+                appendServerMessage(result.typeString, *it);
+            }
+        }
         m_server->queue(result.toServer);
     } // for
 }
