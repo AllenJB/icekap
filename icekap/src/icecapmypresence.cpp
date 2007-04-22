@@ -16,36 +16,43 @@ namespace Icecap
 
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName)
     {
+//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_connected = false;
         m_autoconnect = false;
+        setState (SSDisconnected);
         m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork)
+    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork)
     {
+//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = false;
         m_autoconnect = false;
+        setState (SSDisconnected);
         m_viewContainerPtr = viewContainer;
     }
 
-    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, const Network& newNetwork, const QMap<QString,QString>& parameterMap)
+    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString,QString>& parameterMap)
     {
+//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = parameterMap.contains ("connected");
         m_autoconnect = parameterMap.contains ("autoconnect");
+        setState (SSDisconnected);
         if (parameterMap.contains ("presence"))
         {
             m_presence = parameterMap["presence"];
         }
         m_viewContainerPtr = viewContainer;
         if (m_connected) {
+            setState (SSConnected);
             init ();
         }
     }
@@ -57,7 +64,7 @@ namespace Icecap
             return;
         }
 */
-        statusView = m_viewContainerPtr->addStatusView(this);
+        statusView = getViewContainer()->addStatusView(this);
         statusView->setMyPresence (this);
         statusView->setServer (m_server);
     }
@@ -67,7 +74,7 @@ namespace Icecap
         m_name = newName;
     }
 
-    void MyPresence::setNetwork (const Network& newNetwork)
+    void MyPresence::setNetwork (Network* newNetwork)
     {
         m_network = newNetwork;
     }
@@ -87,36 +94,36 @@ namespace Icecap
         m_presence = presenceName;
     }
 
-    Channel MyPresence::channel (const QString& channelName)
+    Channel* MyPresence::channel (const QString& channelName)
     {
-        QValueList<Channel>::const_iterator end = channelList.end();
-        for( QValueListConstIterator<Channel> it( channelList.begin() ); it != end; ++it ) {
-            Channel current = *it;
-            if (current.getName() == channelName) {
+        QPtrListIterator<Channel> it( channelList );
+        Channel* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if (current->getName() == channelName) {
                 return current;
             }
         }
-        // Return a "null" Presence
-        // TODO: Is there a better way?
-        return Channel();
+
+        return 0;
     }
 
-    void MyPresence::channelAdd (const Channel& channel)
+    void MyPresence::channelAdd (const Channel* channel)
     {
         channelList.append (channel);
     }
 
     void MyPresence::channelAdd (const QString& channelName)
     {
-        channelList.append (Channel (channelName));
+        channelList.append (new Channel (channelName));
     }
 
     void MyPresence::channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap)
     {
-        channelList.append (Channel (channelName, parameterMap));
+        channelList.append (new Channel (channelName, parameterMap));
     }
 
-    void MyPresence::channelRemove (const Channel& channel)
+    void MyPresence::channelRemove (const Channel* channel)
     {
         channelList.remove (channel);
     }
@@ -131,22 +138,29 @@ namespace Icecap
         channelList.clear ();
     }
 
-    bool MyPresence::operator== (MyPresence compareTo)
+    bool MyPresence::operator== (MyPresence* compareTo)
     {
-        return ( (m_name == compareTo.m_name) && (m_network == compareTo.m_network) );
+        return ( (m_name == compareTo->name()) && (m_network->name() == compareTo->network()->name()) );
     }
 
     bool MyPresence::isNull ()
     {
         return m_name.isNull();
     }
-/*
-    IcecapOutputFilter* MyPresence::getOutputFilter ()
+
+    void MyPresence::setState (State state)
     {
-        IcecapOutputFilter* retVal = m_server->getOutputFilter ();
-        return retVal;
+        m_state = state;
+        if ((statusView == 0) && (state == SSConnecting)) {
+            init ();
+        }
     }
-*/
+
+    void MyPresence::appendStatusMessage(const QString& type, const QString& message)
+    {
+        statusView->appendServerMessage(type,message);
+    }
+
 }
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;

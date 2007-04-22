@@ -109,23 +109,23 @@ class IcecapServer : public QObject
         ChannelListPanel* addChannelListPanel();
 
         void networkClear () { networkList.clear (); }
-        void networkAdd (const Icecap::Network& network);
+        void networkAdd (Icecap::Network* network);
         void networkAdd (const QString& protocol, const QString& name);
-        void networkRemove (const Icecap::Network& network);
+        void networkRemove (Icecap::Network* network);
         void networkRemove (const QString& name);
-        Icecap::Network network (const QString& name);
-        QValueList<Icecap::Network> getNetworkList () { return networkList; }
+        Icecap::Network* network (const QString& name);
+//        QValueList<Icecap::Network> getNetworkList () { return networkList; }
         void networkListDisplay ();
 
-        void mypresenceAdd (Icecap::MyPresence& mypresence);
+        void mypresenceAdd (Icecap::MyPresence* mypresence);
         void mypresenceAdd (const QString& name, const QString& networkName);
         void mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap);
-        void mypresenceRemove (const Icecap::MyPresence& mypresence);
+        void mypresenceRemove (Icecap::MyPresence* mypresence);
         void mypresenceRemove (const QString& name, const QString& networkName);
-        void mypresenceRemove (const QString& name, const Icecap::Network& network);
+        void mypresenceRemove (const QString& name, Icecap::Network* network);
         // TODO: These may need to return a pointer / reference
-        Icecap::MyPresence mypresence (const QString& name, const Icecap::Network& network);
-        Icecap::MyPresence mypresence (const QString& name, const QString& networkName);
+        Icecap::MyPresence* mypresence (const QString& name, Icecap::Network* network);
+        Icecap::MyPresence* mypresence (const QString& name, const QString& networkName);
         void presenceListDisplay ();
         void mypresenceClear () { mypresenceList.clear(); }
 
@@ -247,8 +247,8 @@ class IcecapServer : public QObject
         /// Used to lock incomingTimer while processing message.
         bool m_processingIncoming;
 
-        QValueList<Icecap::Network> networkList;
-        QValueList<Icecap::MyPresence> mypresenceList;
+        QPtrList<Icecap::Network> networkList;
+        QPtrList<Icecap::MyPresence> mypresenceList;
 
         TextEventHandler* textEventHnd;
 };

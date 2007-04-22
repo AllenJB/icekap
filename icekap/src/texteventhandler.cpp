@@ -10,6 +10,7 @@
 #include <klocale.h>
 
 #include "icecapserver.h"
+#include "icecapmypresence.h"
 
 TextEventHandler::TextEventHandler (IcecapServer* server)
 {
@@ -38,7 +39,7 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
         m_server->appendStatusMessage (i18n ("Network List"),
             "Network List Error: An unhandled error occurred.");
     } else if (type == "network_list") {
-        QString message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameter["protocol"]).arg (parameter["network"]);
+        QString message = i18n ("%1 Network: %2").arg (parameter["protocol"]).arg (parameter["network"]);
         m_server->appendStatusMessage (i18n ("Network List"), message);
     } else if (type == "network_list_end") {
         m_server->appendStatusMessage (i18n ("Network List"), "End of network list");
@@ -99,6 +100,49 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
         m_server->appendStatusMessage (i18n ("Channel"),
             "Channel Del: Error: An unhandled error occurred.");
     }
+
+    else if (type == "gateway_connecting") {
+        QString message = i18n ("Connecting to gateway: %1:%2").arg(parameter["ip"]).arg (parameter["port"]);
+        Icecap::MyPresence* myp = m_server->mypresence(parameter["mypresence"], parameter["network"]);
+        myp->appendStatusMessage (i18n ("Gateway"), message);
+    }
+    else if (type == "gateway_connected") {
+        QString message = i18n ("Connected to gateway: %1:%2 - in_charsets: %3 - out_charset: %4").arg(parameter["ip"]).arg (parameter["port"]).arg (parameter["in_charsets"]).arg (parameter["out_charset"]);
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("Gateway"), message);
+    }
+    else if (type == "gateway_disconnected") {
+        QString message = i18n ("Disconnected from gateway.");
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("Gateway"), message);
+    }
+    else if (type == "gateway_motd") {
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("MOTD"), parameter["data"]);
+    }
+    else if (type == "gateway_motd_end") {
+        QString message = i18n ("End of MOTD.");
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("MOTD"), message);
+    }
+    else if (type == "gateway_logged_in") {
+        QString message = i18n ("Logged in to gateway.");
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("Gateway"), message);
+    }
+
+    else if (type == "msg") {
+        if (parameter["presence"].length () < 1) {
+            if (parameter["irc_target"] == "AUTH") {
+                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (parameter["irc_target"], parameter["msg"]);
+            } else {
+                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n("Message"), parameter["msg"]);
+            }
+        }
+    }
+
+    // TODO: presence_init (own)
+/*
+    else if (type == "presence_init") {
+        QString message = i18n ("Disconnected from gateway.");
+        m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n ("Gateway"), message);
+    }
+*/
 
     else {
         // Let developers know when they forget to add something. Users should never see this.

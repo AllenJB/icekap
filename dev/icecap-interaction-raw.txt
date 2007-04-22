@@ -231,3 +231,47 @@ cp;+;id=2514;time=1176414534;
 
 --- ERK! A bug?!?
 Connection closed by foreign host.
+
+--- Connect sequence: Icecap events only
+
+4;presence connect;network=freenode;mypresence=AllenJB|icecap
+*;gateway_connecting;id=255;time=1176048852.4;network=freenode;mypresence=AllenJB|icecap;ip=213.92.8.4;port=6667
+4;+;id=256;time=1176048852.4;
+*;gateway_connected;id=257;time=1176048852.7;network=freenode;mypresence=AllenJB|icecap;in_charsets=utf-8 cp1252;out_charset=iso-8859-1;ip=213.92.8.4;port=6667
+*;presence_init;id=258;time=1176048852.7;own;mypresence=AllenJB|icecap;presence=AllenJB|icecap;network=freenode
+*;msg;id=260;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Looking up your hostname...;presence=;irc_target=AUTH;no_autoreply
+*;msg;id=262;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Checking ident;presence=;irc_target=AUTH;no_autoreply
+*;msg;id=264;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** No identd (auth) response;presence=;irc_target=AUTH;no_autoreply
+*;msg;id=266;time=1176048852.8;network=freenode;mypresence=AllenJB|icecap;msg=*** Found your hostname;presence=;irc_target=AUTH;no_autoreply
+*;gateway_logged_in;id=268;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap
+*;msg;id=271;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;msg=*** Your host is calvino.freenode.net[calvino.freenode.net/6667], running version hyperion-1.0.2b;presence=;irc_target=AllenJB|icecap;no_autoreply
+*;gateway_motd;id=284;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- calvino.freenode.net Message of the Day -
+*;gateway_motd;id=286;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Welcome to the freenode IRC server in Milan, Italy. Thanks to
+*;gateway_motd;id=288;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- I.Net S.p.A. (http://www.inet.it/) for sponsoring this
+*;gateway_motd;id=290;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- server.
+*;gateway_motd;id=292;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;gateway_motd;id=294;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- CALVINO, ITALO [1923-1985].  Born in Cuba, Italo Calvino grew
+*;gateway_motd;id=296;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- up in San Remo, Italy.  During World War II, he joined the
+*;gateway_motd;id=298;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- partisans during the German occupation and, after writing a
+*;gateway_motd;id=300;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- series of stories which drew on his experiences, he became a
+*;gateway_motd;id=302;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- journalist. His work included Mr. Palomar, Under the
+*;gateway_motd;id=304;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Jaguar Sun, Cosmicomics and t zero.  Calvino made
+*;gateway_motd;id=306;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- important contributions to Italian literature in the middle
+*;gateway_motd;id=308;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- of the last century.
+*;gateway_motd;id=310;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;gateway_motd;id=312;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- You're using freenode, a service of Peer-Directed Projects
+*;gateway_motd;id=314;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Center (http://freenode.net/pdpc.shtml).
+*;gateway_motd;id=316;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;gateway_motd;id=318;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Freenode runs an open proxy scanner. Your use of the network
+*;gateway_motd;id=320;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- indicates your acceptance of this policy. For details on
+*;gateway_motd;id=322;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- freenode network policy, please take a look at our policy
+*;gateway_motd;id=324;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- page (http://freenode.net/policy.shtml). Thank you for using
+*;gateway_motd;id=326;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- the network!
+*;gateway_motd;id=328;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;gateway_motd;id=330;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- Freenode is a service of Peer-Directed Projects Center, an
+*;gateway_motd;id=332;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- IRS 501(c)(3) not-for-profit organization.  Our yearly
+*;gateway_motd;id=334;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- fundraiser will begin soon\. if you'd like to donate early,
+*;gateway_motd;id=336;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- please see http://freenode.net/pdpc_donations.shtml for more
+*;gateway_motd;id=338;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- information.  Thank you for using freenode!
+*;gateway_motd;id=340;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
+*;gateway_motd_end;id=342;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap

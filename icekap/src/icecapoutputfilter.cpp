@@ -292,7 +292,21 @@ namespace Icecap
 
     OutputFilterResult IcecapOutputFilter::parseMyPresence (const QString& parameter)
     {
+//        QString usage = "Usage: /presence (list|display|add|del|connect) [name] [network]";
+        QStringList usage;
+        usage.append ("Usage: /presence [command] [parameters]");
+        usage.append ("  list                           - List presences");
+        usage.append ("  display                        - Display local list of presences (debugging)");
+        usage.append ("  add [name] [network]           - Create a new presence called 'name' on 'network'");
+        usage.append ("  del [name] [network]           - Delete an existing presence");
+        usage.append ("  connect [name] [network]       - Connect a presence to a given network");
+        usage.append ("  disconnect [name] [network]    - Disconnect a presence");
+
         OutputFilterResult result;
+        result.typeString = "Presence";
+
+        QStringList parameterList = QStringList::split(" ", parameter);
+
         if (parameter == "list")
         {
             result.toServer = "prslist;presence list";
@@ -302,39 +316,38 @@ namespace Icecap
         {
             m_server->presenceListDisplay ();
         }
-        else if (parameter.startsWith ("add "))
-        {
-            QStringList parameterList = QStringList::split(" ", parameter);
-            if (parameterList.size() < 3) {
-                result.output = "Usage: /presence (list|display|add|del) [name] [network]";
-                result.type = Program;
-                return result;
-            }
+        else if (parameterList.size() > 2) {
             QString myp = parameterList[1];
             parameterList.pop_front ();
             parameterList.pop_front ();
             QString network = parameterList.join (" ");
-            result.toServer = "prsadd;presence add;mypresence="+ myp +";network="+ network;
+
             result.type = Command;
-        }
-        else if (parameter.startsWith ("del "))
-        {
-            QStringList parameterList = QStringList::split(" ", parameter);
-            if (parameterList.size() < 3) {
-                result.output = "Usage: /presence (list|display|add|del) [name] [network]";
-                result.type = Program;
-                return result;
+            if (parameter.startsWith ("add "))
+            {
+                result.toServer = "prsadd;presence add;mypresence="+ myp +";network="+ network;
             }
-            QString myp = parameterList[1];
-            parameterList.pop_front ();
-            parameterList.pop_front ();
-            QString network = parameterList.join (" ");
-            result.toServer = "prsdel;presence remove;mypresence="+ myp +";network="+ network;
-            result.type = Command;
+            else if (parameter.startsWith ("del "))
+            {
+                result.toServer = "prsdel;presence remove;mypresence="+ myp +";network="+ network;
+            }
+            else if (parameter.startsWith ("connect "))
+            {
+                result.toServer = "prscon;presence connect;mypresence="+ myp +";network="+ network;
+            }
+            else if (parameter.startsWith ("disconnect "))
+            {
+                result.toServer = "prsdis;presence disconnect;mypresence="+ myp +";network="+ network;
+            }
+            else
+            {
+                result.outputList = usage;
+                result.type = Program;
+            }
         }
         else
         {
-            result.output = "Usage: /presence (list|display|add|del) [name] [network]";
+            result.outputList = usage;
             result.type = Program;
         }
         return result;
@@ -343,6 +356,8 @@ namespace Icecap
     OutputFilterResult IcecapOutputFilter::parseNetwork (const QString& parameter)
     {
         OutputFilterResult result;
+        result.typeString = "Network";
+
         if (parameter == "list")
         {
             result.toServer = "netlist;network list";
@@ -398,6 +413,8 @@ namespace Icecap
         QString usage = "Usage: /"+ command +" (list|display|add|del) [channel] [mypresence] [network]";
 
         OutputFilterResult result;
+        result.typeString = "Channel";
+
         if (parameter == "list")
         {
             result.toServer = cmd +"list;"+ command +" list";
@@ -581,7 +598,7 @@ namespace Icecap
                     port = hostParser.port();
                 }
             }
-
+/*
             if (Preferences::isServerGroup(host))
             {
                 emit connectToServerGroup(host);
@@ -590,6 +607,7 @@ namespace Icecap
             {
                 emit connectToServer(host, port, password);
             }
+*/
         }
     }
 
