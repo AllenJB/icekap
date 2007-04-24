@@ -167,8 +167,7 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         Icecap::MyPresence* myp = server->mypresence(parameterMap["mypresence"], parameterMap["network"]);
         myp->setState (Icecap::SSConnecting);
         QString message = i18n ("Connecting to gateway: %1:%2").arg(parameterMap["ip"]).arg (parameterMap["port"]);
-        myp->appendStatusMessage (i18n ("Gateway"), message);
-//        textEventHnd->processEvent(eventName, parameterMap);
+        textEventHnd->processEvent(eventName, parameterMap);
     }
     else if ((eventName == "gateway_disconnected") || (eventName == "gateway_motd") || (eventName == "gateway_motd_end"))
     {
@@ -247,12 +246,12 @@ void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, Q
 {
     if (status == "+") {
         netlistInProgress = false;
-        if (getAutomaticRequest ("netlist") == 0) {
+        if (getAutomaticRequest ("netlist") > 0) {
             textEventHnd->processEvent ("network_list_end", parameterMap);
             setAutomaticRequest ("netlist", false);
         }
     } else if (status == ">") {
-        if (getAutomaticRequest ("netlist") == 0) {
+        if (getAutomaticRequest ("netlist") < 1) {
             textEventHnd->processEvent( "network_list", parameterMap );
         } else {
             if (!netlistInProgress) {
@@ -292,12 +291,12 @@ void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, 
 {
     if (status == "+") {
         prslistInProgress = false;
-        if (getAutomaticRequest ("prslist") == 0) {
+        if (getAutomaticRequest ("prslist") > 0) {
             textEventHnd->processEvent("presence_list_end", parameterMap);
             setAutomaticRequest ("prslist", false);
         }
     } else if (status == ">") {
-        if (getAutomaticRequest ("prslist") == 0) {
+        if (getAutomaticRequest ("prslist") < 1) {
             textEventHnd->processEvent( "presence_list", parameterMap);
         } else {
             if (!prslistInProgress) {
@@ -338,12 +337,12 @@ void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, Q
 {
     if (status == "+") {
         prslistInProgress = false;
-        if (getAutomaticRequest ("chlist") == 0) {
+        if (getAutomaticRequest ("chlist") > 0) {
             textEventHnd->processEvent("channel_list_end", parameterMap);
             setAutomaticRequest ("chlist", false);
         }
     } else if (status == ">") {
-        if (getAutomaticRequest ("chlist") == 0) {
+        if (getAutomaticRequest ("chlist") < 1) {
             textEventHnd->processEvent("channel_list", parameterMap);
         } else {
             if (!chlistInProgress) {

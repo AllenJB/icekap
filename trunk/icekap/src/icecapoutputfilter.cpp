@@ -195,7 +195,6 @@ namespace Icecap
     OutputFilterResult IcecapOutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
     {
         setCommandChar();
-//        commandChar = "/";
 
         OutputFilterResult result;
         destination=name;
@@ -240,6 +239,9 @@ namespace Icecap
             QString parameter = inputLine.section (' ', 1);
             parameter = parameter.stripWhiteSpace();
             result = parseChannel (parameter);
+        }
+        else if (line.startsWith (commandChar +"autoreq")) {
+            result = parseAutoReq();
         }
         else
 
@@ -286,6 +288,31 @@ namespace Icecap
             result.type = Program;
         }
 
+        return result;
+    }
+
+    OutputFilterResult IcecapOutputFilter::parseAutoReq ()
+    {
+        OutputFilterResult result;
+        result.typeString = "AutoReq";
+        result.type = Program;
+        QStringList out;
+        if (m_server->getInputFilter()->getAutomaticRequest ("netlist") > 0) {
+            out.append (" netlist: true" );
+        } else {
+            out.append (" netlist: false");
+        }
+        if (m_server->getInputFilter()->getAutomaticRequest ("prslist") > 0) {
+            out.append (" prslist: true" );
+        } else {
+            out.append (" prslist: false");
+        }
+        if (m_server->getInputFilter()->getAutomaticRequest ("chlist") > 0) {
+            out.append (" chlist: true" );
+        } else {
+            out.append (" chlist: false");
+        }
+        result.outputList = out;
         return result;
     }
 
