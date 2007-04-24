@@ -16,35 +16,35 @@ namespace Icecap
 
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName)
     {
-//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_connected = false;
         m_autoconnect = false;
+        statusViewActive = false;
         setState (SSDisconnected);
         m_viewContainerPtr = viewContainer;
     }
 
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork)
     {
-//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = false;
         m_autoconnect = false;
+        statusViewActive = false;
         setState (SSDisconnected);
         m_viewContainerPtr = viewContainer;
     }
 
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString,QString>& parameterMap)
     {
-//        statusView = 0;
         m_server = server;
         m_name = newName;
         m_network = newNetwork;
         m_connected = parameterMap.contains ("connected");
         m_autoconnect = parameterMap.contains ("autoconnect");
+        statusViewActive = false;
         setState (SSDisconnected);
         if (parameterMap.contains ("presence"))
         {
@@ -59,13 +59,11 @@ namespace Icecap
 
     void MyPresence::init ()
     {
-/*
-        if (!m_connected) {
-            return;
-        }
-*/
+        if (statusViewActive) return;
+
+        statusViewActive = true;
         statusView = getViewContainer()->addStatusView(this);
-        statusView->setMyPresence (this);
+//        statusView->setMyPresence (this);
         statusView->setServer (m_server);
     }
 
@@ -151,14 +149,18 @@ namespace Icecap
     void MyPresence::setState (State state)
     {
         m_state = state;
-        if ((statusView == 0) && (state == SSConnecting)) {
+        if (state == SSConnecting) {
             init ();
         }
     }
 
     void MyPresence::appendStatusMessage(const QString& type, const QString& message)
     {
-        statusView->appendServerMessage(type,message);
+        if ( statusViewActive ) {
+            statusView->appendServerMessage(type,message);
+        } else {
+            m_server->appendStatusMessage (type, message);
+        }
     }
 
 }

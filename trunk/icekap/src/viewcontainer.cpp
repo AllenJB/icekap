@@ -1941,6 +1941,7 @@ StatusPanel* ViewContainer::addStatusView(Icecap::MyPresence* server)
     StatusPanel* statusView=new StatusPanel(m_tabWidget);
 
     // first set up internal data ...
+        statusView->setMyPresence (server);
 //    statusView->setServer(server);
 //    statusView->setIdentity(server->getIdentity());
 //    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());

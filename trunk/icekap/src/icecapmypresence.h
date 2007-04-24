@@ -98,6 +98,7 @@ namespace Icecap
 
             ViewContainer* m_viewContainerPtr;
             StatusPanel* statusView;
+            bool statusViewActive;
 //            OutputFilter m_outputFilter;
     };
 

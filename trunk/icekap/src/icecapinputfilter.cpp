@@ -164,8 +164,11 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     }
     else if (eventName == "gateway_connecting")
     {
-        server->mypresence(parameterMap["mypresence"], parameterMap["network"])->setState (Icecap::SSConnecting);
-        textEventHnd->processEvent(eventName, parameterMap);
+        Icecap::MyPresence* myp = server->mypresence(parameterMap["mypresence"], parameterMap["network"]);
+        myp->setState (Icecap::SSConnecting);
+        QString message = i18n ("Connecting to gateway: %1:%2").arg(parameterMap["ip"]).arg (parameterMap["port"]);
+        myp->appendStatusMessage (i18n ("Gateway"), message);
+//        textEventHnd->processEvent(eventName, parameterMap);
     }
     else if ((eventName == "gateway_disconnected") || (eventName == "gateway_motd") || (eventName == "gateway_motd_end"))
     {
