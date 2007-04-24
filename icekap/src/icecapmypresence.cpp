@@ -63,7 +63,6 @@ namespace Icecap
 
         statusViewActive = true;
         statusView = getViewContainer()->addStatusView(this);
-//        statusView->setMyPresence (this);
         statusView->setServer (m_server);
     }
 

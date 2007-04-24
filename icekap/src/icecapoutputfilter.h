@@ -96,6 +96,7 @@ namespace Icecap
             OutputFilterResult parseNetwork (const QString& parameter);
             OutputFilterResult parseMyPresence (const QString& parameter);
             OutputFilterResult parseChannel (const QString& parameter);
+            OutputFilterResult parseAutoReq ();
 
             void parseServer(const QString& parameter);
             void parseReconnect();
