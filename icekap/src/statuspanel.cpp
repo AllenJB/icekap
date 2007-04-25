@@ -25,7 +25,7 @@
 
 #include <kspy.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "statuspanel.h"
 #include "konversationapplication.h"
 #include "ircinput.h"

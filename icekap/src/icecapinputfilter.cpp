@@ -31,7 +31,7 @@
 #include "commit.h"
 #include "version.h"
 #include "query.h"
-#include "channel.h"
+// #include "channel.h"
 #include "statuspanel.h"
 #include "common.h"
 #include "notificationhandler.h"

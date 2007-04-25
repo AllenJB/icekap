@@ -27,7 +27,7 @@
 #include "preferences.h"
 #include "chatwindow.h"
 #include "icecapserver.h"
-#include "channel.h"
+// #include "channel.h"
 #include "ircview.h"
 
 ViewTree::ViewTree(QWidget *parent)

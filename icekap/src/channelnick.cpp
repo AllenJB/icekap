@@ -14,7 +14,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "channelnick.h"
 #include "icecapserver.h"
 

@@ -36,7 +36,7 @@
 #include "icecapquickconnectdialog.h"
 #include "servergroupsettings.h"
 #include "serversettings.h"
-#include "channel.h"
+// #include "channel.h"
 #include "nicklistview.h"
 #include "images.h"
 #include "notificationhandler.h"

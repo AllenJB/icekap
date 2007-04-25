@@ -51,7 +51,7 @@
 #include <kdebug.h>
 #include <kmenubar.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "konversationapplication.h"
 #include "konversationmainwindow.h"
 #include "viewcontainer.h"

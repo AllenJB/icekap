@@ -75,13 +75,13 @@ class NickList : public QPtrList<Nick>
         CompareMethod m_compareMethod;
 };
 
-class Channel : public ChatWindow
+class ChannelWindow : public ChatWindow
 {
     Q_OBJECT
 
     public:
-        Channel(QWidget* parent);
-        ~Channel();
+        ChannelWindow(QWidget* parent);
+        ~ChannelWindow();
 //META
         virtual bool canBeFrontView();
         virtual bool searchView();

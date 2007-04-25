@@ -15,7 +15,7 @@
 #include <kdialogbase.h>
 
 #include <qstringlist.h>
-#include "channel.h"
+#include "channelwindow.h"
 
 namespace Konversation
 {
@@ -26,7 +26,7 @@ namespace Konversation
     {
         Q_OBJECT
             public:
-            explicit ChannelOptionsDialog(Channel *channel);
+            explicit ChannelOptionsDialog(ChannelWindow *channel);
             ~ChannelOptionsDialog();
 
             QString topic();
@@ -58,7 +58,7 @@ namespace Konversation
 
         private:
             ChannelOptionsUI* m_widget;
-            Channel *m_channel;
+            ChannelWindow *m_channel;
     };
 
     // This is needed to overcome two deficiencies in KListViewItem
