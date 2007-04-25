@@ -35,7 +35,7 @@
 #include "konsolepanel.h"
 #include "urlcatcher.h"
 #include "statuspanel.h"
-#include "channel.h"
+#include "channelwindow.h"
 #include "query.h"
 #include "rawlog.h"
 #include "channellistpanel.h"
@@ -2076,9 +2076,9 @@ void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State
     }
 }
 
-Channel* ViewContainer::addChannel(IcecapServer* server, const QString& name)
+ChannelWindow* ViewContainer::addChannel(IcecapServer* server, const QString& name)
 {
-    Channel* channel=new Channel(m_tabWidget);
+    ChannelWindow* channel=new ChannelWindow(m_tabWidget);
     channel->setServer(server);
     channel->setName(name);
     addView(channel, name);
@@ -2094,7 +2094,7 @@ void ViewContainer::openChannelSettings()
 {
     if (m_frontView->getType() == ChatWindow::Channel)
     {
-        Channel* channel = static_cast<Channel*>(m_tabWidget->currentPage());
+        ChannelWindow* channel = static_cast<ChannelWindow*>(m_tabWidget->currentPage());
         channel->showOptionsDialog();
     }
 }

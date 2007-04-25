@@ -27,7 +27,7 @@
 #include "nicklistview.h"
 #include "nicklistviewitem.h"
 
-NickListView::NickListView(QWidget* parent, Channel *chan) :
+NickListView::NickListView(QWidget* parent, ChannelWindow *chan) :
 KListView(parent)
 {
     KListView::setSorting(-1);

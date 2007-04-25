@@ -16,7 +16,7 @@
 #include "blowfish.h"
 #include "mc_blowfish.h"
 #include "icecapserver.h"
-#include "channel.h"
+// #include "channel.h"
 
 namespace Konversation
 {

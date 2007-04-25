@@ -24,12 +24,12 @@
 #include "channeloptionsdialog.h"
 #include "konversationapplication.h"
 #include "channeloptionsui.h"
-#include "channel.h"
+// #include "channelwindow.h"
 
 namespace Konversation
 {
 
-    ChannelOptionsDialog::ChannelOptionsDialog(Channel *channel)
+    ChannelOptionsDialog::ChannelOptionsDialog(ChannelWindow *channel)
         : KDialogBase(channel, "channelOptions", false, i18n("Channel Settings for %1").arg(channel->getName()), Ok|Cancel, Ok)
     {
         Q_ASSERT(channel);

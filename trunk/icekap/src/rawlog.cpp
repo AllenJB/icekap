@@ -16,7 +16,7 @@
 #include <kdebug.h>
 
 #include "rawlog.h"
-#include "channel.h"
+// #include "channel.h"
 #include "ircview.h"
 #include "ircviewbox.h"
 #include "icecapserver.h"

@@ -22,7 +22,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "icecapserver.h"
 #include "chatwindow.h"
 

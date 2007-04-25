@@ -19,7 +19,7 @@
 #include <kprocess.h>
 #include <dcopclient.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "scriptlauncher.h"
 #include "konversationapplication.h"
 #include "icecapserver.h"

@@ -28,7 +28,7 @@
 #include <kstringhandler.h>
 #include <kpopupmenu.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "query.h"
 #include "icecapserver.h"
 #include "konversationapplication.h"

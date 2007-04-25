@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include "channel.h"
+// #include "channel.h"
 #include "icecapstatuspanel.h"
 #include "konversationapplication.h"
 #include "ircinput.h"

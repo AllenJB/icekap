@@ -30,7 +30,7 @@
 #include <kshell.h>
 
 #include "urlcatcher.h"
-#include "channel.h"
+// #include "channel.h"
 #include "icecapserver.h"
 #include "konversationapplication.h"
 #include "viewcontainer.h"

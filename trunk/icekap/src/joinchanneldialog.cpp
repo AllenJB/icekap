@@ -19,7 +19,7 @@
 
 #include "joinchannelui.h"
 #include "icecapserver.h"
-#include "channel.h"
+// #include "channel.h"
 #include "servergroupsettings.h"
 
 namespace Konversation

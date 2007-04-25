@@ -30,7 +30,7 @@
 #include "konversationapplication.h"
 #include "icecapserver.h"
 #include "common.h"
-#include "channel.h"
+// #include "channel.h"
 
 #include <kdeversion.h>
 

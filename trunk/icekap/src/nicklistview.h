@@ -16,7 +16,7 @@
 #define NICKLISTVIEW_H
 
 #include <klistview.h>
-#include "channel.h"
+#include "channelwindow.h"
 // #include "nicklisttooltip.h"
 #include "images.h"
 #include "common.h"
@@ -34,7 +34,7 @@ class NickListView : public KListView
     Q_OBJECT
 
         public:
-        NickListView(QWidget* parent, Channel *chan);
+        NickListView(QWidget* parent, ChannelWindow *chan);
         ~NickListView();
 
         /** Call when the icons have been changed.
@@ -68,7 +68,7 @@ class NickListView : public KListView
         QPopupMenu* popup;
         QPopupMenu* modes;
         QPopupMenu* kickban;
-        Channel *channel;
+        ChannelWindow *channel;
         QTimer *m_resortTimer;
 
         int m_column;

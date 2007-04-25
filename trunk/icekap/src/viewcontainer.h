@@ -34,6 +34,7 @@ class IcecapServer;
 class Images;
 class UrlCatcher;
 class NicksOnline;
+class ChannelWindow;
 
 namespace Konversation
 {
@@ -124,7 +125,7 @@ class ViewContainer : public QObject
         void showJoinChannelDialog();
         void serverStateChanged(IcecapServer* server, IcecapServer::State state);
 
-        Channel* addChannel(IcecapServer* server, const QString& name);
+        ChannelWindow* addChannel(IcecapServer* server, const QString& name);
         void openChannelSettings();
         void toggleChannelNicklists();
 
