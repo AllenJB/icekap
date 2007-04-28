@@ -7,19 +7,38 @@
 
 #include "icecapchannel.h"
 
+#include "channelwindow.h"
+#include "viewcontainer.h"
+#include "icecapmypresence.h"
+
 namespace Icecap
 {
 
-    Channel::Channel (const QString& newName)
+    Channel::Channel (MyPresence* p_mypresence, const QString& newName)
     {
+        mypresence = p_mypresence;
         name = newName;
         connected = false;
+        windowIsActive = false;
     }
 
-    Channel::Channel (const QString& newName, const QMap<QString, QString>& parameterMap)
+    Channel::Channel (MyPresence* p_mypresence, const QString& newName, const QMap<QString, QString>& parameterMap)
     {
+        mypresence = p_mypresence;
         name = newName;
         connected = parameterMap.contains ("joined");
+        windowIsActive = false;
+
+        if (connected) init ();
+    }
+
+    void Channel::init ()
+    {
+        if (windowIsActive) return;
+
+        windowIsActive = true;
+        window = getViewContainer()->addChannel (mypresence, name);
+//        window->setServer (m_server);
     }
 
     void Channel::setName (const QString& newName)
@@ -49,6 +68,7 @@ namespace Icecap
     void Channel::setConnected (bool newStatus)
     {
         connected = newStatus;
+        if (connected) init ();
     }
 
     void Channel::presenceAdd (const Presence& user)

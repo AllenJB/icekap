@@ -297,6 +297,12 @@ ChannelWindow::ChannelWindow(QWidget* parent)
     updateAppearance();
 }
 
+void ChannelWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
+{
+    mypresence = p_mypresence;
+    setServer (mypresence->server());
+}
+
 void ChannelWindow::setServer(IcecapServer *server)
 {
     ChatWindow::setServer(server);

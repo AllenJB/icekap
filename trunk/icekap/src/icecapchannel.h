@@ -16,15 +16,19 @@
 
 #include "icecappresence.h"
 
+class ChannelWindow;
+class ViewContainer;
+
 namespace Icecap
 {
+    class MyPresence;
 
     class Channel
     {
         public:
             Channel (): name(0) {}
-            Channel (const QString& newName);
-            Channel (const QString& newName, const QMap<QString, QString>& parameterMap);
+            Channel (MyPresence* p_mypresence, const QString& newName);
+            Channel (MyPresence* p_mypresence, const QString& newName, const QMap<QString, QString>& parameterMap);
 //            ~Channel ();
 
             QString getName () { return name; }
@@ -51,17 +55,29 @@ namespace Icecap
             Presence presenceByName (const QString& userName);
             Presence presenceByAddress (const QString& userAddress);
 
+            void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
+            ViewContainer* viewContainer () { return m_viewContainerPtr; }
+            ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
+
             bool operator== (Channel compareTo);
             bool isNull ();
 
         private:
+            void init ();
+
             QString name;
             QString topic;
             QString topicSetBy;
             QDateTime topicTimestamp;
             QString modes;
             bool connected;
+            // TODO: This probably needs to be changed to a QPtrList
             QValueList<Presence> presenceList;
+
+            MyPresence* mypresence;
+            ViewContainer* m_viewContainerPtr;
+            ChannelWindow* window;
+            bool windowIsActive;
     };
 
 }
