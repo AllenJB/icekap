@@ -123,6 +123,7 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         parameterMap.insert (key, value, TRUE);
     }
 
+    bool processTextEvent = true;
     if (eventName == "preauth") {
         // preauth - currently this is just a welcome signal
         // eventually icecap will implement authentication so we'll need to add support for that
@@ -130,51 +131,50 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         // Send the welcome signal, so the server class knows we are connected properly
         emit welcome("");
         m_connecting = true;
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "network_init")
     {
         server->networkAdd (parameterMap["protocol"], parameterMap["network"]);
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "network_deinit")
     {
         server->networkRemove (parameterMap["network"]);
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "local_presence_init")
     {
         server->mypresenceAdd (parameterMap ["mypresence"], parameterMap["network"]);
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "local_presence_deinit")
     {
         server->mypresenceRemove (parameterMap ["mypresence"], parameterMap["network"]);
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "channel_init")
     {
         server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd (parameterMap["channel"]);
-        textEventHnd->processEvent (eventName, parameterMap);
     }
     else if (eventName == "channel_deinit")
     {
         server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelRemove (parameterMap["channel"]);
-        textEventHnd->processEvent (eventName, parameterMap);
+    }
+    else if (eventName == "channel_connection_init")
+    {
+        server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"])->setConnected (true);
     }
     else if (eventName == "gateway_connecting")
     {
         Icecap::MyPresence* myp = server->mypresence(parameterMap["mypresence"], parameterMap["network"]);
         myp->setState (Icecap::SSConnecting);
         QString message = i18n ("Connecting to gateway: %1:%2").arg(parameterMap["ip"]).arg (parameterMap["port"]);
-        textEventHnd->processEvent(eventName, parameterMap);
     }
     else if ((eventName == "gateway_disconnected") || (eventName == "gateway_motd") || (eventName == "gateway_motd_end"))
     {
-        textEventHnd->processEvent(eventName, parameterMap);
+        // Do nothing
     }
-    else if (eventName == "msg")
-    {
+    else if (eventName != "msg") {
+        processTextEvent = false;
+    }
+
+    if (processTextEvent) {
         textEventHnd->processEvent(eventName, parameterMap);
     }
 }

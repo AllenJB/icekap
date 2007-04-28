@@ -2076,16 +2076,17 @@ void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State
     }
 }
 
-ChannelWindow* ViewContainer::addChannel(IcecapServer* server, const QString& name)
+ChannelWindow* ViewContainer::addChannel(Icecap::MyPresence* mypresence, const QString& name)
 {
-    ChannelWindow* channel=new ChannelWindow(m_tabWidget);
-    channel->setServer(server);
+    ChannelWindow* channel = new ChannelWindow(m_tabWidget);
+//    channel->setServer(server);
+    channel->setMyPresence (mypresence);
     channel->setName(name);
     addView(channel, name);
 
     connect(this, SIGNAL(updateChannelAppearance()), channel, SLOT(updateAppearance()));
     connect(channel, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
-    connect(server, SIGNAL(awayState(bool)), channel, SLOT(indicateAway(bool)) );
+    connect(mypresence, SIGNAL(awayState(bool)), channel, SLOT(indicateAway(bool)) );
 
     return channel;
 }

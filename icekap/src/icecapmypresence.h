@@ -8,6 +8,7 @@
 #ifndef ICECAPMYPRESENCE_H
 #define ICECAPMYPRESENCE_H
 
+#include <qobject.h>
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qmap.h>
@@ -32,8 +33,10 @@ namespace Icecap
         SSConnected
     } State;
 
-    class MyPresence
+    class MyPresence : public QObject
     {
+        Q_OBJECT
+
         public:
             MyPresence (): m_name(0) {}
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName);
@@ -73,10 +76,9 @@ namespace Icecap
 
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
+            ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
 
             void appendStatusMessage(const QString& type,const QString& message);
-
-            ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
 
 ////            OutputFilter* outputFilter () { return m_outputFilter; }
 ////            void setOutputFilter (const OutputFilter& outputFilter) { m_outputFilter = outputFilter; }

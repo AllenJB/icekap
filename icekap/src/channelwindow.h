@@ -95,6 +95,7 @@ class ChannelWindow : public ChatWindow
         void setKey(const QString& newKey);
         QString getKey();
 
+        virtual void setMyPresence (Icecap::MyPresence* p_mypresence);
         virtual void setServer(IcecapServer* newServer);
         virtual void setIdentity(const Identity *newIdentity);
 
@@ -366,5 +367,10 @@ class ChannelWindow : public ChatWindow
         bool m_allowNotifications; ///<TODO: remove this, its been implemented on the chatwindow object
 
         Konversation::ChannelOptionsDialog *m_optionsDialog;
+
+        Icecap::MyPresence* mypresence;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

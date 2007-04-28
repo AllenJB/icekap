@@ -125,7 +125,8 @@ class ViewContainer : public QObject
         void showJoinChannelDialog();
         void serverStateChanged(IcecapServer* server, IcecapServer::State state);
 
-        ChannelWindow* addChannel(IcecapServer* server, const QString& name);
+//        ChannelWindow* addChannel(IcecapServer* server, const QString& name);
+        ChannelWindow* addChannel(Icecap::MyPresence* p_mypresence, const QString& name);
         void openChannelSettings();
         void toggleChannelNicklists();
 
