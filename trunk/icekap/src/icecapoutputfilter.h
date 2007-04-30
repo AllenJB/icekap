@@ -32,6 +32,7 @@ class ChatWindow;
 
 namespace Icecap
 {
+    class Channel;
 
     typedef enum MessageType
     {
@@ -69,6 +70,7 @@ namespace Icecap
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
             OutputFilterResult parse(const QString& myNick,const QString& line,const QString& name);
+            OutputFilterResult parse(const QString& myNick,const QString& line, Channel* channel);
             bool replaceAliases(QString& line);
 
         signals:

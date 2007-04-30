@@ -14,18 +14,18 @@
 namespace Icecap
 {
 
-    Channel::Channel (MyPresence* p_mypresence, const QString& newName)
+    Channel::Channel (MyPresence* p_mypresence, const QString& name)
     {
-        mypresence = p_mypresence;
-        name = newName;
+        m_mypresence = p_mypresence;
+        m_name = name;
         connected = false;
         windowIsActive = false;
     }
 
-    Channel::Channel (MyPresence* p_mypresence, const QString& newName, const QMap<QString, QString>& parameterMap)
+    Channel::Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap)
     {
-        mypresence = p_mypresence;
-        name = newName;
+        m_mypresence = p_mypresence;
+        m_name = name;
         connected = parameterMap.contains ("joined");
         windowIsActive = false;
 
@@ -37,13 +37,7 @@ namespace Icecap
         if (windowIsActive) return;
 
         windowIsActive = true;
-        window = getViewContainer()->addChannel (mypresence, name);
-//        window->setServer (m_server);
-    }
-
-    void Channel::setName (const QString& newName)
-    {
-        name = newName;
+        window = getViewContainer()->addChannel (this);
     }
 
     void Channel::setTopic (const QString& newTopic, const QString& setBy, const QDateTime& timestamp)
@@ -119,7 +113,7 @@ namespace Icecap
 
     ViewContainer* Channel::getViewContainer () const
     {
-        return mypresence->getViewContainer ();
+        return m_mypresence->getViewContainer ();
     }
 
     void Channel::append(const QString& nickname,const QString& message)
@@ -130,12 +124,12 @@ namespace Icecap
 
     bool Channel::operator== (Channel compareTo)
     {
-        return (name == compareTo.name);
+        return (m_name == compareTo.m_name);
     }
 
     bool Channel::isNull ()
     {
-        return name.isNull();
+        return m_name.isNull();
     }
 
 }

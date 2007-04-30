@@ -39,6 +39,8 @@
 #include "icecapserver.h"
 #include "irccharsets.h"
 #include "konviiphelper.h"
+#include "icecapchannel.h"
+#include "icecapmypresence.h"
 
 #include "query.h"
 
@@ -277,6 +279,109 @@ namespace Icecap
         else if(!destination.isEmpty())
         {
             BYPASS_COMMAND_PARSING:
+            result.type = Message;
+        }
+        // Eveything else goes to the server unchanged
+        else
+        {
+            result.toServer = inputLine;
+            result.output = inputLine;
+            result.typeString = i18n("Raw");
+            result.type = Program;
+        }
+
+        return result;
+    }
+
+    OutputFilterResult IcecapOutputFilter::parse (const QString& myNick, const QString& originalLine, Channel* channel)
+    {
+        setCommandChar();
+
+        OutputFilterResult result;
+        destination = channel->name();
+
+        QString inputLine(originalLine);
+
+        if(inputLine.isEmpty() || inputLine == "\n")
+            return result;
+
+        if(!Preferences::disableExpansion())
+        {
+            // replace placeholders
+            inputLine.replace("%%","%\x01");      // make sure to protect double %%
+            inputLine.replace("%B","\x02");       // replace %B with bold char
+            inputLine.replace("%C","\x03");       // replace %C with color char
+            inputLine.replace("%G","\x07");       // replace %G with ASCII BEL 0x07
+            inputLine.replace("%I","\x09");       // replace %I with italics char
+            inputLine.replace("%O","\x0f");       // replace %O with reset to default char
+            inputLine.replace("%S","\x13");       // replace %S with strikethru char
+            //  inputLine.replace(QRegExp("%?"),"\x15");
+            inputLine.replace("%R","\x16");       // replace %R with reverse char
+            inputLine.replace("%U","\x1f");       // replace %U with underline char
+            inputLine.replace("%\x01","%");       // restore double %% as single %
+        }
+
+        QString line=inputLine.lower();
+
+        if (line.startsWith (commandChar +"network"))
+        {
+            QString parameter = inputLine.section(' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseNetwork (parameter);
+        }
+        else if (line.startsWith (commandChar +"presence"))
+        {
+            QString parameter = inputLine.section(' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseMyPresence (parameter);
+        }
+        else if (line.startsWith (commandChar +"channel"))
+        {
+            QString parameter = inputLine.section (' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseChannel (parameter);
+        }
+        else if (line.startsWith (commandChar +"autoreq")) {
+            result = parseAutoReq();
+        }
+        else
+
+        // Convert double command chars at the beginning to single ones
+        if(line.startsWith(commandChar+commandChar) && !destination.isEmpty())
+        {
+            inputLine=inputLine.mid(1);
+            goto BYPASS_COMMAND_PARSING;
+        }
+        // Server command?
+        else if(line.startsWith(commandChar))
+        {
+            QString command = inputLine.section(' ', 0, 0).mid(1).lower();
+            QString parameter = inputLine.section(' ', 1);
+
+            if(command == "exec")     result = parseExec(parameter);
+            else if(command == "raw")      result = parseRaw(parameter);
+            else if(command == "konsole")  parseKonsole();
+            else if(command == "server")   parseServer(parameter);
+            else if(command == "reconnect")  emit reconnectServer();
+            else if(command == "disconnect") emit disconnectServer();
+            else if(command == "prefs")    result = parsePrefs(parameter);
+            else if(command == "dns")      result = parseDNS(parameter);
+
+            // Forward unknown commands to server
+            else
+            {
+                result.toServer = inputLine.mid(1);
+                result.type = Message;
+            }
+        }
+        // Ordinary message to channel/query?
+        else if(!destination.isEmpty())
+        {
+            BYPASS_COMMAND_PARSING:
+            QString network = channel->mypresence()->network()->name();
+            QString mypresence = channel->mypresence()->name();
+            result.toServer = "m;msg;network="+ network +";mypresence="+ mypresence +";channel="+ destination +";msg="+ inputLine;
+            result.output = inputLine;
             result.type = Message;
         }
         // Eveything else goes to the server unchanged

@@ -26,20 +26,20 @@ namespace Icecap
     class Channel
     {
         public:
-            Channel (): name(0) {}
-            Channel (MyPresence* p_mypresence, const QString& newName);
-            Channel (MyPresence* p_mypresence, const QString& newName, const QMap<QString, QString>& parameterMap);
+            Channel (): m_name(0) {}
+            Channel (MyPresence* p_mypresence, const QString& name);
+            Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap);
 //            ~Channel ();
 
-            QString getName () { return name; }
+            QString name () { return m_name; }
             QString getTopic () { return topic; }
             QString getTopicSetBy () { return topicSetBy; }
             QDateTime getTopicTimestamp () { return topicTimestamp; }
             QString getModes () { return modes; }
             bool getConnected () { return connected; }
-            MyPresence* getMyPresence () { return mypresence; }
+            MyPresence* mypresence () { return m_mypresence; }
 
-            void setName (const QString& newName);
+            void setName (const QString& name) { m_name = name; }
             // In case we don't know who set the topic.
             // Suspect this may not ever be used, atleast for IRC.
             // TODO: A version that will take a standard formatted string and convert it to QDateTime
@@ -57,7 +57,6 @@ namespace Icecap
             Presence presenceByAddress (const QString& userAddress);
 
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
-//            ViewContainer* viewContainer () { return m_viewContainerPtr; }
             ViewContainer* getViewContainer() const;
 
             void append(const QString& nickname,const QString& message);
@@ -69,7 +68,7 @@ namespace Icecap
         private:
             void init ();
 
-            QString name;
+            QString m_name;
             QString topic;
             QString topicSetBy;
             QDateTime topicTimestamp;
@@ -78,7 +77,7 @@ namespace Icecap
             // TODO: This probably needs to be changed to a QPtrList
             QValueList<Presence> presenceList;
 
-            MyPresence* mypresence;
+            MyPresence* m_mypresence;
             ViewContainer* m_viewContainerPtr;
             ChannelWindow* window;
             bool windowIsActive;
