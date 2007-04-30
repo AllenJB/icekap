@@ -1942,7 +1942,6 @@ StatusPanel* ViewContainer::addStatusView(Icecap::MyPresence* server)
 
     // first set up internal data ...
         statusView->setMyPresence (server);
-//    statusView->setServer(server);
 //    statusView->setIdentity(server->getIdentity());
 //    statusView->setNotificationsEnabled(server->serverGroupSettings()->enableNotifications());
 
@@ -2079,8 +2078,6 @@ void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State
 ChannelWindow* ViewContainer::addChannel(Icecap::MyPresence* mypresence, const QString& name)
 {
     ChannelWindow* channel = new ChannelWindow(m_tabWidget, mypresence);
-//    channel->setServer(server);
-//    channel->setMyPresence (mypresence);
     channel->setName(name);
     addView(channel, name);
 

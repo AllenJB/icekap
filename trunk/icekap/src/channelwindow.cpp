@@ -215,7 +215,7 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence)
 
     nicknameCombobox = new QComboBox(commandLineBox);
     nicknameCombobox->setEditable(true);
-    nicknameCombobox->insertStringList(Preferences::nicknameList());
+//    nicknameCombobox->insertStringList(Preferences::nicknameList());
     QWhatsThis::add(nicknameCombobox, i18n("<qt>This shows your current nick, and any alternatives you have set up.  If you select or type in a different nickname, then a request will be sent to the IRC server to change your nick.  If the server allows it, the new nickname will be selected.  If you type in a new nickname, you need to press 'Enter' at the end.<p>You can add change the alternative nicknames from the <em>Identities</em> option in the <em>File</em> menu.</qt>"));
     oldNick = nicknameCombobox->currentText();
 
@@ -303,6 +303,7 @@ void ChannelWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
 //    m_mypresence = p_mypresence;
     ChatWindow::setMyPresence (p_mypresence);
     setServer (p_mypresence->server());
+    setNickname (p_mypresence->name());
 }
 
 void ChannelWindow::setServer(IcecapServer *server)
@@ -380,6 +381,7 @@ void ChannelWindow::popupChannelCommand(int id)
 }
 
 // Will be connected to NickListView::popupCommand(int)
+// TODO: Move all this somewhere sensible (*Filter)
 void ChannelWindow::popupCommand(int id)
 {
     QString pattern;
@@ -919,6 +921,7 @@ void ChannelWindow::channelLimitChanged()
     modeButtonClicked(7,lim>0);
 }
 
+// TODO: Shift this somewhere sensible (*Filter)
 void ChannelWindow::modeButtonClicked(int id,bool on)
 {
     char mode[]={'t','n','s','i','p','m','k','l'};
@@ -2469,18 +2472,6 @@ void ChannelWindow::sortNickList()
     {
         m_delayedSortTimer->stop();
     }
-}
-
-void ChannelWindow::setIdentity(const Identity *newIdentity)
-{
-  if(!newIdentity)
-  {
-    return;
-  }
-
-  ChatWindow::setIdentity(newIdentity);
-  nicknameCombobox->clear();
-  nicknameCombobox->insertStringList(newIdentity->getNicknameList());
 }
 
 bool ChannelWindow::eventFilter(QObject* watched, QEvent* e)

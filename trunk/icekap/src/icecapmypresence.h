@@ -11,6 +11,7 @@
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qmap.h>
 
 #include "icecapchannel.h"
@@ -48,20 +49,27 @@ namespace Icecap
             Network* network () { return m_network; };
             bool connected () { return m_connected; };
             bool autoconnect () { return m_autoconnect; };
-            QString presence () { return m_presence; };
+//            QString presence () { return m_presence; };
             QString getServerName() const { return m_network->name(); };
             IcecapServer* server() { return m_server; };
-//            QString icecapServerName () { return m_serverName; }
             State state () { return m_state; };
 
-            void setName (const QString& newName);
+//            void setName (const QString& newName);
             void setNetwork (Network* newNetwork);
             void setConnected (bool newStatus);
             void setAutoconnect (bool newStatus);
-            void setPresence (QString& presenceName);
-//            void setServer (IcecapServer* server) { m_server = server; }
-//            void setIcecapServerName (const QString serverName) { m_serverName = serverName; }
+//            void setPresence (QString& presenceName);
             void setState (State state);
+
+            // TODO: Which is the current nickname? 0 or last?
+/*
+            void setNickname(uint index,const QString& nick) { nicknameList[index]=nick; }
+            QString getNickname(uint index) const;
+
+            void setNicknameList(const QStringList& newList);
+            QStringList getNicknameList() const { return nicknameList; }
+*/
+
 
             Channel* channel (const QString& channelName);
             void channelAdd (const Channel* channel);
@@ -90,13 +98,15 @@ namespace Icecap
             IcecapServer* m_server;
 
             QString m_name;
-            QString m_presence;
+//            QString m_presence;
             State m_state;
             bool m_connected;
             bool m_autoconnect;
             QPtrList<Channel> channelList;
             Network* m_network;
 //            QString m_serverName;
+
+//            QStringList nicknameList;
 
             ViewContainer* m_viewContainerPtr;
             StatusPanel* statusView;
