@@ -122,6 +122,12 @@ namespace Icecap
         return mypresence->getViewContainer ();
     }
 
+    void Channel::append(const QString& nickname,const QString& message)
+    {
+        window->append (nickname, message);
+    }
+
+
     bool Channel::operator== (Channel compareTo)
     {
         return (name == compareTo.name);

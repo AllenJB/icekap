@@ -60,6 +60,9 @@ namespace Icecap
 //            ViewContainer* viewContainer () { return m_viewContainerPtr; }
             ViewContainer* getViewContainer() const;
 
+            void append(const QString& nickname,const QString& message);
+
+
             bool operator== (Channel compareTo);
             bool isNull ();
 

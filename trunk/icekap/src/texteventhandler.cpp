@@ -137,6 +137,10 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
             } else {
                 m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n("Message"), parameter["msg"]);
             }
+        } else
+        if (parameter["channel"].length () > 0) {
+            Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
+            channel->append (parameter["presence"], parameter["msg"]);
         }
     }
 
