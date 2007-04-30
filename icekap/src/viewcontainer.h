@@ -21,6 +21,7 @@
 #include "icecapserver.h"
 #include "statuspanel.h"
 #include "icecapstatuspanel.h"
+#include "icecapchannel.h"
 
 class QSplitter;
 
@@ -120,13 +121,13 @@ class ViewContainer : public QObject
         IcecapStatusPanel* addStatusView(IcecapServer* server);
         StatusPanel* addStatusView (Icecap::MyPresence* server);
         RawLog* addRawLog(IcecapServer* server);
+
         void disconnectFrontServer();
         void reconnectFrontServer();
         void showJoinChannelDialog();
         void serverStateChanged(IcecapServer* server, IcecapServer::State state);
 
-//        ChannelWindow* addChannel(IcecapServer* server, const QString& name);
-        ChannelWindow* addChannel(Icecap::MyPresence* p_mypresence, const QString& name);
+        ChannelWindow* addChannel(Icecap::Channel* channel);
         void openChannelSettings();
         void toggleChannelNicklists();
 

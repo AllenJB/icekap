@@ -60,11 +60,13 @@
 #include "topiclabel.h"
 #include "channeloptionsdialog.h"
 #include "notificationhandler.h"
+#include "icecapchannel.h"
 
-ChannelWindow::ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence)
+ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
   : ChatWindow(parent), key(" ")
 {
     // init variables
+    m_channel = channel;
     m_processingTimer = 0;
     m_delayedSortTimer = 0;
     m_optionsDialog = NULL;
@@ -293,14 +295,15 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence)
     connect(Preferences::self(), SIGNAL (autoContinuousWhoChanged()),this,SLOT (scheduleAutoWho()));
 
     m_allowNotifications = true;
-    setMyPresence (mypresence);
+    m_channel = channel;
+    setName (channel->name());
+    setMyPresence (channel->mypresence());
 
     updateAppearance();
 }
 
 void ChannelWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
 {
-//    m_mypresence = p_mypresence;
     ChatWindow::setMyPresence (p_mypresence);
     setServer (p_mypresence->server());
     setNickname (p_mypresence->name());
@@ -311,7 +314,6 @@ void ChannelWindow::setServer(IcecapServer *server)
     ChatWindow::setServer(server);
     topicLine->setServer(server);
     refreshModeButtons();
-//    setIdentity(server->getIdentity());
 }
 
 ChannelWindow::~ChannelWindow()
@@ -830,37 +832,34 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
     for(unsigned int index=0;index<outList.count();index++)
     {
         QString output(outList[index]);
-/*
-        // encoding stuff is done in Server()
-        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(),output,getName());
+
+//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_mypresence->getNickname(),output,getName());
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_mypresence->name(),output, m_channel);
 
         // Is there something we need to display for ourselves?
         if(!result.output.isEmpty())
         {
-            if(result.type == Icecap::Action) appendAction(m_server->getNickname(), result.output);
-            else if(result.type == Konversation::Command) appendCommandMessage(result.typeString, result.output);
-            else if(result.type == Konversation::Program) appendServerMessage(result.typeString, result.output);
-            else if(result.type == Konversation::PrivateMessage) appendQuery(result.typeString, result.output);
-            else append(m_server->getNickname(), result.output);
+            if(result.type == Icecap::Action) appendAction(m_mypresence->name(), result.output);
+            else if(result.type == Icecap::Command) appendCommandMessage(result.typeString, result.output);
+            else if(result.type == Icecap::Program) appendServerMessage(result.typeString, result.output);
+            else if(result.type == Icecap::PrivateMessage) appendQuery(result.typeString, result.output);
+            else append(m_mypresence->name(), result.output);
         }
         else if (result.outputList.count())
         {
-            Q_ASSERT(result.type==Konversation::Message);
+            Q_ASSERT(result.type==Icecap::Message);
             for ( QStringList::Iterator it = result.outputList.begin(); it != result.outputList.end(); ++it )
             {
-                append(m_server->getNickname(), *it);
+                append(m_mypresence->name(), *it);
             }
         }
+
         // Send anything else to the server
-        if(!result.toServer.isEmpty())
-        {
+        if (!result.toServer.isEmpty()) {
             m_server->queue(result.toServer);
-        }
-        else
-        {
+        } else {
             m_server->queueList(result.toServerList);
         }
-*/
     } // for
 }
 
@@ -2095,6 +2094,7 @@ void ChannelWindow::nicknameComboboxChanged()
     }
 }
 
+// TODO: Move IRC commands to somewhere sensible
 void ChannelWindow::changeNickname(const QString& newNickname)
 {
     if (!newNickname.isEmpty())

@@ -54,6 +54,11 @@ namespace Konversation
     class ChannelOptionsDialog;
 }
 
+namespace Icecap
+{
+    class Channel;
+}
+
 class NickList : public QPtrList<Nick>
 {
     public:
@@ -80,7 +85,7 @@ class ChannelWindow : public ChatWindow
     Q_OBJECT
 
     public:
-        ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence);
+        ChannelWindow(QWidget* parent, Icecap::Channel* channel);
         ~ChannelWindow();
 //META
         virtual bool canBeFrontView();
@@ -369,6 +374,7 @@ class ChannelWindow : public ChatWindow
         Konversation::ChannelOptionsDialog *m_optionsDialog;
 
 //        Icecap::MyPresence* mypresence;
+        Icecap::Channel* m_channel;
 };
 #endif
 

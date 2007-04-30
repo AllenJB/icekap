@@ -107,7 +107,7 @@ namespace Icecap
         Channel* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
-            if (current->getName() == channelName) {
+            if (current->name() == channelName) {
                 return current;
             }
         }
