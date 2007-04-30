@@ -80,7 +80,7 @@ class ChannelWindow : public ChatWindow
     Q_OBJECT
 
     public:
-        ChannelWindow(QWidget* parent);
+        ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence);
         ~ChannelWindow();
 //META
         virtual bool canBeFrontView();
@@ -368,7 +368,7 @@ class ChannelWindow : public ChatWindow
 
         Konversation::ChannelOptionsDialog *m_optionsDialog;
 
-        Icecap::MyPresence* mypresence;
+//        Icecap::MyPresence* mypresence;
 };
 #endif
 

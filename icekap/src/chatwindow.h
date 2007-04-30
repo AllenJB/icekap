@@ -21,6 +21,8 @@
 #include "identity.h"
 #include "common.h"
 
+#include "icecapmypresence.h"
+
 /*
   @author Dario Abatianni
 */
@@ -40,7 +42,8 @@ class ChatWindow : public QVBox
 
         enum WindowType
         {
-            Status=0,
+            IcecapStatus=0,
+            Status,
             Channel,
             Query,
             DccChat,
@@ -69,6 +72,9 @@ class ChatWindow : public QVBox
          *  @return The server it is associated with, or null if none.
          */
         IcecapServer* getServer();
+        Icecap::MyPresence* getMyPresence ();
+        void setMyPresence (Icecap::MyPresence* p_mypresence);
+
         virtual void setIdentity(const Identity *newIdentity);
         void setTextView(IRCView* newView);
         IRCView* getTextView() const;
@@ -202,6 +208,7 @@ class ChatWindow : public QVBox
          *  Not always non-null - e.g. for konsolepanel
          */
         IcecapServer* m_server;
+        Icecap::MyPresence* m_mypresence;
         Identity identity;
         QFile logfile;
         WindowType type;
@@ -213,3 +220,6 @@ class ChatWindow : public QVBox
         Konversation::TabNotifyType m_currentTabNotify;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

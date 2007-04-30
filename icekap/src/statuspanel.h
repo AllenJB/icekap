@@ -49,7 +49,7 @@ class StatusPanel : public IcecapStatusPanel
 
         virtual void setIdentity(const Identity *newIdentity);
 
-        void setMyPresence (Icecap::MyPresence* p_mypresence);
+//        void setMyPresence (Icecap::MyPresence* p_mypresence);
 
     signals:
         void sendFile();
@@ -80,7 +80,7 @@ class StatusPanel : public IcecapStatusPanel
 
         StatusPanel* statusPanel;
 
-        Icecap::MyPresence* mypresence;
+//        Icecap::MyPresence* mypresence;
 };
 #endif
 

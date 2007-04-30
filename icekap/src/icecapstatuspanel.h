@@ -36,7 +36,7 @@ class IcecapStatusPanel : public ChatWindow
 
     public:
 //        explicit IcecapStatusPanel(QWidget* parent);
-		explicit IcecapStatusPanel(QWidget* parent, bool p_isPresenceStatus = false);
+        explicit IcecapStatusPanel(QWidget* parent, bool p_isPresenceStatus = false);
         ~IcecapStatusPanel();
 
         virtual void setName(const QString& newName);
@@ -78,3 +78,6 @@ class IcecapStatusPanel : public ChatWindow
 		bool isPresenceStatus;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

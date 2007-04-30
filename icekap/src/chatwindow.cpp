@@ -38,6 +38,7 @@ ChatWindow::ChatWindow(QWidget* parent) : QVBox(parent)
     parentWidget=parent;
     firstLog=true;
     m_server=0;
+//    m_mypresence = 0;
     m_notificationsEnabled = true;
     m_channelEncodingSupported = false;
     m_currentTabNotify = Konversation::tnfNone;
@@ -108,6 +109,17 @@ void ChatWindow::setServer(IcecapServer* newServer)
 IcecapServer* ChatWindow::getServer()
 {
     return m_server;
+}
+
+void ChatWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
+{
+    m_mypresence = p_mypresence;
+    setServer (p_mypresence->server());
+}
+
+Icecap::MyPresence* ChatWindow::getMyPresence()
+{
+    return m_mypresence;
 }
 
 void ChatWindow::serverOnline(bool state)
@@ -512,3 +524,6 @@ void ChatWindow::resetTabNotification()
 }
 
 #include "chatwindow.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

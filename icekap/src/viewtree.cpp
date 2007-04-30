@@ -846,17 +846,33 @@ ViewTreeItem* ViewTree::getItemForView(ChatWindow* view)
 ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 {
     IcecapServer* server = view->getServer();
+    Icecap::MyPresence* mypresence = view->getMyPresence();
+    bool hasMyPresence = false;
+    if (mypresence) {
+        hasMyPresence = true;
+    }
 
     ViewTreeItem* item = static_cast<ViewTreeItem*>(firstChild());
 
     while (item)
     {
-        if (item->getViewType() == ChatWindow::Status
+        if (view->getType() == ChatWindow::RawLog
+            && item->getViewType() == ChatWindow::IcecapStatus
             && item->getView()
             && item->getView()->getServer() == server)
         {
             return item;
             break;
+        } else
+        if (hasMyPresence) {
+            if (item->getViewType() == ChatWindow::Status
+                && item->getView()
+                && item->getView()->getMyPresence()
+                && item->getView()->getMyPresence() == mypresence)
+            {
+                return item;
+                break;
+            }
         }
 
         item = static_cast<ViewTreeItem*>(item->itemBelow());
@@ -909,3 +925,6 @@ void ViewTree::paintEmptyArea(QPainter* p, const QRect& rect)
 }
 
 #include "viewtree.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

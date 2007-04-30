@@ -36,6 +36,7 @@
 StatusPanel::StatusPanel(QWidget* parent) : IcecapStatusPanel (parent, true)
 {
     setChannelEncodingSupported(true);
+    setType (ChatWindow::Status);
 
     awayChanged=false;
     awayState=false;
@@ -240,11 +241,6 @@ void StatusPanel::emitUpdateInfo()
 {
 //    QString info = mypresencename();
 //    emit updateInfo(info);
-}
-
-void StatusPanel::setMyPresence (Icecap::MyPresence* p_mypresence)
-{
-    mypresence = p_mypresence;
 }
 
 void StatusPanel::statusTextEntered()
