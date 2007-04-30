@@ -97,7 +97,7 @@ class ChannelWindow : public ChatWindow
 
         virtual void setMyPresence (Icecap::MyPresence* p_mypresence);
         virtual void setServer(IcecapServer* newServer);
-        virtual void setIdentity(const Identity *newIdentity);
+//        virtual void setIdentity(const Identity *newIdentity);
 
 //Unsure of future placement and/or continued existence of these members
         int numberOfNicks() const { return nicks; }

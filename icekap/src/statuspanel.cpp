@@ -80,6 +80,15 @@ StatusPanel::~StatusPanel()
 {
 }
 
+void StatusPanel::setMyPresence (Icecap::MyPresence* mypresence)
+{
+    IcecapStatusPanel::setMyPresence (mypresence);
+    nicknameCombobox->clear();
+//    nicknameCombobox->insertStringList(mypresence->getNicknameList());
+//    nicknameCombobox->setCurrentText (mypresence->getNickname (0));
+    nicknameCombobox->setCurrentText (mypresence->name ());
+}
+
 void StatusPanel::setNickname(const QString& newNickname)
 {
     nicknameCombobox->setCurrentText(newNickname);
@@ -168,10 +177,13 @@ void StatusPanel::showEvent(QShowEvent*)
     }
 }
 
+// TODO: Shift IRC command somewhere sensible
 void StatusPanel::nicknameComboboxChanged()
 {
     QString newNick=nicknameCombobox->currentText();
 //    oldNick=m_server->getNickname();
+//    oldNick=m_mypresence->getNickname(0);
+    oldNick = m_mypresence->name ();
     if(oldNick!=newNick)
     {
       nicknameCombobox->setCurrentText(oldNick);
@@ -181,6 +193,7 @@ void StatusPanel::nicknameComboboxChanged()
     statusInput->setFocus();
 }
 
+// TODO: Shift IRC command somewhere sensible
 void StatusPanel::changeNickname(const QString& newNickname)
 {
     m_server->queue("NICK "+newNickname);
@@ -223,18 +236,6 @@ void StatusPanel::showNicknameBox(bool show)
     {
         nicknameCombobox->hide();
     }
-}
-
-void StatusPanel::setIdentity(const Identity *newIdentity)
-{
-    if(!newIdentity)
-    {
-        return;
-    }
-
-    ChatWindow::setIdentity(newIdentity);
-    nicknameCombobox->clear();
-    nicknameCombobox->insertStringList(newIdentity->getNicknameList());
 }
 
 void StatusPanel::emitUpdateInfo()

@@ -126,13 +126,13 @@ void ChatWindow::serverOnline(bool state)
 {
     emit online(this,state);
 }
-
+/*
 void ChatWindow::setIdentity(const Identity *newIdentity)
 {
     if(!newIdentity) return;
     identity=*newIdentity;
 }
-
+*/
 void ChatWindow::setTextView(IRCView* newView)
 {
     textView = newView;

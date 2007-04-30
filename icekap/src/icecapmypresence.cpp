@@ -18,6 +18,7 @@ namespace Icecap
     {
         m_server = server;
         m_name = newName;
+//        setNickname (0, newName);
         m_connected = false;
         m_autoconnect = false;
         statusViewActive = false;
@@ -29,6 +30,7 @@ namespace Icecap
     {
         m_server = server;
         m_name = newName;
+//        setNickname (0, newName);
         m_network = newNetwork;
         m_connected = false;
         m_autoconnect = false;
@@ -41,6 +43,7 @@ namespace Icecap
     {
         m_server = server;
         m_name = newName;
+//        setNickname (0, newName);
         m_network = newNetwork;
         m_connected = parameterMap.contains ("connected");
         m_autoconnect = parameterMap.contains ("autoconnect");
@@ -48,7 +51,9 @@ namespace Icecap
         setState (SSDisconnected);
         if (parameterMap.contains ("presence"))
         {
-            m_presence = parameterMap["presence"];
+//            m_presence = parameterMap["presence"];
+            m_name = parameterMap["presence"];
+//            setNickname (0, parameterMap["presence"]);
         }
         m_viewContainerPtr = viewContainer;
         if (m_connected) {
@@ -65,11 +70,21 @@ namespace Icecap
         statusView = getViewContainer()->addStatusView(this);
         statusView->setServer (m_server);
     }
-
-    void MyPresence::setName (const QString& newName)
+/*
+    QString MyPresence::getNickname(uint index) const
     {
-        m_name = newName;
+        if(index < nicknameList.count())
+            return nicknameList[index];
+
+        return QString();
     }
+
+    void MyPresence::setNicknameList(const QStringList& newList)
+    {
+        nicknameList.clear();
+        nicknameList = newList;
+    }
+*/
 
     void MyPresence::setNetwork (Network* newNetwork)
     {
@@ -84,11 +99,6 @@ namespace Icecap
     void MyPresence::setAutoconnect (bool newStatus)
     {
         m_autoconnect = newStatus;
-    }
-
-    void MyPresence::setPresence (QString& presenceName)
-    {
-        m_presence = presenceName;
     }
 
     Channel* MyPresence::channel (const QString& channelName)
@@ -107,7 +117,6 @@ namespace Icecap
 
     void MyPresence::channelAdd (const Channel* channel)
     {
-//        channel->setMyPresence (this);
         channelList.append (channel);
     }
 

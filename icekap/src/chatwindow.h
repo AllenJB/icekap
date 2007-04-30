@@ -75,7 +75,7 @@ class ChatWindow : public QVBox
         Icecap::MyPresence* getMyPresence ();
         void setMyPresence (Icecap::MyPresence* p_mypresence);
 
-        virtual void setIdentity(const Identity *newIdentity);
+//        virtual void setIdentity(const Identity *newIdentity);
         void setTextView(IRCView* newView);
         IRCView* getTextView() const;
         void setLog(bool activate);
