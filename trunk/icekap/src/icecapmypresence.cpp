@@ -107,17 +107,18 @@ namespace Icecap
 
     void MyPresence::channelAdd (const Channel* channel)
     {
+//        channel->setMyPresence (this);
         channelList.append (channel);
     }
 
     void MyPresence::channelAdd (const QString& channelName)
     {
-        channelList.append (new Channel (this, channelName));
+        channelAdd (new Channel (this, channelName));
     }
 
     void MyPresence::channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap)
     {
-        channelList.append (new Channel (this, channelName, parameterMap));
+        channelAdd (new Channel (this, channelName, parameterMap));
     }
 
     void MyPresence::channelRemove (const Channel* channel)

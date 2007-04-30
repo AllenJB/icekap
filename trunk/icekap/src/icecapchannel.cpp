@@ -117,6 +117,11 @@ namespace Icecap
         Channel::presenceList.remove (presenceByAddress (userAddress));
     }
 
+    ViewContainer* Channel::getViewContainer () const
+    {
+        return mypresence->getViewContainer ();
+    }
+
     bool Channel::operator== (Channel compareTo)
     {
         return (name == compareTo.name);

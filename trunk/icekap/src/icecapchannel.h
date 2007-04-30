@@ -37,6 +37,7 @@ namespace Icecap
             QDateTime getTopicTimestamp () { return topicTimestamp; }
             QString getModes () { return modes; }
             bool getConnected () { return connected; }
+            MyPresence* getMyPresence () { return mypresence; }
 
             void setName (const QString& newName);
             // In case we don't know who set the topic.
@@ -56,8 +57,8 @@ namespace Icecap
             Presence presenceByAddress (const QString& userAddress);
 
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
-            ViewContainer* viewContainer () { return m_viewContainerPtr; }
-            ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
+//            ViewContainer* viewContainer () { return m_viewContainerPtr; }
+            ViewContainer* getViewContainer() const;
 
             bool operator== (Channel compareTo);
             bool isNull ();

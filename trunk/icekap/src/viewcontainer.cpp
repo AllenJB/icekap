@@ -2078,9 +2078,9 @@ void ViewContainer::serverStateChanged(IcecapServer* server, IcecapServer::State
 
 ChannelWindow* ViewContainer::addChannel(Icecap::MyPresence* mypresence, const QString& name)
 {
-    ChannelWindow* channel = new ChannelWindow(m_tabWidget);
+    ChannelWindow* channel = new ChannelWindow(m_tabWidget, mypresence);
 //    channel->setServer(server);
-    channel->setMyPresence (mypresence);
+//    channel->setMyPresence (mypresence);
     channel->setName(name);
     addView(channel, name);
 

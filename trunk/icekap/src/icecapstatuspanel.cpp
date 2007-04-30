@@ -35,7 +35,7 @@ IcecapStatusPanel::IcecapStatusPanel(QWidget* parent, bool p_isPresenceStatus) :
 {
     isPresenceStatus = p_isPresenceStatus;
 
-    setType(ChatWindow::Status);
+    setType(ChatWindow::IcecapStatus);
 
     // set up text view, will automatically take care of logging
     IRCViewBox* ircBox = new IRCViewBox(this, 0); // Server will be set later in setServer()

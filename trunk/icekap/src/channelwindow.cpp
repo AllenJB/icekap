@@ -61,7 +61,7 @@
 #include "channeloptionsdialog.h"
 #include "notificationhandler.h"
 
-ChannelWindow::ChannelWindow(QWidget* parent)
+ChannelWindow::ChannelWindow(QWidget* parent, Icecap::MyPresence* mypresence)
   : ChatWindow(parent), key(" ")
 {
     // init variables
@@ -293,14 +293,16 @@ ChannelWindow::ChannelWindow(QWidget* parent)
     connect(Preferences::self(), SIGNAL (autoContinuousWhoChanged()),this,SLOT (scheduleAutoWho()));
 
     m_allowNotifications = true;
+    setMyPresence (mypresence);
 
     updateAppearance();
 }
 
 void ChannelWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
 {
-    mypresence = p_mypresence;
-    setServer (mypresence->server());
+//    m_mypresence = p_mypresence;
+    ChatWindow::setMyPresence (p_mypresence);
+    setServer (p_mypresence->server());
 }
 
 void ChannelWindow::setServer(IcecapServer *server)
