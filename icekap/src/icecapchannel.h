@@ -60,7 +60,7 @@ namespace Icecap
             ViewContainer* getViewContainer() const;
 
             void append(const QString& nickname,const QString& message);
-
+            void appendAction(const QString& nickname,const QString& message, bool usenotifications = false);
 
             bool operator== (Channel compareTo);
             bool isNull ();

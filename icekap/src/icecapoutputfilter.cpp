@@ -367,6 +367,17 @@ namespace Icecap
             else if(command == "prefs")    result = parsePrefs(parameter);
             else if(command == "dns")      result = parseDNS(parameter);
 
+            else if ((command == "me") || (command == "action"))
+            {
+                QString network = channel->mypresence()->network()->name();
+                QString mypresence = channel->mypresence()->name();
+                QString escapedLine = parameter;
+                escapedLine.replace (";", "\\.");
+                result.toServer = "m;msg;network="+ network +";mypresence="+ mypresence +";channel="+ destination +";type=action;msg="+ escapedLine;
+                result.output = parameter;
+                result.type = Action;
+            }
+
             // Forward unknown commands to server
             else
             {
