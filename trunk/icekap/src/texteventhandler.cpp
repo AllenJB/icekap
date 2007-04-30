@@ -131,16 +131,18 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
     }
 
     else if (type == "msg") {
+        QString escapedMsg = parameter["msg"];
+        escapedMsg.replace ("\\.", ";");
         if (parameter["presence"].length () < 1) {
             if (parameter["irc_target"] == "AUTH") {
-                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (parameter["irc_target"], parameter["msg"]);
+                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (parameter["irc_target"], escapedMsg);
             } else {
-                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n("Message"), parameter["msg"]);
+                m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (i18n("Message"), escapedMsg);
             }
         } else
         if (parameter["channel"].length () > 0) {
             Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
-            channel->append (parameter["presence"], parameter["msg"]);
+            channel->append (parameter["presence"], escapedMsg);
         }
     }
 

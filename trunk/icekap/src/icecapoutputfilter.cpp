@@ -380,7 +380,9 @@ namespace Icecap
             BYPASS_COMMAND_PARSING:
             QString network = channel->mypresence()->network()->name();
             QString mypresence = channel->mypresence()->name();
-            result.toServer = "m;msg;network="+ network +";mypresence="+ mypresence +";channel="+ destination +";msg="+ inputLine;
+            QString escapedLine = inputLine;
+            escapedLine.replace (";", "\\.");
+            result.toServer = "m;msg;network="+ network +";mypresence="+ mypresence +";channel="+ destination +";msg="+ escapedLine;
             result.output = inputLine;
             result.type = Message;
         }
