@@ -242,6 +242,12 @@ namespace Icecap
             parameter = parameter.stripWhiteSpace();
             result = parseChannel (parameter);
         }
+        else if (line.startsWith (commandChar +"gateway"))
+        {
+            QString parameter = inputLine.section (' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseGateway (parameter);
+        }
         else if (line.startsWith (commandChar +"autoreq")) {
             result = parseAutoReq();
         }
@@ -340,6 +346,12 @@ namespace Icecap
             QString parameter = inputLine.section (' ', 1);
             parameter = parameter.stripWhiteSpace();
             result = parseChannel (parameter);
+        }
+        else if (line.startsWith (commandChar +"gateway"))
+        {
+            QString parameter = inputLine.section (' ', 1);
+            parameter = parameter.stripWhiteSpace();
+            result = parseGateway (parameter);
         }
         else if (line.startsWith (commandChar +"autoreq")) {
             result = parseAutoReq();
@@ -601,6 +613,56 @@ namespace Icecap
             parameterList.pop_front ();
             QString network = parameterList.join (" ");
             result.toServer = cmd +"del;"+ command +" remove;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
+            result.type = Command;
+        }
+        else
+        {
+            result.output = usage;
+            result.type = Program;
+        }
+        return result;
+    }
+
+
+    // TODO: Add support for host, password and priority parameters
+    OutputFilterResult IcecapOutputFilter::parseGateway (const QString& parameter)
+    {
+        QString command = "gateway";
+        QString cmd = "gw";
+        QString usage = "Usage: /"+ command +" (list|add|del) [network] [host]";
+
+        OutputFilterResult result;
+        result.typeString = "Gateway";
+
+        if (parameter == "list")
+        {
+            result.toServer = cmd +"list;"+ command +" list";
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("add "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() != 3) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString network = parameterList[1];
+            QString host = parameterList[2];
+            result.toServer = cmd +"add;"+ command +" add;network="+ network +";host="+ host;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("del "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() != 3) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString network = parameterList[1];
+            QString host = parameterList[2];
+            result.toServer = cmd +"del;"+ command +" remove;network="+ network +";host="+ host;
             result.type = Command;
         }
         else
