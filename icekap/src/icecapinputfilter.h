@@ -71,6 +71,10 @@ class IcecapInputFilter : public QObject
         void parseChannelList  (const QString& status, QMap<QString, QString>& parameterMap);
         void parseChannelDel   (const QString& status, QMap<QString, QString>& parameterMap);
 
+        void parseGatewayAdd   (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseGatewayList  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseGatewayDel   (const QString& status, QMap<QString, QString>& parameterMap);
+
         bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);
 

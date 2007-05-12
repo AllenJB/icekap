@@ -240,6 +240,19 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         parseChannelDel (status, parameterMap);
     }
 
+    if (tag == "gwlist")
+    {
+        parseGatewayList (status, parameterMap);
+    }
+    else if (tag == "gwadd")
+    {
+        parseGatewayAdd (status, parameterMap);
+    }
+    else if (tag == "gwdel")
+    {
+        parseGatewayDel (status, parameterMap);
+    }
+
 }
 
 void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, QString> &parameterMap)
@@ -247,8 +260,9 @@ void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, Q
     if (status == "+") {
         netlistInProgress = false;
         if (getAutomaticRequest ("netlist") > 0) {
-            textEventHnd->processEvent ("network_list_end", parameterMap);
             setAutomaticRequest ("netlist", false);
+        } else {
+            textEventHnd->processEvent ("network_list_end", parameterMap);
         }
     } else if (status == ">") {
         if (getAutomaticRequest ("netlist") < 1) {
@@ -260,7 +274,7 @@ void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, Q
             }
 
             textEventHnd->processEvent("network_list", parameterMap);
-            server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
+//            server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
         }
     } else {
         // TODO: Are there any known circumstances that would cause this?
@@ -292,8 +306,9 @@ void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, 
     if (status == "+") {
         prslistInProgress = false;
         if (getAutomaticRequest ("prslist") > 0) {
-            textEventHnd->processEvent("presence_list_end", parameterMap);
             setAutomaticRequest ("prslist", false);
+        } else {
+            textEventHnd->processEvent("presence_list_end", parameterMap);
         }
     } else if (status == ">") {
         if (getAutomaticRequest ("prslist") < 1) {
@@ -305,7 +320,7 @@ void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, 
             }
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
-            textEventHnd->processEvent("presence_list", parameterMap);
+//            textEventHnd->processEvent("presence_list", parameterMap);
             server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
         }
     } else {
@@ -338,8 +353,9 @@ void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, Q
     if (status == "+") {
         prslistInProgress = false;
         if (getAutomaticRequest ("chlist") > 0) {
-            textEventHnd->processEvent("channel_list_end", parameterMap);
             setAutomaticRequest ("chlist", false);
+        } else {
+            textEventHnd->processEvent("channel_list_end", parameterMap);
         }
     } else if (status == ">") {
         if (getAutomaticRequest ("chlist") < 1) {
@@ -351,7 +367,7 @@ void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, Q
             }
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
-            textEventHnd->processEvent("channel_list", parameterMap);
+//            textEventHnd->processEvent("channel_list", parameterMap);
             server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd(parameterMap["channel"], parameterMap);
         }
     } else {
@@ -376,6 +392,38 @@ void IcecapInputFilter::parseChannelDel (const QString& status, QMap<QString, QS
         textEventHnd->processEvent("channel_del", parameterMap);
     } else {
         textEventHnd->processEvent("channel_del_error", parameterMap);
+    }
+}
+
+
+void IcecapInputFilter::parseGatewayList (const QString &status, QMap<QString, QString> &parameterMap)
+{
+    if (status == "+") {
+//        gwlistInProgress = false;
+        textEventHnd->processEvent("gateway_list_end", parameterMap);
+    } else if (status == ">") {
+        textEventHnd->processEvent("gateway_list", parameterMap);
+    } else {
+        // TODO: Are there any known circumstances that would cause this?
+        textEventHnd->processEvent("gateway_list_error", parameterMap);
+    }
+}
+
+void IcecapInputFilter::parseGatewayAdd (const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        textEventHnd->processEvent("gateway_add", parameterMap);
+    } else {
+        textEventHnd->processEvent("gateway_add_error", parameterMap);
+    }
+}
+
+void IcecapInputFilter::parseGatewayDel (const QString& status, QMap<QString, QString>& parameterMap)
+{
+    if (status == "+") {
+        textEventHnd->processEvent("gateway_del", parameterMap);
+    } else {
+        textEventHnd->processEvent("gateway_del_error", parameterMap);
     }
 }
 

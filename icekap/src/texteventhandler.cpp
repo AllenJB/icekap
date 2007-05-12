@@ -105,6 +105,28 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
             "Channel Del: Error: An unhandled error occurred.");
     }
 
+    else if (type == "gateway_list_end") {
+        m_server->appendStatusMessage (i18n ("Gateway List"), "End of gateway list");
+    } else if (type == "gateway_list") {
+        QString message = i18n ("%1 Network: %2", "%1 Network: %2").arg(parameter["host"]).arg (parameter["network"]);
+        m_server->appendStatusMessage (i18n ("Gateway List"), message);
+    } else if (type == "gateway_list_error") {
+        m_server->appendStatusMessage (i18n ("Gateway List"),
+            "Gateway List Error: An unhandled error occurred.");
+    }
+
+    else if (type == "gateway_add") {
+        m_server->appendStatusMessage (i18n ("Gateway"), "Gateway added successfully.");
+    } else if (type == "gateway_add_error") {
+        m_server->appendStatusMessage (i18n ("Gateway"),
+            "Gateway Add: Error: An unhandled error occurred.");
+    } else if (type == "gateway_del") {
+        m_server->appendStatusMessage (i18n ("Gateway"), "Gateway deleted successfully.");
+    } else if (type == "gateway_del_error") {
+        m_server->appendStatusMessage (i18n ("Gateway"),
+            "Gateway Del: Error: An unhandled error occurred.");
+    }
+
     else if (type == "gateway_connecting") {
         QString message = i18n ("Connecting to gateway: %1:%2").arg(parameter["ip"]).arg (parameter["port"]);
         Icecap::MyPresence* myp = m_server->mypresence(parameter["mypresence"], parameter["network"]);
