@@ -34,9 +34,18 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
     } else if ( type == "channel_deinit" ) {
         m_server->appendStatusMessage ( i18n("Channel"), "Channel deleted: "+ parameter["channel"] +" from presence: "+ parameter["mypresence"] +" on network: "+ parameter["network"]);
     }
+
     else if ( type == "channel_connection_init" ) {
         Icecap::MyPresence* myp = m_server->mypresence(parameter["mypresence"], parameter["network"]);
         myp->appendStatusMessage (i18n ("Channel"), "Connected to channel: "+ parameter["channel"]);
+    }
+    else if ( type == "channel_connection_deinit" ) {
+        Icecap::MyPresence* myp = m_server->mypresence(parameter["mypresence"], parameter["network"]);
+        if (parameter["reason"].length () > 0) {
+            myp->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ parameter["channel"] +": "+ parameter["reason"]);
+        } else {
+            myp->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ parameter["channel"]);
+        }
     }
 
     else if (type == "network_list_error") {

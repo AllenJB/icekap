@@ -567,7 +567,7 @@ namespace Icecap
     {
         QString command = "channel";
         QString cmd = "ch";
-        QString usage = "Usage: /"+ command +" (list|display|add|del) [channel] [mypresence] [network]";
+        QString usage = "Usage: /"+ command +" (list|display|add|del|join|part) [channel] [mypresence] [network]";
 
         OutputFilterResult result;
         result.typeString = "Channel";
@@ -613,6 +613,40 @@ namespace Icecap
             parameterList.pop_front ();
             QString network = parameterList.join (" ");
             result.toServer = cmd +"del;"+ command +" remove;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("join "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 4) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString channel = parameterList[1];
+            QString mypresence = parameterList[2];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = cmd +"join;"+ command +" join;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
+            result.type = Command;
+        }
+        else if (parameter.startsWith ("part "))
+        {
+            QStringList parameterList = QStringList::split(" ", parameter);
+            if (parameterList.size() < 4) {
+                result.output = usage;
+                result.type = Program;
+                return result;
+            }
+            QString channel = parameterList[1];
+            QString mypresence = parameterList[2];
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            parameterList.pop_front ();
+            QString network = parameterList.join (" ");
+            result.toServer = cmd +"part;"+ command +" part;channel="+ channel +";mypresence="+ mypresence +";network="+ network;
             result.type = Command;
         }
         else
