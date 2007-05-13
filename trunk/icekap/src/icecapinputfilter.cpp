@@ -174,6 +174,10 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     {
         // Do nothing
     }
+    else if ((eventName == "channel_presence_removed") || (eventName == "channel_presence_added"))
+    {
+        // Do nothing
+    }
     else if (eventName != "msg") {
         processTextEvent = false;
     }
