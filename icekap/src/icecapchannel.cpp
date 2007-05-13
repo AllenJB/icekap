@@ -50,7 +50,7 @@ namespace Icecap
             }
         }
     }
-
+/*
     void Channel::setTopic (const QString& newTopic, const QString& setBy, const QDateTime& timestamp)
     {
         topic = newTopic;
@@ -60,7 +60,7 @@ namespace Icecap
             window->setTopic (topicSetBy, topic);
         }
     }
-
+*/
     void Channel::setTopic (const QString& newTopic, const QString& setBy, const QString& timestampStr)
     {
         topic = newTopic;
