@@ -27,6 +27,9 @@ namespace Icecap
         m_mypresence = p_mypresence;
         m_name = name;
         connected = parameterMap.contains ("joined");
+        if (parameterMap.contains ("topic")) {
+            topic = parameterMap["topic"];
+        }
         windowIsActive = false;
 
         if (connected) init ();
@@ -38,6 +41,14 @@ namespace Icecap
 
         windowIsActive = true;
         window = getViewContainer()->addChannel (this);
+
+        if (topic.length () > 0) {
+            if (topicSetBy.length () > 0) {
+                window->setTopic (topic);
+            } else {
+                window->setTopic (topicSetBy, topic);
+            }
+        }
     }
 
     void Channel::setTopic (const QString& newTopic, const QString& setBy, const QDateTime& timestamp)
@@ -45,8 +56,23 @@ namespace Icecap
         topic = newTopic;
         topicSetBy = setBy;
         topicTimestamp = timestamp;
+        if (windowIsActive) {
+            window->setTopic (topicSetBy, topic);
+        }
     }
 
+    void Channel::setTopic (const QString& newTopic, const QString& setBy, const QString& timestampStr)
+    {
+        topic = newTopic;
+        topicSetBy = setBy;
+        topicTimestamp = QDateTime ();
+        topicTimestamp.setTime_t (timestampStr.toUInt ());
+        if (windowIsActive) {
+            window->setTopic (topicSetBy, topic);
+        }
+    }
+
+/*
     void Channel::setTopic (const QString& topic, const QString& setBy)
     {
         setTopic (topic, setBy, QDateTime::currentDateTime ());
@@ -58,7 +84,7 @@ namespace Icecap
         topicSetBy = QString ();
         topicTimestamp = QDateTime ();
     }
-
+*/
     void Channel::setConnected (bool newStatus)
     {
         connected = newStatus;
