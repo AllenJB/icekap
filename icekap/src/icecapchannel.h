@@ -61,6 +61,8 @@ namespace Icecap
 
             void append(const QString& nickname,const QString& message);
             void appendAction(const QString& nickname,const QString& message, bool usenotifications = false);
+            void appendCommandMessage (const QString& command, const QString& message, bool important = true,
+                bool parseURL = true, bool self = false);
 
             bool operator== (Channel compareTo);
             bool isNull ();

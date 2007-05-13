@@ -163,21 +163,26 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
 
     else if (type == "channel_presence_added") {
         Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
-        channel->append (">>", "Join: "+ parameter["presence"]);
+//        channel->append (">>", "Join: "+ parameter["presence"]);
+        channel->appendCommandMessage (i18n("Join"), i18n("%1 is the nick joining",
+            "%1 has joined this channel").arg(parameter["presence"]), false, false);
+
     }
     else if (type == "channel_presence_removed") {
         Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
         if (parameter.contains ("type") && (parameter["type"] == "quit")) {
             if (parameter["reason"].length () > 0) {
-                channel->append ("<<", "Quit: "+ parameter["presence"] +" Reason: "+ parameter["reason"]);
+                channel->appendCommandMessage(i18n("Quit"), i18n("%1 adds the nick and %2 the reason",
+                    "%1 has left this server (%2).").arg(parameter["presence"]).arg(parameter["reason"]), false);
             } else {
-                channel->append ("<<", "Quit: "+ parameter["presence"]);
+                channel->appendCommandMessage (i18n("Quit"), i18n("%1 has left this server.").arg(parameter["presence"]), false);
             }
         } else {
             if (parameter["reason"].length () > 0) {
-                channel->append ("<<", "Part: "+ parameter["presence"] +" Reason: "+ parameter["reason"]);
+                channel->appendCommandMessage(i18n("Part"), i18n("%1 adds the nick and %2 the reason",
+                    "%1 has left this channel (%2).").arg(parameter["presence"]).arg(parameter["reason"]), false);
             } else {
-                channel->append ("<<", "Part: "+ parameter["presence"]);
+                channel->appendCommandMessage (i18n("Part"), i18n("%1 has left this channel.").arg(parameter["presence"]), false);
             }
         }
     }
