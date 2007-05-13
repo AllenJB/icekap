@@ -126,6 +126,12 @@ namespace Icecap
         window->appendAction (nickname, message, usenotifications);
     }
 
+    void Channel::appendCommandMessage (const QString& command, const QString& message, bool important,
+        bool parseURL, bool self)
+    {
+        window->appendCommandMessage(command, message, important, parseURL, self);
+    }
+
 
     bool Channel::operator== (Channel compareTo)
     {
