@@ -44,9 +44,10 @@ namespace Icecap
             // Suspect this may not ever be used, atleast for IRC.
             // TODO: A version that will take a standard formatted string and convert it to QDateTime
             void setTopic (const QString& newTopic, const QString& setBy, const QDateTime& timestamp);
+            void setTopic (const QString& newTopic, const QString& setBy, const QString& timestampStr);
             // Timestamp defaults to now
-            void setTopic (const QString& newTopic, const QString& setBy);
-            void setTopic (const QString& newTopic);
+//            void setTopic (const QString& newTopic, const QString& setBy);
+//            void setTopic (const QString& newTopic);
             void setConnected (bool newStatus);
 
             void presenceAdd (const Presence& user);

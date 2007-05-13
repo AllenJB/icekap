@@ -1212,22 +1212,11 @@ void ChannelWindow::setTopic(const QString &newTopic)
 
 void ChannelWindow::setTopic(const QString &nickname, const QString &newTopic) // Overloaded
 {
-/*
-    if(nickname == m_server->getNickname())
-    {
-        appendCommandMessage(i18n("Topic"), i18n("You set the channel topic to \"%1\".").arg(newTopic));
-    }
-    else
-    {
-        appendCommandMessage(i18n("Topic"), i18n("%1 sets the channel topic to \"%2\".").arg(nickname).arg(newTopic));
-    }
-
     m_topicHistory.prepend(QString("%1 %2 %3").arg(QDateTime::currentDateTime().toTime_t()).arg(nickname).arg(newTopic));
     QString topic = Konversation::removeIrcMarkup(newTopic);
     topicLine->setText(topic);
 
     emit topicHistoryChanged();
-*/
 }
 
 QStringList ChannelWindow::getTopicHistory()

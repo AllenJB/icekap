@@ -178,6 +178,15 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     {
         // Do nothing
     }
+    else if (eventName == "channel_changed")
+    {
+        if (parameterMap.contains ("topic")) {
+            processTextEvent = false;
+            Icecap::Channel* channel = server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"]);
+            channel->setTopic (parameterMap["topic"], parameterMap["topic_set_by"], parameterMap["timestamp"]);
+            textEventHnd->processEvent ("topic_changed", parameterMap);
+        }
+    }
     else if (eventName != "msg") {
         processTextEvent = false;
     }

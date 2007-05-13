@@ -163,10 +163,8 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
 
     else if (type == "channel_presence_added") {
         Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
-//        channel->append (">>", "Join: "+ parameter["presence"]);
         channel->appendCommandMessage (i18n("Join"), i18n("%1 is the nick joining",
             "%1 has joined this channel").arg(parameter["presence"]), false, false);
-
     }
     else if (type == "channel_presence_removed") {
         Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
@@ -185,6 +183,11 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
                 channel->appendCommandMessage (i18n("Part"), i18n("%1 has left this channel.").arg(parameter["presence"]), false);
             }
         }
+    }
+
+    else if (type == "topic_changed") {
+        Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
+        channel->appendCommandMessage(i18n("Topic"), i18n("%1 sets the channel topic to \"%2\".").arg(parameter["topic_set_by"]).arg(parameter["topic"]));
     }
 
     else if (type == "msg") {
