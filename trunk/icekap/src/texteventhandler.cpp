@@ -179,6 +179,9 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
                 channel->append (parameter["presence"], escapedMsg);
             }
         }
+        else if (parameter["irc_target"] == "$*") {
+            m_server->mypresence(parameter["mypresence"], parameter["network"])->appendStatusMessage (parameter["presence"], escapedMsg);
+        }
     }
 
     // TODO: presence_init (own)
