@@ -1213,6 +1213,34 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             }
             break;
 
+        case ChatWindow::IcecapStatus:
+            if (Preferences::tabNotificationsLeds())
+                iconSet = images->getServerLed(false);
+            else if (Preferences::closeButtons())
+                iconSet = images->getCloseIcon();
+
+            // Cycle over the tabs
+            // For each tab:
+            //      If the tab is not a channel, status, rawlog or query window
+            //          The new tab should be placed here
+            if (m_viewTree)
+            {
+                for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
+                {
+                    tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
+
+                    if (tmp_ChatWindow->getType() != ChatWindow::Channel
+                        && tmp_ChatWindow->getType() != ChatWindow::Status
+                        && tmp_ChatWindow->getType() != ChatWindow::RawLog
+                        && tmp_ChatWindow->getType() != ChatWindow::Query)
+                    {
+                        placement = sindex;
+                        break;
+                    }
+                }
+            }
+            break;
+
         case ChatWindow::ChannelList:
             if (Preferences::tabNotificationsLeds())
                 iconSet = images->getSystemLed(false);

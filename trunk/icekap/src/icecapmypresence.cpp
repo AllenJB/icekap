@@ -49,17 +49,33 @@ namespace Icecap
         m_autoconnect = parameterMap.contains ("autoconnect");
         statusViewActive = false;
         setState (SSDisconnected);
+/*
+        TODO: This is nickname, not mypresence name!
         if (parameterMap.contains ("presence"))
         {
 //            m_presence = parameterMap["presence"];
             m_name = parameterMap["presence"];
 //            setNickname (0, parameterMap["presence"]);
         }
+*/
         m_viewContainerPtr = viewContainer;
         if (m_connected) {
             setState (SSConnected);
             init ();
         }
+    }
+
+    void MyPresence::update (const QMap<QString,QString>& parameterMap)
+    {
+        setConnected (parameterMap.contains ("connected"));
+        setAutoconnect (parameterMap.contains ("autoconnect"));
+/*
+        TODO: This is nickname, not mypresence name!
+        if (parameterMap.contains ("presence"))
+        {
+            m_name = parameterMap["presence"];
+        }
+*/
     }
 
     void MyPresence::init ()
@@ -94,6 +110,10 @@ namespace Icecap
     void MyPresence::setConnected (bool newStatus)
     {
         m_connected = newStatus;
+        if (m_connected) {
+            setState (SSConnected);
+            init ();
+        }
     }
 
     void MyPresence::setAutoconnect (bool newStatus)
