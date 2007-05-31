@@ -135,6 +135,8 @@
       <includeTypes>true</includeTypes>
       <includeEnums>true</includeEnums>
       <includeTypedefs>false</includeTypedefs>
+      <parseMissingHeadersExperimental>false</parseMissingHeadersExperimental>
+      <resolveIncludePathsUsingMakeExperimental>false</resolveIncludePathsUsingMakeExperimental>
     </codecompletion>
     <creategettersetter>
       <prefixGet/>

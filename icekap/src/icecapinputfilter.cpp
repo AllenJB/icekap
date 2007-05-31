@@ -180,8 +180,8 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     }
     else if (eventName == "channel_changed")
     {
+        processTextEvent = false;
         if (parameterMap.contains ("topic")) {
-            processTextEvent = false;
             Icecap::Channel* channel = server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"]);
             channel->setTopic (parameterMap["topic"], parameterMap["topic_set_by"], parameterMap["timestamp"]);
             textEventHnd->processEvent ("topic_changed", parameterMap);
@@ -340,7 +340,12 @@ void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, 
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
             textEventHnd->processEvent("presence_list", parameterMap);
-            server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
+
+            if (server->mypresence (parameterMap["mypresence"], parameterMap["network"]) != 0) {
+                server->mypresence (parameterMap["mypresence"], parameterMap["network"])->update (parameterMap);
+            } else {
+                server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
+            }
         }
     } else {
         // TODO: Are there any known circumstances that would cause this?
@@ -388,6 +393,11 @@ void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, Q
             // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
             // It's simpler than trying to handle all the possibilities here I think
             textEventHnd->processEvent("channel_list", parameterMap);
+
+            if (server->mypresence (parameterMap["mypresence"], parameterMap["network"]) == 0) {
+                server->mypresenceAdd (parameterMap["mypresence"], parameterMap["network"]);
+            }
+
             server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd(parameterMap["channel"], parameterMap);
         }
     } else {

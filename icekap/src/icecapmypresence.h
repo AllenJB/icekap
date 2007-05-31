@@ -45,6 +45,8 @@ namespace Icecap
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString, QString>& parameterMap);
 //            ~MyPresence ();
 
+            void update (const QMap<QString,QString>& parameterMap);
+
             QString name () { return m_name; };
             Network* network () { return m_network; };
             bool connected () { return m_connected; };
