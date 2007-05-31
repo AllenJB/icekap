@@ -1,21 +1,34 @@
+
+--- network list
+
 	netlist;network list
 	netlist;>;id=241;time=1176048093.9;network=Test Network;protocol=IRC
 	netlist;+;id=242;time=1176048093.9;
 
+--- gateway list (empty)
+
 gatewaylist;gateway list
 gatewaylist;+;id=244;time=1176048612.2;
+
+--- network add
 
 	1;network add;network=freenode;protocol=irc
 	*;network_init;id=246;time=1176048778.1;network=freenode;protocol=IRC
 	1;+;id=247;time=1176048778.1;
 
+--- gateway add
+
 2;gateway add;host=irc.freenode.org;network=freenode;port=6667
 *;gateway_init;id=249;time=1176048800.4;network=freenode;host=irc.freenode.org
 2;+;id=250;time=1176048800.4;
 
+--- presence add
+
 	3;presence add;network=freenode;mypresence=AllenJB|icecap
 	*;local_presence_init;id=252;time=1176048828.9;mypresence=AllenJB|icecap;network=freenode
 	3;+;id=253;time=1176048828.9;
+
+--- presence connect (all events)
 
 4;presence connect;network=freenode;mypresence=AllenJB|icecap
 *;gateway_connecting;id=255;time=1176048852.4;network=freenode;mypresence=AllenJB|icecap;ip=213.92.8.4;port=6667
@@ -109,6 +122,8 @@ gatewaylist;+;id=244;time=1176048612.2;
 *;irc_event;id=343;time=1176048853.6;network=freenode;mypresence=AllenJB|icecap;irc_event=privmsg;nick=freenode-connect;address=freenode@freenode/bot/connect;data=allenjb|icecap :VERSION;raw
 *;irc_ctcp;id=344;time=1176048853.6;network=freenode;mypresence=AllenJB|icecap;name=version;presence=freenode-connect;irc_target=allenjb|icecap
 
+--- channel join
+
 5;channel join;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
 *;channel_init;id=346;time=1176048933;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
 *;channel_connection_init;id=347;time=1176048933;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb
@@ -124,89 +139,132 @@ gatewaylist;+;id=244;time=1176048612.2;
 *;channel_changed;id=357;time=1176048933.2;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;initial_presences_added
 	*;irc_event;id=358;time=1176048933.9;network=freenode;mypresence=AllenJB|icecap;target=allenjb|icecap;irc_event=477;nick=calvino.freenode.net;data=#allenjb :[freenode-info] if you need to send private messages, please register: http://freenode.net/faq.shtml#privmsg;raw
 
+--- send message to channel
+
 6;msg;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;msg=hello world
 *;presence_status_changed;id=361;time=1176048986.7;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|icecap;idle_started=1176048986
 6;>;time=1176048986.7;id=360
 6;+;id=363;time=1176048997.7;
+
+--- channel join
 
 	*;irc_event;id=364;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;irc_event=join;nick=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo;data=:#allenjb;raw
 *;presence_init;id=365;time=1176049025.6;mypresence=AllenJB|icecap;presence=AllenJB|2;network=freenode
 *;presence_changed;id=366;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo
 *;channel_presence_added;id=367;time=1176049025.6;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;presence=AllenJB|2
 
+--- presence status (error)
+
 7;presence status;network=freenode;mypresence=AllenJB|icecap;name=AllenJB|2
 7;-;args;time=1176049047.7;
 
+--- presence status (error)
+
 7;presence status;network=freenode;mypresence=AllenJB|icecap;name=AllenJB|icecap
 7;-;args;time=1176049080.7;
+
+--- presence list
 
 	preslist;presence list
 	preslist;>;id=371;time=1176049152.3;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
 	preslist;+;id=372;time=1176049152.3;
 
+--- irc event: ping
+
 *;irc_event;id=373;time=1176049166.8;network=freenode;mypresence=AllenJB|icecap;irc_event=ping;data=:calvino.freenode.net;raw
+
+--- channel list
 
 	chanlist;channel list
 	chanlist;>;id=375;time=1176049177.1;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;joined
 	chanlist;+;id=376;time=1176049177.1;
+
+--- network list
 
 	netlist;network list
 	netlist;>;id=378;time=1176049214.1;network=Test Network;protocol=IRC
 	netlist;>;id=379;time=1176049214.1;network=freenode;protocol=IRC
 	netlist;+;id=380;time=1176049214.1;
 
+--- gateway list
+
 gatelist;gateway list
 gatelist;>;id=382;time=1176049231;network=freenode;host=irc.freenode.org
 gatelist;+;id=383;time=1176049231;
+
+--- message (channel)
 
 	*;irc_event;id=384;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;irc_event=privmsg;nick=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo;data=#allenjb :hello;raw
 *;msg;id=385;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;msg=hello;presence=AllenJB|2;address=n=Allen@pdpc/supporter/sustaining/Athon-Solo
 *;presence_status_changed;id=386;time=1176049295.5;network=freenode;mypresence=AllenJB|icecap;presence=AllenJB|2;idle_started=1176049295
 
+--- client connected
 
 *;client_connected;id=388;time=1176049498.5;
+
+--- network list (other client)
 
 *;client_command;id=389;time=1176049515.4;tag=netlist;command=network list
 *;client_command_reply;id=390;time=1176049515.4;tag=netlist;command=network list;network=Test Network;protocol=IRC
 *;client_command_reply;id=391;time=1176049515.4;tag=netlist;command=network list;network=freenode;protocol=IRC
 *;client_command_reply;id=392;time=1176049515.4;tag=netlist;command=network list
 
+--- presence list (other client)
+
 *;client_command;id=393;time=1176049522.1;tag=preslist;command=presence list
 *;client_command_reply;id=394;time=1176049522.1;tag=preslist;command=presence list;network=freenode;mypresence=AllenJB|icecap;autoconnect;connected;presence=AllenJB|icecap
 *;client_command_reply;id=395;time=1176049522.1;tag=preslist;command=presence list
+
+--- channel list (other client)
 
 *;client_command;id=397;time=1176049537.1;tag=chanlist;command=channel list
 *;client_command_reply;id=398;time=1176049537.1;tag=chanlist;command=channel list;network=freenode;mypresence=AllenJB|icecap;channel=#allenjb;joined
 *;client_command_reply;id=399;time=1176049537.1;tag=chanlist;command=channel list
 
+--- presence disconnect: error - not found
+
 pd;presence disconnect;network=freenode;mypresence=allenjb|icecap
 pd;-;notfound;time=1176049656.5;
+
+--- presence disconnect
 
 pd;presence disconnect;network=freenode;mypresence=AllenJB|icecap
 *;gateway_disconnected;id=402;time=1176049680.3;network=freenode;mypresence=AllenJB|icecap
 
+--- presence remove
+
 	prsdel;presence remove;mypresence=AllenJB|icecap;network=freenode
 	*;local_presence_deinit;id=448;time=1176065831.9;mypresence=AllenJB|icecap;network=freenode
 	prsdel;+;id=449;time=1176065831.9;
+
+--- presence change (change nickname)
 
 7;presence change;network=freenode;mypresence=ajbi;name=ajb2
 7;+;id=572;time=1176068583;
 	*;irc_event;id=573;time=1176068583.4;network=freenode;mypresence=ajbi;irc_event=nick;nick=ajbi;address=n=ajbi@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com;data=:ajb2;raw
 *;presence_changed;id=574;time=1176068583.4;network=freenode;mypresence=ajbi;presence=ajbi;name=ajb2
 
+--- presence list
+
 	pl;presence list
 	pl;>;id=576;time=1176068623.2;network=freenode;mypresence=ajbi;autoconnect;connected;presence=ajb2
 	pl;+;id=577;time=1176068623.2;
 
+--- channel address
+
 	ca;channel add;network=freenode;mypresence=ajbi;channel=#allenjb2
 	*;channel_init;id=2499;time=1176414041.3;network=freenode;mypresence=ajbi;channel=#allenjb2
 	ca;+;id=2500;time=1176414041.3;
+
+--- channel list
 
 	cl;channel list
 	cl;>;id=2502;time=1176414051.5;network=freenode;mypresence=ajbi;channel=allenjb
 	cl;>;id=2503;time=1176414051.5;network=freenode;mypresence=ajbi;channel=#allenjb;joined
 	cl;>;id=2504;time=1176414051.5;network=freenode;mypresence=ajbi;channel=#allenjb2
 	cl;+;id=2505;time=1176414051.5;
+
+--- channel partisans
 
 cp;channel part;mypresence=ajbi;network=freenode;channel=#allenjb
 *;channel_part;id=2509;time=1176414534;network=freenode;mypresence=ajbi;channel=#allenjb;deinit
@@ -216,6 +274,8 @@ cp;channel part;mypresence=ajbi;network=freenode;channel=#allenjb
 *;channel_connection_deinit;id=2513;time=1176414534;network=freenode;mypresence=ajbi;channel=#allenjb;reason=
 cp;+;id=2514;time=1176414534;
 	*;irc_event;id=2515;time=1176414534.1;network=freenode;mypresence=ajbi;irc_event=part;nick=ajb2;address=n=ajbi@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com;data=#allenjb :;raw
+
+--- channel remove
 
 	cr;channel remove;mypresence=ajbi;network=freenode;channel=allenjb
 	*;channel_deinit;id=2517;time=1176414613.9;network=freenode;mypresence=ajbi;channel=allenjb
@@ -227,8 +287,29 @@ cp;+;id=2514;time=1176414534;
 3. network remove with a presence joined, with and without a channel open
 4. Gateway deinit
 
---- ERK! A bug?!?
-Connection closed by foreign host.
+--- Channel topic changed
+
+*;irc_event;id=622;time=1179050070;network=Freenode;mypresence=ajbi;irc_event=topic;nick=AllenJB;address=n=ajb42@pdpc/supporter/sustaining/Athon-Solo;data=#allenjb :This is the channel topic;raw
+*;channel_changed;id=623;time=1179050070;network=Freenode;mypresence=ajbi;channel=#allenjb;topic=This is the channel topic;topic_timestamp=1179050070;topic_set_by=AllenJB
+
+--- Join channel with a topic
+
+chjoin;channel join;channel=#allenjb;mypresence=ajbi;network=freenode
+*;channel_connection_init;id=636;time=1179050271.9;network=Freenode;mypresence=ajbi;channel=#allenjb
+chjoin;+;id=637;time=1179050271.9;
+*;irc_event;id=638;time=1179050272.1;network=Freenode;mypresence=ajbi;irc_event=join;nick=ajbi;address=n=ajbi@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com;data=:#allenjb;raw
+*;channel_join;id=639;time=1179050272.1;network=Freenode;mypresence=ajbi;channel=#allenjb;init
+*;channel_presence_added;id=640;time=1179050272.1;network=Freenode;mypresence=ajbi;channel=#allenjb;init;presence=ajbi
+*;irc_event;id=641;time=1179050272.1;network=Freenode;mypresence=ajbi;target=ajbi;irc_event=332;nick=heinlein.freenode.net;data=#allenjb :This is the channel topic;raw
+*;irc_event;id=642;time=1179050272.1;network=Freenode;mypresence=ajbi;target=ajbi;irc_event=333;nick=heinlein.freenode.net;data=#allenjb AllenJB 1179050039;raw
+*;presence_init;id=643;time=1179050272.1;mypresence=ajbi;presence=AllenJB;network=Freenode
+*;channel_changed;id=644;time=1179050272.1;network=Freenode;mypresence=ajbi;channel=#allenjb;init;topic=This is the channel topic;topic_timestamp=1179050039;topic_set_by=AllenJB
+*;irc_event;id=645;time=1179050272.1;network=Freenode;mypresence=ajbi;target=ajbi;irc_event=353;nick=heinlein.freenode.net;data=@ #allenjb :ajbi allen @AllenJB ;raw
+*;presence_init;id=646;time=1179050272.1;mypresence=ajbi;presence=allen;network=Freenode
+*;channel_presence_added;id=647;time=1179050272.1;network=Freenode;mypresence=ajbi;channel=#allenjb;init;presence=allen
+*;channel_presence_added;id=648;time=1179050272.1;network=Freenode;mypresence=ajbi;channel=#allenjb;init;presence=AllenJB;mode=op;irc_mode=@
+*;irc_event;id=649;time=1179050272.2;network=Freenode;mypresence=ajbi;target=ajbi;irc_event=366;nick=heinlein.freenode.net;data=#allenjb :End of /NAMES list.;raw
+*;channel_changed;id=650;time=1179050272.2;network=Freenode;mypresence=ajbi;channel=#allenjb;initial_presences_added
 
 --- Connect sequence: Icecap events only
 
