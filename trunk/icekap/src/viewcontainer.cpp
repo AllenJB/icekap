@@ -1195,6 +1195,7 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             else if (Preferences::closeButtons())
                 iconSet = images->getCloseIcon();
 
+/*
             if (m_viewTree)
             {
                 for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
@@ -1210,7 +1211,33 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
                         break;
                     }
                 }
+
             }
+*/
+/*
+            for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
+            {
+                tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
+
+                if (tmp_ChatWindow->getType() == ChatWindow::Status && tmp_ChatWindow->getServer() == view->getServer())
+                {
+                    for (int index = sindex + 1; index < m_tabWidget->count(); index++)
+                    {
+                        tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(index));
+                        wtype = tmp_ChatWindow->getType();
+
+                        if (wtype != ChatWindow::Channel && wtype != ChatWindow::RawLog)
+                        {
+                            placement = index;
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+*/
+            placement = 1;
             break;
 
         case ChatWindow::IcecapStatus:
@@ -1219,6 +1246,7 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             else if (Preferences::closeButtons())
                 iconSet = images->getCloseIcon();
 
+/*
             // Cycle over the tabs
             // For each tab:
             //      If the tab is not a channel, status, rawlog or query window
@@ -1239,6 +1267,8 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
                     }
                 }
             }
+*/
+            placement = 1;
             break;
 
         case ChatWindow::ChannelList:

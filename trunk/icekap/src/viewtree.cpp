@@ -854,8 +854,10 @@ ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
 
     ViewTreeItem* item = static_cast<ViewTreeItem*>(firstChild());
 
+    // item is the prospective parent
     while (item)
     {
+        // If the view in question is a RawLog
         if (view->getType() == ChatWindow::RawLog
             && item->getViewType() == ChatWindow::IcecapStatus
             && item->getView()
@@ -864,7 +866,17 @@ ViewTreeItem* ViewTree::getParentItemForView(ChatWindow* view)
             return item;
             break;
         } else
+        // If the view in question is a MyPresence Status window
+        if (view->getType() == ChatWindow::Status
+            && item->getViewType() == ChatWindow::IcecapStatus
+            && item->getView()
+            && item->getView()->getServer() == server)
+        {
+            return item;
+            break;
+        } else
         if (hasMyPresence) {
+            // Attach channels to a MyPresence Status Window
             if (item->getViewType() == ChatWindow::Status
                 && item->getView()
                 && item->getView()->getMyPresence()
