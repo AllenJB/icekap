@@ -16,6 +16,7 @@
 #include <qobject.h>
 #include <qguardedptr.h>
 
+#include "kdebug.h"
 #include "konversationmainwindow.h"
 #include "common.h"
 #include "icecapserver.h"

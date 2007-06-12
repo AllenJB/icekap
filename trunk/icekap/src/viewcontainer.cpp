@@ -1150,7 +1150,7 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             {
                 tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
 
-                if (tmp_ChatWindow->getType() == ChatWindow::Status && tmp_ChatWindow->getServer() == view->getServer())
+                if (tmp_ChatWindow->getType() == ChatWindow::IcecapStatus && tmp_ChatWindow->getServer() == view->getServer())
                 {
                     placement = sindex + 1;
                     break;
@@ -1169,7 +1169,7 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             {
                 tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
 
-                if (tmp_ChatWindow->getType() == ChatWindow::Status && tmp_ChatWindow->getServer() == view->getServer())
+                if (tmp_ChatWindow->getType() == ChatWindow::Status && tmp_ChatWindow->getMyPresence() == view->getMyPresence())
                 {
                     for (int index = sindex + 1; index < m_tabWidget->count(); index++)
                     {
@@ -1195,49 +1195,25 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             else if (Preferences::closeButtons())
                 iconSet = images->getCloseIcon();
 
-/*
-            if (m_viewTree)
-            {
-                for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
-                {
-                    tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
-
-                    if (tmp_ChatWindow->getType() != ChatWindow::Channel
-                        && tmp_ChatWindow->getType() != ChatWindow::Status
-                        && tmp_ChatWindow->getType() != ChatWindow::RawLog
-                        && tmp_ChatWindow->getType() != ChatWindow::Query)
-                    {
-                        placement = sindex;
-                        break;
-                    }
-                }
-
-            }
-*/
-/*
             for (int sindex = 0; sindex < m_tabWidget->count(); sindex++)
             {
                 tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(sindex));
 
-                if (tmp_ChatWindow->getType() == ChatWindow::Status && tmp_ChatWindow->getServer() == view->getServer())
+                if (tmp_ChatWindow->getType() == ChatWindow::IcecapStatus && tmp_ChatWindow->getServer() == view->getServer())
                 {
-                    for (int index = sindex + 1; index < m_tabWidget->count(); index++)
-                    {
-                        tmp_ChatWindow = static_cast<ChatWindow *>(m_tabWidget->page(index));
-                        wtype = tmp_ChatWindow->getType();
-
-                        if (wtype != ChatWindow::Channel && wtype != ChatWindow::RawLog)
-                        {
-                            placement = index;
-                            break;
+                    if ((sindex + 1) <= m_tabWidget->count ()) {
+                        ChatWindow *tmp_NextChatWindow = static_cast<ChatWindow *>(m_tabWidget->page (sindex + 1));
+                        if (tmp_NextChatWindow->getType() == ChatWindow::RawLog) {
+                            placement = sindex + 2;
+                        } else {
+                            placement = sindex + 1;
                         }
+                    } else {
+                        placement = sindex + 1;
                     }
-
                     break;
                 }
             }
-*/
-            placement = 1;
             break;
 
         case ChatWindow::IcecapStatus:
@@ -1246,7 +1222,6 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             else if (Preferences::closeButtons())
                 iconSet = images->getCloseIcon();
 
-/*
             // Cycle over the tabs
             // For each tab:
             //      If the tab is not a channel, status, rawlog or query window
@@ -1267,7 +1242,6 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
                     }
                 }
             }
-*/
             placement = 1;
             break;
 
@@ -1294,6 +1268,8 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
                 iconSet = images->getCloseIcon();
             break;
     }
+
+    kdDebug() << i18n ("Tab type: %1 :: Placement: %2").arg(view->getType()).arg(placement) << endl;
 
     m_tabWidget->insertTab(view, iconSet, label, placement);
     m_tabWidget->show();
