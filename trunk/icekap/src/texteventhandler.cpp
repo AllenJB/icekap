@@ -70,26 +70,26 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
             "Network Del: Error: An unhandled error occurred.");
     }
 
-    else if (type == "presence_list_end") {
-        m_server->appendStatusMessage (i18n ("Presence List"), "End of presence list");
-    } else if (type == "presence_list") {
+    else if (type == "mypresence_list_end") {
+        m_server->appendStatusMessage (i18n ("MyPresence List"), "End of mypresence list");
+    } else if (type == "mypresence_list") {
         QString message = i18n ("%1 Network: %2", "%1 Network: %2").arg (parameter["mypresence"]).arg (parameter["network"]);
-        m_server->appendStatusMessage (i18n ("Presence List"), message);
-    } else if (type == "presence_list_error") {
-        m_server->appendStatusMessage (i18n ("Presence List"),
-            "Presence List Error: An unhandled error occurred.");
+        m_server->appendStatusMessage (i18n ("MyPresence List"), message);
+    } else if (type == "mypresence_list_error") {
+        m_server->appendStatusMessage (i18n ("MyPresence List"),
+            "MyPresence List Error: An unhandled error occurred.");
     }
 
-    else if (type == "presence_add") {
-        m_server->appendStatusMessage (i18n ("Presence"), "Presence added successfully.");
-    } else if (type == "presence_add_error") {
-        m_server->appendStatusMessage (i18n ("Presence"),
-            "Presence Add: Error: An unhandled error occurred.");
-    } else if (type == "presence_del") {
-        m_server->appendStatusMessage (i18n ("Presence"), "Presence deleted successfully.");
-    } else if (type == "presence_del_error") {
-        m_server->appendStatusMessage (i18n ("Presence"),
-            "Presence Del: Error: An unhandled error occurred.");
+    else if (type == "mypresence_add") {
+        m_server->appendStatusMessage (i18n ("MyPresence"), "MyPresence added successfully.");
+    } else if (type == "mypresence_add_error") {
+        m_server->appendStatusMessage (i18n ("MyPresence"),
+            "MyPresence Add: Error: An unhandled error occurred.");
+    } else if (type == "mypresence_del") {
+        m_server->appendStatusMessage (i18n ("MyPresence"), "MyPresence deleted successfully.");
+    } else if (type == "mypresence_del_error") {
+        m_server->appendStatusMessage (i18n ("MyPresence"),
+            "MyPresence Del: Error: An unhandled error occurred.");
     }
 
     else if (type == "channel_list_end") {
