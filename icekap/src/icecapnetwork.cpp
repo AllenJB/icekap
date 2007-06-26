@@ -27,21 +27,20 @@ namespace Icecap
         m_connected = newStatus;
     }
 
-    Gateway Network::gateway (const QString& hostname, int port)
+    Gateway* Network::gateway (const QString& hostname, int port)
     {
-        QValueList<Gateway>::const_iterator end = gatewayList.end();
-        for( QValueListConstIterator<Gateway> it( gatewayList.begin() ); it != end; ++it ) {
-            Gateway current = *it;
-            if ( (current.getHostname() == hostname) && (current.getPort() == port) ) {
+        QPtrListIterator<Gateway> it( gatewayList );
+        Gateway* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if ( (current->getHostname() == hostname) && (current->getPort() == port) ) {
                 return current;
             }
         }
-        // Return a "null" Presence
-        // TODO: Is there a better way?
-        return Gateway();
+        return 0;
     }
 
-    void Network::gatewayAdd (const Gateway& gateway)
+    void Network::gatewayAdd (const Gateway* gateway)
     {
         gatewayList.append (gateway);
     }
@@ -51,9 +50,37 @@ namespace Icecap
         gatewayList.remove (gateway (hostname, port));
     }
 
-    void Network::gatewayRemove (const Gateway& gateway)
+    void Network::gatewayRemove (const Gateway* gateway)
     {
         gatewayList.remove (gateway);
+    }
+
+    Presence* Network::presence (const QString& name)
+    {
+        QPtrListIterator<Presence> it( presenceList );
+        Presence* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if ( current->name() == name ) {
+                return current;
+            }
+        }
+        return 0;
+    }
+
+    void Network::presenceAdd (const Presence* presence)
+    {
+        presenceList.append (presence);
+    }
+
+    void Network::presenceRemove (const Presence* presence)
+    {
+        presenceList.remove (presence);
+    }
+
+    void Network::presenceRemove (const QString& name)
+    {
+        presenceList.remove (presence (name));
     }
 
 }

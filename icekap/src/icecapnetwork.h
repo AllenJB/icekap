@@ -10,9 +10,10 @@
 
 #include <qptrlist.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+// #include <qvaluelist.h>
 
 #include "icecapgateway.h"
+#include "icecappresence.h"
 
 namespace Icecap
 {
@@ -22,7 +23,6 @@ namespace Icecap
         public:
             Network (): m_protocol(0), m_name(0) {}
             Network (const QString& newProtocol, const QString& newName);
-//            ~Network ();
 
             QString protocol () const { return m_protocol; }
             QString name () const { return m_name; }
@@ -31,10 +31,15 @@ namespace Icecap
             void setName (const QString& newName);
             void setConnected (bool newStatus);
 
-            Gateway gateway (const QString& hostname, int port);
-            void gatewayAdd (const Gateway& gateway);
-            void gatewayRemove (const Gateway& gateway);
+            Gateway* gateway (const QString& hostname, int port);
+            void gatewayAdd (const Gateway* gateway);
+            void gatewayRemove (const Gateway* gateway);
             void gatewayRemove (const QString& hostname, int port);
+
+            Presence* presence (const QString& name);
+            void presenceAdd (const Presence* presence);
+            void presenceRemove (const Presence* presence);
+            void presenceRemove (const QString& name);
 
             bool operator== (Network* compareTo) { return (m_name == compareTo->name()); }
             bool isNull () { return m_name.isNull(); }
@@ -43,7 +48,8 @@ namespace Icecap
             QString m_protocol;
             QString m_name;
             bool m_connected;
-            QValueList<Gateway> gatewayList;
+            QPtrList<Gateway> gatewayList;
+            QPtrList<Presence> presenceList;
 
     };
 

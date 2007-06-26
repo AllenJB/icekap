@@ -354,3 +354,10 @@ chjoin;+;id=637;time=1179050271.9;
 	*;gateway_motd;id=338;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=- information.  Thank you for using freenode!
 	*;gateway_motd;id=340;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap;data=-
 	*;gateway_motd_end;id=342;time=1176048852.9;network=freenode;mypresence=AllenJB|icecap
+
+--- Channel Names
+
+[21:01] << cn;channel names;network=freenode;mypresence=ajbi;channel=#allenjb
+[21:01] >> cn;>;id=17260;time=1181851293.4;presence=ajbi;address=n=ajbi@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com
+[21:01] >> cn;>;id=17261;time=1181851293.4;presence=AllenJB;address=n=ajb42@pdpc/supporter/sustaining/Athon-Solo;mode=op;irc_mode=@
+[21:01] >> cn;+;id=17262;time=1181851293.4;

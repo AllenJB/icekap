@@ -372,8 +372,8 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
 
     inputFilter.setAutomaticRequest ("netlist", true);
     queue ("netlist;network list");
-    inputFilter.setAutomaticRequest ("prslist", true);
-    queue ("prslist;presence list");
+    inputFilter.setAutomaticRequest ("myplist", true);
+    queue ("myplist;presence list");
     inputFilter.setAutomaticRequest ("chlist", true);
     queue ("chlist;channel list");
 }
@@ -861,7 +861,7 @@ void IcecapServer::networkRemove (const QString& name)
 Icecap::MyPresence* IcecapServer::mypresence (const QString& name, Icecap::Network* network)
 {
     QPtrListIterator<Icecap::MyPresence> it( mypresenceList );
-    Icecap::MyPresence* current = 0;
+    Icecap::MyPresence* current;
     while ( (current = it.current()) != 0 ) {
         ++it;
         if ((current->name() == name) && (current->network() == network)) {
@@ -869,7 +869,7 @@ Icecap::MyPresence* IcecapServer::mypresence (const QString& name, Icecap::Netwo
         }
     }
 
-    return current;
+    return 0;
 }
 
 Icecap::MyPresence* IcecapServer::mypresence (const QString& name, const QString& networkName)
@@ -941,6 +941,71 @@ Icecap::IcecapOutputFilter* IcecapServer::getOutputFilter ()
 {
     Icecap::IcecapOutputFilter* retVal = outputFilter;
     return retVal;
+}
+
+void IcecapServer::queueCommand (Icecap::Cmd command)
+{
+    uint last = commandsPending.end().key();
+    uint next = last++;
+    QString parameters;
+    if (command.parameters.length() < 1) {
+        parameters = command.parameters;
+    } else {
+        QMap<QString,QString>::const_iterator end = command.parameterList.end();
+        for ( QMap<QString,QString>::const_iterator it = command.parameterList.begin(); it != end; ++it ) {
+            parameters += ";"+ it.key() +"="+ it.data();
+        }
+    }
+    commandsPending.insert (next, command);
+//    QString nextStr = new QString (next);
+    QString cmdStr = QString ("%1."+command.tag +";"+ command.command +";"+ parameters).arg (next);
+    queue (cmdStr);
+}
+
+void IcecapServer::queueCommand (QString& command)
+{
+    Icecap::Cmd cmd;
+    QStringList cmdPart = QStringList::split(";", command);
+    cmd.tag = cmdPart[0];
+    cmd.command = cmdPart[1];
+    cmdPart.pop_front ();
+    cmdPart.pop_front ();
+    cmd.parameters = cmdPart.join (";");
+
+    queueCommand (cmd);
+}
+
+void IcecapServer::emitEvent (Icecap::Cmd result)
+{
+    // Grab the original command and attach any parameters
+    QStringList tagPart = QStringList::split (".", result.tag);
+    uint id = tagPart[0].toUInt();
+    Icecap::Cmd sendCmd = commandsPending.find (id).data();
+    result.tag = tagPart[1];
+    result.sentCommand = sendCmd.command;
+    result.sentParameterList = sendCmd.parameterList;
+    // TODO: Get rid of sentParameters
+    result.sentParameters = sendCmd.parameters;
+
+    // Set the network, mypresence and channel parameters, if set in the sent command
+    if (result.sentParameterList.contains ("network")) {
+        result.network = result.sentParameterList.find ("network").data();
+    }
+
+    if (result.sentParameterList.contains ("mypresence")) {
+        result.mypresence = result.sentParameterList.find ("mypresence").data();
+    }
+
+    if (result.sentParameterList.contains ("channel")) {
+        result.channel = result.sentParameterList.find ("channel").data();
+    }
+
+    // Remove commands once a terminating response has been received
+    if ((result.status == "+") || (result.status == "-")) {
+        commandsPending.remove (id);
+    }
+
+    emit event (result);
 }
 
 #include "icecapserver.moc"

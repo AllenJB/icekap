@@ -7,8 +7,8 @@ bin_SCRIPTS = icekapircprotocolhandler
 
 icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp \
 	konvisettingsdialog.cpp konversationmainwindow.cpp valuelistviewitem.cpp \
-	icecapoutputfilter.cpp \
-	texteventhandler.cpp icecappresence.cpp icecapchannel.cpp icecapgateway.cpp icecapnetwork.cpp icecapmypresence.cpp \
+	icecapmisc.h icecapoutputfilter.cpp \
+	texteventhandler.cpp icecappresence.cpp icecapchannelpresence.cpp icecapchannel.cpp icecapgateway.cpp icecapnetwork.cpp icecapmypresence.cpp \
 	urlcatcher.cpp scriptlauncher.cpp rawlog.cpp channellistpanel.cpp konsolepanel.cpp \
 	identity.cpp icecapstatuspanel.cpp statuspanel.cpp topiccombobox.cpp \
 	nicklistviewitem.cpp highlight.cpp \
@@ -23,7 +23,7 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 		logfilereader.cpp multilineedit.cpp nickinfo.cpp \
 		konversationsound.cpp \
 	quickconnectdialog.cpp serverlistdialog.cpp \
-	icecapquickconnectdialog.cpp icecapquickconnectdialog.h \
+	icecapquickconnectdialog.cpp \
 		channelnick.cpp insertchardialog.cpp \
 		irccharsets.cpp editnotifydialog.cpp common.cpp sslsocket.cpp \
 		servergroupsettings.cpp icecapserversettings.cpp serversettings.cpp servergroupdialog.cpp 	ssllabel.cpp serverdialog.cpp \
