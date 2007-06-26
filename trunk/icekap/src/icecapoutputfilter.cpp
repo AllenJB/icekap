@@ -432,10 +432,10 @@ namespace Icecap
         } else {
             out.append (" netlist: false");
         }
-        if (m_server->getInputFilter()->getAutomaticRequest ("prslist") > 0) {
-            out.append (" prslist: true" );
+        if (m_server->getInputFilter()->getAutomaticRequest ("myplist") > 0) {
+            out.append (" myplist: true" );
         } else {
-            out.append (" prslist: false");
+            out.append (" myplist: false");
         }
         if (m_server->getInputFilter()->getAutomaticRequest ("chlist") > 0) {
             out.append (" chlist: true" );
@@ -466,7 +466,7 @@ namespace Icecap
 
         if (parameter == "list")
         {
-            result.toServer = "prslist;presence list";
+            result.toServer = "myplist;presence list";
             result.type = Command;
         }
         else if (parameter == "display")
@@ -482,19 +482,19 @@ namespace Icecap
             result.type = Command;
             if (parameter.startsWith ("add "))
             {
-                result.toServer = "prsadd;presence add;mypresence="+ myp +";network="+ network;
+                result.toServer = "mypadd;presence add;mypresence="+ myp +";network="+ network;
             }
             else if (parameter.startsWith ("del "))
             {
-                result.toServer = "prsdel;presence remove;mypresence="+ myp +";network="+ network;
+                result.toServer = "mypdel;presence remove;mypresence="+ myp +";network="+ network;
             }
             else if (parameter.startsWith ("connect "))
             {
-                result.toServer = "prscon;presence connect;mypresence="+ myp +";network="+ network;
+                result.toServer = "mypcon;presence connect;mypresence="+ myp +";network="+ network;
             }
             else if (parameter.startsWith ("disconnect "))
             {
-                result.toServer = "prsdis;presence disconnect;mypresence="+ myp +";network="+ network;
+                result.toServer = "mypdis;presence disconnect;mypresence="+ myp +";network="+ network;
             }
             else
             {

@@ -10,37 +10,44 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
+#include <qobject.h>
 
-#include <ksharedptr.h>
+// #include <ksharedptr.h>
 
+// TODO: Away status (message?)
+// TODO: idle time
+// TODO: How do we know when it's safe to delere a Presence?
 namespace Icecap
 {
 
-    class Presence : public KShared
+    class Presence : public QObject
     {
+        Q_OBJECT
+
         public:
-            Presence (): name(0) {}
-            Presence (const QString& newName);
-//            ~Presence ();
+            Presence (): m_name(0) {}
+            Presence (const QString& name);
+            Presence (const QString& name, const QString& address);
 
-            QString getName () { return name; }
-            QString getAddress () { return address; }
-            QString getModes () { return modes; }
-            bool getConnected () { return connected; }
+            QString name () { return m_name; }
+            QString address () { return m_address; }
+            bool connected () { return m_connected; }
 
-            void setName (const QString& newName);
-            void setAddress (const QString& newAddress);
-            void setModes (const QString& newModes);
-            void setConnected (bool newStatus);
+            void setName (const QString& name);
+            void setAddress (const QString& address);
+            void setConnected (bool status);
 
             bool operator== (Presence compareTo);
             bool isNull ();
 
+        signals:
+            void presenceChanged (const Presence* presence, QString field);
+
         private:
-            QString name;
-            QString address;
-            QString modes;
-            bool connected;
+            QString m_name;
+            QString m_address;
+            QString m_modes;
+            bool m_connected;
     };
 
 }

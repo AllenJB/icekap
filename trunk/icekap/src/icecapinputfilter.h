@@ -19,7 +19,6 @@
 
 #include "ignore.h"
 #include "servergroupsettings.h"
-// #include "texteventhandler.h"
 
 /*
   @author Dario Abatianni
@@ -63,13 +62,15 @@ class IcecapInputFilter : public QObject
         void parseNetworkList (const QString& status, QMap<QString, QString>& parameterMap);
         void parseNetworkDel  (const QString& status, QMap<QString, QString>& parameterMap);
 
-        void parsePresenceAdd  (const QString& status, QMap<QString, QString>& parameterMap);
-        void parsePresenceList (const QString& status, QMap<QString, QString>& parameterMap);
-        void parsePresenceDel  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseMyPresenceAdd  (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseMyPresenceList (const QString& status, QMap<QString, QString>& parameterMap);
+        void parseMyPresenceDel  (const QString& status, QMap<QString, QString>& parameterMap);
 
         void parseChannelAdd   (const QString& status, QMap<QString, QString>& parameterMap);
         void parseChannelList  (const QString& status, QMap<QString, QString>& parameterMap);
         void parseChannelDel   (const QString& status, QMap<QString, QString>& parameterMap);
+
+        void parsePresenceList (const QString& status, QMap<QString, QString>& parameterMap);
 
         void parseGatewayAdd   (const QString& status, QMap<QString, QString>& parameterMap);
         void parseGatewayList  (const QString& status, QMap<QString, QString>& parameterMap);
@@ -93,7 +94,7 @@ class IcecapInputFilter : public QObject
         bool m_connecting;
 
         bool netlistInProgress;
-        bool prslistInProgress;
+        bool myplistInProgress;
         bool chlistInProgress;
 
         TextEventHandler* textEventHnd;

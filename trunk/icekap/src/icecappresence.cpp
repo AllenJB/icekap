@@ -10,43 +10,50 @@
 namespace Icecap
 {
 
-    Presence::Presence (const QString& newName)
+    Presence::Presence (const QString& name)
     {
-        name = newName;
-        connected = false;
+        m_name = name;
+        m_connected = false;
     }
 
-    void Presence::setName (const QString& newName)
+    Presence::Presence (const QString& name, const QString& address)
     {
-        name = newName;
+        m_name = name;
+        m_address = address;
+        m_connected = false;
     }
 
-    void Presence::setAddress (const QString& newAddress)
+    void Presence::setName (const QString& name)
     {
-        address = newAddress;
+        m_name = name;
+        emit presenceChanged (this, "name");
     }
 
-    void Presence::setModes (const QString& newModes)
+    void Presence::setAddress (const QString& address)
     {
-        modes = newModes;
+        m_address = address;
+        emit presenceChanged (this, "address");
     }
 
-    void Presence::setConnected (bool newStatus)
+    void Presence::setConnected (bool status)
     {
-        connected = newStatus;
+        m_connected = status;
+        emit presenceChanged (this, "connected");
     }
 
     bool Presence::operator== (Presence compareTo)
     {
-        return (compareTo.getName() == name);
+        return (compareTo.name() == m_name);
     }
 
     bool Presence::isNull ()
     {
-        return (name.isNull());
+        return (m_name.isNull());
     }
 
 }
+
+#include "icecappresence.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
 // vim: set et sw=4 ts=4 cino=l1,cs,U1:

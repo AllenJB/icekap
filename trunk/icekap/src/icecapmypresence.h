@@ -16,9 +16,6 @@
 
 #include "icecapchannel.h"
 #include "icecapnetwork.h"
-// #include "statuspanel.h"
-// #include "icecapoutputfilter.h"
-// #include "icecapserver.h"
 
 class StatusPanel;
 class ViewContainer;
@@ -26,7 +23,6 @@ class IcecapServer;
 
 namespace Icecap
 {
-//    class OutputFilter;
     typedef enum
     {
         SSDisconnected,

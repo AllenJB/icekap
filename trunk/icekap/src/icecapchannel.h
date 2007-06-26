@@ -8,13 +8,15 @@
 #ifndef ICECAPCHANNEL_H
 #define ICECAPCHANNEL_H
 
-// #include <qptrlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qvaluelist.h>
 #include <qmap.h>
+#include <qobject.h>
 
-#include "icecappresence.h"
+#include "icecapchannelpresence.h"
+#include "icecapmisc.h"
 
 class ChannelWindow;
 class ViewContainer;
@@ -23,8 +25,10 @@ namespace Icecap
 {
     class MyPresence;
 
-    class Channel
+    class Channel : public QObject
     {
+        Q_OBJECT
+
         public:
             Channel (): m_name(0) {}
             Channel (MyPresence* p_mypresence, const QString& name);
@@ -50,12 +54,12 @@ namespace Icecap
 //            void setTopic (const QString& newTopic);
             void setConnected (bool newStatus);
 
-            void presenceAdd (const Presence& user);
-            void presenceRemove (const Presence& user);
+            void presenceAdd (const ChannelPresence* user);
+            void presenceRemove (const ChannelPresence* user);
             void presenceRemoveByName (const QString& userName);
             void presenceRemoveByAddress (const QString& userAddress);
-            Presence presenceByName (const QString& userName);
-            Presence presenceByAddress (const QString& userAddress);
+            ChannelPresence* presence (const QString& userName);
+            ChannelPresence* presenceByAddress (const QString& userAddress);
 
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* getViewContainer() const;
@@ -68,6 +72,9 @@ namespace Icecap
             bool operator== (Channel compareTo);
             bool isNull ();
 
+        private slots:
+            void eventFilter (Cmd result);
+
         private:
             void init ();
 
@@ -77,8 +84,7 @@ namespace Icecap
             QDateTime topicTimestamp;
             QString modes;
             bool connected;
-            // TODO: This probably needs to be changed to a QPtrList
-            QValueList<Presence> presenceList;
+            QPtrList<ChannelPresence> presenceList;
 
             MyPresence* m_mypresence;
             ViewContainer* m_viewContainerPtr;

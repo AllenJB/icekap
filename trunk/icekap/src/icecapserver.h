@@ -29,6 +29,7 @@
 #include <kbufferedsocket.h>
 #include <kstreamsocket.h>
 
+#include "icecapmisc.h"
 #include "icecapinputfilter.h"
 #include "icecapoutputfilter.h"
 #include "sslsocket.h"
@@ -135,6 +136,13 @@ class IcecapServer : public QObject
 
         TextEventHandler* getTextEventHandler ();
 
+        /// Called by InputFilter. Emit an event down the events channel (after associating any relevent information from the original command sent to the server)
+        void emitEvent (Icecap::Cmd command);
+
+        /// Queue a command to be sent to the server (and record the parameters in case we need them later)
+        void queueCommand (Icecap::Cmd command);
+        void queueCommand (QString& command);
+
     signals:
         /// will be connected to KonversationApplication::removeServer()
         void deleted(IcecapServer* myself);
@@ -149,6 +157,9 @@ class IcecapServer : public QObject
         void connectionChangedState(IcecapServer* server, IcecapServer::State state);
 
         void showView(ChatWindow* view);
+
+        /// Used for sending out results to commands - associates parameter values sent to the server with the result
+        void event (Icecap::Cmd result);
 
     public slots:
         void lookupFinished();
@@ -251,6 +262,9 @@ class IcecapServer : public QObject
         QPtrList<Icecap::MyPresence> mypresenceList;
 
         TextEventHandler* textEventHnd;
+
+        /// Used to maintain information on commands sent to the server so we can use parameter values when the response comes back.
+        QMap<uint, Icecap::Cmd> commandsPending;
 };
 #endif
 
