@@ -104,6 +104,7 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
     }
 }
 
+// TODO: Re-implement all this stuff using the new signal based system
 void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStringList &parameterList)
 {
     // I assume this ensures there's a valid server to communicate with
@@ -178,16 +179,22 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     {
         // Do nothing
     }
-    else if (eventName == "channel_changed")
-    {
-        processTextEvent = false;
-        if (parameterMap.contains ("topic")) {
-            Icecap::Channel* channel = server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"]);
-            channel->setTopic (parameterMap["topic"], parameterMap["topic_set_by"], parameterMap["timestamp"]);
-            textEventHnd->processEvent ("topic_changed", parameterMap);
-        }
-    }
+/*
     else if (eventName != "msg") {
+        processTextEvent = false;
+    }
+*/
+    else {
+        // If there's no specific handler, we send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
+        // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
+        Icecap::Cmd result;
+        result.tag = "*";
+        result.command = eventName;
+        result.parameterList = parameterMap;
+        result.network = parameterMap["network"];
+        result.mypresence = parameterMap["mypresence"];
+        result.channel = parameterMap["channel"];
+        server->emitEvent (result);
         processTextEvent = false;
     }
 
@@ -218,291 +225,12 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         parameterMap.insert (key, value, TRUE);
     }
 
-    if (tag == "netlist") {
-        parseNetworkList (status, parameterMap);
-    }
-    else if (tag == "netadd")
-    {
-        parseNetworkAdd (status, parameterMap);
-    }
-    else if (tag == "netdel")
-    {
-        parseNetworkDel (status, parameterMap);
-    }
-    else
-
-    if (tag == "myplist")
-    {
-        parseMyPresenceList (status, parameterMap);
-    }
-    else if (tag == "mypadd")
-    {
-        parseMyPresenceAdd (status, parameterMap);
-    }
-    else if (tag == "mypdel")
-    {
-        parseMyPresenceDel (status, parameterMap);
-    } else
-
-    if (tag == "chlist")
-    {
-        parseChannelList (status, parameterMap);
-    }
-    else if (tag == "chadd")
-    {
-        parseChannelAdd (status, parameterMap);
-    }
-    else if (tag == "chdel")
-    {
-        parseChannelDel (status, parameterMap);
-    }
-
-    if (tag == "gwlist")
-    {
-        parseGatewayList (status, parameterMap);
-    }
-    else if (tag == "gwadd")
-    {
-        parseGatewayAdd (status, parameterMap);
-    }
-    else if (tag == "gwdel")
-    {
-        parseGatewayDel (status, parameterMap);
-    }
-/*
-    if (tag == "chplist")
-    {
-//        parsePresenceList (status, parameterMap);
-    }
-*/
-    else {
-        // If there's no specific handler, we send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
-        // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
-        Icecap::Cmd result;
-        result.tag = tag;
-        result.status = status;
-        result.parameterList = parameterMap;
-        server->emitEvent (result);
-    }
-}
-
-void IcecapInputFilter::parseNetworkList (const QString &status, QMap<QString, QString> &parameterMap)
-{
-    if (status == "+") {
-        netlistInProgress = false;
-        if (getAutomaticRequest ("netlist") > 0) {
-            setAutomaticRequest ("netlist", false);
-        }
-//        else {
-            textEventHnd->processEvent ("network_list_end", parameterMap);
-//        }
-    } else if (status == ">") {
-        if (getAutomaticRequest ("netlist") < 1) {
-            textEventHnd->processEvent( "network_list", parameterMap );
-        } else {
-            if (!netlistInProgress) {
-                server->networkClear ();
-                netlistInProgress = true;
-            }
-
-            textEventHnd->processEvent("network_list", parameterMap);
-            server->networkAdd(parameterMap["protocol"], parameterMap["network"]);
-        }
-    } else {
-        // TODO: Are there any known circumstances that would cause this?
-        textEventHnd->processEvent("network_list_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseNetworkAdd (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("network_add", parameterMap);
-    } else {
-        textEventHnd->processEvent("network_add_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseNetworkDel (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent ("network_del", parameterMap);
-    } else {
-        textEventHnd->processEvent("network_del_error", parameterMap);
-    }
-}
-
-
-void IcecapInputFilter::parseMyPresenceList (const QString &status, QMap<QString, QString> &parameterMap)
-{
-    if (status == "+") {
-        myplistInProgress = false;
-        if (getAutomaticRequest ("myplist") > 0) {
-            setAutomaticRequest ("myplist", false);
-        }
-//        else {
-            textEventHnd->processEvent("mypresence_list_end", parameterMap);
-//        }
-    } else if (status == ">") {
-        if (getAutomaticRequest ("myplist") < 1) {
-            textEventHnd->processEvent( "mypresence_list", parameterMap);
-        } else {
-            if (!myplistInProgress) {
-                server->mypresenceClear ();
-                myplistInProgress = true;
-            }
-            // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
-            // It's simpler than trying to handle all the possibilities here I think
-            textEventHnd->processEvent("mypresence_list", parameterMap);
-
-            if (server->mypresence (parameterMap["mypresence"], parameterMap["network"]) != 0) {
-                server->mypresence (parameterMap["mypresence"], parameterMap["network"])->update (parameterMap);
-            } else {
-                server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
-            }
-        }
-    } else {
-        // TODO: Are there any known circumstances that would cause this?
-        textEventHnd->processEvent ("mypresence_list_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseMyPresenceAdd (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("mypresence_add", parameterMap);
-    } else {
-        textEventHnd->processEvent("mypresence_add_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseMyPresenceDel (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("mypresence_del", parameterMap);
-    } else {
-        textEventHnd->processEvent("mypresence_del_error", parameterMap);
-    }
-}
-
-
-void IcecapInputFilter::parseChannelList (const QString &status, QMap<QString, QString> &parameterMap)
-{
-    if (status == "+") {
-        chlistInProgress = false;
-        if (getAutomaticRequest ("chlist") > 0) {
-            setAutomaticRequest ("chlist", false);
-        }
-//        else {
-            textEventHnd->processEvent("channel_list_end", parameterMap);
-//        }
-    } else if (status == ">") {
-        if (getAutomaticRequest ("chlist") < 1) {
-            textEventHnd->processEvent("channel_list", parameterMap);
-        } else {
-            if (!chlistInProgress) {
-                server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelClear ();
-                chlistInProgress = true;
-            }
-            // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
-            // It's simpler than trying to handle all the possibilities here I think
-            textEventHnd->processEvent("channel_list", parameterMap);
-
-            if (server->mypresence (parameterMap["mypresence"], parameterMap["network"]) == 0) {
-                server->mypresenceAdd (parameterMap["mypresence"], parameterMap["network"]);
-            }
-
-            server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd(parameterMap["channel"], parameterMap);
-        }
-    } else {
-        // TODO: Are there any known circumstances that would cause this?
-        textEventHnd->processEvent("channel_list_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseChannelAdd (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("channel_add", parameterMap);
-    } else {
-        textEventHnd->processEvent("channel_add_error", parameterMap);
-    }
-}
-
-// TODO: Does this even exist?
-void IcecapInputFilter::parseChannelDel (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("channel_del", parameterMap);
-    } else {
-        textEventHnd->processEvent("channel_del_error", parameterMap);
-    }
-}
-
-/*
-void IcecapInputFilter::parsePresenceList (const QString &status, QMap<QString, QString> &parameterMap)
-{
-    if (status == "+") {
-        chplistInProgress = false;
-        if (getAutomaticRequest ("chplist") > 0) {
-            setAutomaticRequest ("chplist", false);
-        }
-//        else {
-            textEventHnd->processEvent("presence_list_end", parameterMap);
-//        }
-    } else if (status == ">") {
-        if (getAutomaticRequest ("chplist") < 1) {
-            textEventHnd->processEvent( "presence_list", parameterMap);
-        } else {
-            if (!myplistInProgress) {
-                server->mypresenceClear ();
-                myplistInProgress = true;
-            }
-            // We pass parameter map to get settings like autoconnect, connected and presence (current nick on server)
-            // It's simpler than trying to handle all the possibilities here I think
-            textEventHnd->processEvent("presence_list", parameterMap);
-
-            if (server->mypresence (parameterMap["mypresence"], parameterMap["network"]) != 0) {
-                server->mypresence (parameterMap["mypresence"], parameterMap["network"])->update (parameterMap);
-            } else {
-                server->mypresenceAdd(parameterMap["mypresence"], parameterMap["network"], parameterMap);
-            }
-        }
-    } else {
-        // TODO: Are there any known circumstances that would cause this?
-        textEventHnd->processEvent ("presence_list_error", parameterMap);
-    }
-}
-*/
-
-void IcecapInputFilter::parseGatewayList (const QString &status, QMap<QString, QString> &parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("gateway_list_end", parameterMap);
-    } else if (status == ">") {
-        textEventHnd->processEvent("gateway_list", parameterMap);
-    } else {
-        // TODO: Are there any known circumstances that would cause this?
-        textEventHnd->processEvent("gateway_list_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseGatewayAdd (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("gateway_add", parameterMap);
-    } else {
-        textEventHnd->processEvent("gateway_add_error", parameterMap);
-    }
-}
-
-void IcecapInputFilter::parseGatewayDel (const QString& status, QMap<QString, QString>& parameterMap)
-{
-    if (status == "+") {
-        textEventHnd->processEvent("gateway_del", parameterMap);
-    } else {
-        textEventHnd->processEvent("gateway_del_error", parameterMap);
-    }
+    // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
+    Icecap::Cmd result;
+    result.tag = tag;
+    result.status = status;
+    result.parameterList = parameterMap;
+    server->emitEvent (result);
 }
 
 

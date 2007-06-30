@@ -35,7 +35,7 @@ namespace Icecap
             Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap);
 //            ~Channel ();
 
-            QString name () { return m_name; }
+            QString name () const { return m_name; }
             QString getTopic () { return topic; }
             QString getTopicSetBy () { return topicSetBy; }
             QDateTime getTopicTimestamp () { return topicTimestamp; }

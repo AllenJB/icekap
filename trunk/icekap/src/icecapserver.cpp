@@ -50,6 +50,10 @@
 // TODO: Implement support for icecap authorisation (when it supports authorisation itself)
 // TODO: Implement support for SSL connections
 
+// TODO: (Re-)Implement adding and removing networks, gateways, presences and channels using the new event system
+// TODO: (Re-)Implement gateway lists using the new event system
+// TODO: (Re-)Implement ability to obtain a list of all known networks, gateways, presences and channels
+
 IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
     setName (QString ("server"+name).ascii());
@@ -157,6 +161,9 @@ void IcecapServer::connectSignals()
 
     // Status View
     connect(this, SIGNAL(serverOnline(bool)), statusView, SLOT(serverOnline(bool)));
+
+    // Event stream
+    connect (this, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
 
 }
 
@@ -371,12 +378,9 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
         kdDebug() << "alreadyConnected == true! How did that happen?" << endl;
     }
 
-    inputFilter.setAutomaticRequest ("netlist", true);
-    queue ("netlist;network list");
-    inputFilter.setAutomaticRequest ("myplist", true);
-    queue ("myplist;presence list");
-    inputFilter.setAutomaticRequest ("chlist", true);
-    queue ("chlist;channel list");
+    queueCommand ("netlist", "network list");
+    queueCommand ("myplist", "presence list");
+    queueCommand ("chlist",  "channel list");
 }
 
 QCString IcecapServer::getKeyForRecipient(const QString& recipient) const
@@ -805,14 +809,6 @@ void IcecapServer::disconnect()
     }
 }
 
-/*
-void IcecapServer::connectToNewServer(const QString& server, const QString& port, const QString& password)
-{
-    KonversationApplication *konvApp = static_cast<KonversationApplication*>(KApplication::kApplication());
-    konvApp->quickConnectToServer(server, port,"", "", password);
-}
-*/
-
 void IcecapServer::networkListDisplay ()
 {
     appendMessageToFrontmost ("Network", "Network List (Local Copy):");
@@ -846,6 +842,9 @@ void IcecapServer::networkAdd (Icecap::Network* network)
 
 void IcecapServer::networkAdd (const QString& protocol, const QString& name)
 {
+    if (network (name) != 0) {
+        return;
+    }
     networkList.append (new Icecap::Network (protocol, name));
 }
 
@@ -933,24 +932,9 @@ void IcecapServer::presenceListDisplay ()
     appendMessageToFrontmost("Presence", "End of Presence List (Local Copy)");
 }
 
-TextEventHandler* IcecapServer::getTextEventHandler ()
-{
-    return textEventHnd;
-}
-
-Icecap::IcecapOutputFilter* IcecapServer::getOutputFilter ()
-{
-    Icecap::IcecapOutputFilter* retVal = outputFilter;
-    return retVal;
-}
-
+// TODO: Replace parameters with parameterList
 void IcecapServer::queueCommand (Icecap::Cmd command)
 {
-    uint last = 0;
-    if (commandsPending.size() > 0) {
-        last = commandsPending.end().key();
-    }
-    uint next = last++;
     QString parameters;
     if (command.parameters.length() > 0) {
         parameters = command.parameters;
@@ -960,13 +944,15 @@ void IcecapServer::queueCommand (Icecap::Cmd command)
             parameters += ";"+ it.key() +"="+ it.data();
         }
     }
+
+    uint next = nextCommandId;
+    nextCommandId++;
     commandsPending.insert (next, command);
-//    QString nextStr = new QString (next);
-    QString cmdStr = QString ("%1."+command.tag +";"+ command.command +";"+ parameters).arg (next);
-    queue (cmdStr);
+    queue (QString ("%1."+command.tag +";"+ command.command +";"+ parameters).arg (next));
 }
 
-void IcecapServer::queueCommand (QString& command)
+// TODO: Replace parameters with parameterList
+void IcecapServer::queueCommand (QString command)
 {
     Icecap::Cmd cmd;
     QStringList cmdPart = QStringList::split(";", command);
@@ -979,8 +965,31 @@ void IcecapServer::queueCommand (QString& command)
     queueCommand (cmd);
 }
 
+void IcecapServer::queueCommand (QString tag, QString command) {
+    Icecap::Cmd cmd;
+    cmd.tag = tag;
+    cmd.command = command;
+    queueCommand (cmd);
+}
+
+void IcecapServer::queueCommand (QString tag, QString command, QMap<QString, QString> parameterMap) {
+    Icecap::Cmd cmd;
+    cmd.tag = tag;
+    cmd.command = command;
+    cmd.parameterList = parameterMap;
+    queueCommand (cmd);
+}
+
+// TODO: Handling for error events
 void IcecapServer::emitEvent (Icecap::Cmd result)
 {
+    // Events don't have a send command, so skip all the processing
+    if (result.tag == "*") {
+        appendStatusMessage ("Debug", QString ("event emitted :: %1 :: %2 :: m: %3 :: n: %4 :: c: %5 :: p: %6").arg (result.tag).arg (result.command).arg (result.mypresence).arg (result.network).arg (result.channel).arg (paramsToText (result.parameterList)));
+        emit event (result);
+        return;
+    }
+
     // If the command wasn't on the event system, exit now
     if (! result.tag.contains (".")) return;
 
@@ -992,14 +1001,16 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
     }
 
     // Skip the last+1 response for lists
-    // TODO: This is a bad way of handling this, since there may be some commands which are expected to return no parameters
-    // We always get id and time parameters, so discount 2 items on parameterList (parameters should never be used anyway)
+    // TODO: Improve this, since there may be some commands which are expected to return no parameters
+    // We always get id and time parameters, so discount 2 on parameterList (parameters should never be used anyway)
+/*
     if ((result.parameters.length() < 1) && (result.parameterList.size() < 3)) {
         if (result.status == "+") {
             commandsPending.remove (id);
         }
         return;
     }
+*/
 
     Icecap::Cmd sendCmd = commandsPending.find (id).data();
     result.sentCommand = sendCmd.command;
@@ -1027,7 +1038,47 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
 
     result.tag = tagPart[1];
     emit event (result);
-    appendStatusMessage ("DEBUG", QString ("Emitted event: %1 --").arg (result.tag));
+}
+
+// TODO: Implement duplicate checking
+void IcecapServer::eventFilter (Icecap::Cmd event) {
+    if (event.sentCommand == "network list") {
+        if (event.status == ">") {
+            networkAdd (event.parameterList["protocol"], event.parameterList["network"]);
+        }
+    }
+
+    // MyPresence lists are handled here instead of Network because you can't list only presences on a given Network
+    else if (event.sentCommand == "presence list") {
+        if (event.status == ">") {
+            if (mypresence (event.parameterList["mypresence"], event.parameterList["network"]) != 0) {
+                mypresence (event.parameterList["mypresence"], event.parameterList["network"])->update (event.parameterList);
+            } else {
+                mypresenceAdd (event.parameterList["mypresence"], event.parameterList["network"], event.parameterList);
+            }
+        }
+    }
+
+    // Channel lists are handled here instead of MyPresence because you can't list only channels on a given MyPresence
+    else if (event.sentCommand == "channel list") {
+        if (event.status == ">") {
+            if (mypresence (event.parameterList["mypresence"], event.parameterList["network"]) == 0) {
+                mypresenceAdd (event.parameterList["mypresence"], event.parameterList["network"]);
+            }
+
+            mypresence (event.parameterList["mypresence"], event.parameterList["network"])->channelAdd (event.parameterList["channel"], event.parameterList);
+        }
+    }
+}
+
+QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
+{
+    QString parameters;
+    QMap<QString,QString>::const_iterator end = parameterList.end();
+    for ( QMap<QString,QString>::const_iterator it = parameterList.begin(); it != end; ++it ) {
+        parameters += ";"+ it.key() +"="+ it.data();
+    }
+    return parameters;
 }
 
 #include "icecapserver.moc"

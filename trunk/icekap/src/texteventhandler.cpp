@@ -185,11 +185,6 @@ void TextEventHandler::processEvent (const QString type, const QMap<QString, QSt
         }
     }
 
-    else if (type == "topic_changed") {
-        Icecap::Channel* channel = m_server->mypresence(parameter["mypresence"], parameter["network"])->channel (parameter["channel"]);
-        channel->appendCommandMessage(i18n("Topic"), i18n("%1 sets the channel topic to \"%2\".").arg(parameter["topic_set_by"]).arg(parameter["topic"]));
-    }
-
     else if (type == "msg") {
         QString escapedMsg = parameter["msg"];
         escapedMsg.replace ("\\.", ";");

@@ -89,7 +89,7 @@ class IcecapServer : public QObject
         bool connected() const  { return alreadyConnected; }
 
         IcecapInputFilter* getInputFilter() { return &inputFilter; }
-        Icecap::IcecapOutputFilter* getOutputFilter();
+        Icecap::IcecapOutputFilter* getOutputFilter () { return outputFilter; }
 
         void appendStatusMessage(const QString& type,const QString& message);
         void appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL = true);
@@ -108,6 +108,8 @@ class IcecapServer : public QObject
         void setKeyForRecipient(const QString& recipient, const QCString& key);
 
         ChannelListPanel* addChannelListPanel();
+
+        // TODO: Do we really need all these different methods?
 
         void networkClear () { networkList.clear (); }
         void networkAdd (Icecap::Network* network);
@@ -134,14 +136,18 @@ class IcecapServer : public QObject
         void requestMypresenceList ();
         void requestChannelList ();
 
-        TextEventHandler* getTextEventHandler ();
+        TextEventHandler* getTextEventHandler () { return textEventHnd; }
 
         /// Called by InputFilter. Emit an event down the events channel (after associating any relevent information from the original command sent to the server)
         void emitEvent (Icecap::Cmd command);
 
         /// Queue a command to be sent to the server (and record the parameters in case we need them later)
         void queueCommand (Icecap::Cmd command);
-        void queueCommand (QString& command);
+        void queueCommand (QString command);
+        void queueCommand (QString tag, QString command);
+        void queueCommand (QString tag, QString command, QMap<QString, QString> parameterMap);
+
+        QString paramsToText (QMap<QString,QString> parameterList);
 
     signals:
         /// will be connected to KonversationApplication::removeServer()
@@ -177,6 +183,8 @@ class IcecapServer : public QObject
         void disconnect();
 //        void connectToNewServer(const QString& server, const QString& port, const QString& password);
         void showSSLDialog();
+
+        void eventFilter (Icecap::Cmd result);
 
     protected slots:
         void connectionSuccess();
@@ -265,6 +273,7 @@ class IcecapServer : public QObject
 
         /// Used to maintain information on commands sent to the server so we can use parameter values when the response comes back.
         QMap<uint, Icecap::Cmd> commandsPending;
+        int nextCommandId;
 };
 #endif
 
