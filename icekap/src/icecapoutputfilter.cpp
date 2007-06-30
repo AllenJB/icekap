@@ -194,6 +194,7 @@ namespace Icecap
         return finals;
     }
 
+    // TODO: Get rid of this silly replication
     OutputFilterResult IcecapOutputFilter::parse(const QString& myNick,const QString& originalLine,const QString& name)
     {
         setCommandChar();
@@ -224,6 +225,7 @@ namespace Icecap
 
         QString line=inputLine.lower();
 
+/*
         if (line.startsWith (commandChar +"network"))
         {
             QString parameter = inputLine.section(' ', 1);
@@ -248,7 +250,9 @@ namespace Icecap
             parameter = parameter.stripWhiteSpace();
             result = parseGateway (parameter);
         }
-        else if (line.startsWith (commandChar +"autoreq")) {
+        else
+*/
+        if (line.startsWith (commandChar +"autoreq")) {
             result = parseAutoReq();
         }
         else
@@ -329,6 +333,7 @@ namespace Icecap
 
         QString line=inputLine.lower();
 
+/*
         if (line.startsWith (commandChar +"network"))
         {
             QString parameter = inputLine.section(' ', 1);
@@ -353,7 +358,9 @@ namespace Icecap
             parameter = parameter.stripWhiteSpace();
             result = parseGateway (parameter);
         }
-        else if (line.startsWith (commandChar +"autoreq")) {
+        else
+*/
+        if (line.startsWith (commandChar +"autoreq")) {
             result = parseAutoReq();
         }
         else
@@ -446,6 +453,8 @@ namespace Icecap
         return result;
     }
 
+/*
+    // TODO: Re-implement using signal based system
 
     OutputFilterResult IcecapOutputFilter::parseMyPresence (const QString& parameter)
     {
@@ -706,6 +715,7 @@ namespace Icecap
         }
         return result;
     }
+*/
 
 
     OutputFilterResult IcecapOutputFilter::parseExec(const QString& parameter)
