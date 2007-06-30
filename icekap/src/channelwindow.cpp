@@ -48,7 +48,6 @@
 #include "konversationapplication.h"
 #include "channelwindow.h"
 #include "icecapserver.h"
-#include "nick.h"
 #include "nicklistview.h"
 #include "nicklistviewitem.h"
 #include "quickbutton.h"
@@ -61,6 +60,7 @@
 #include "channeloptionsdialog.h"
 #include "notificationhandler.h"
 #include "icecapchannel.h"
+#include "icecapchannelpresence.h"
 
 ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
   : ChatWindow(parent), key(" ")
@@ -70,7 +70,6 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
     m_processingTimer = 0;
     m_delayedSortTimer = 0;
     m_optionsDialog = NULL;
-    m_pendingChannelNickLists.clear();
     m_currentIndex = 0;
     m_opsToAdd = 0;
     nicks = 0;
@@ -262,8 +261,9 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
 
     connect(channelInput,SIGNAL (submit()),this,SLOT (channelTextEntered()) );
     connect(channelInput,SIGNAL (envelopeCommand()),this,SLOT (channelPassthroughCommand()) );
-    connect(channelInput,SIGNAL (nickCompletion()),this,SLOT (completeNick()) );
-    connect(channelInput,SIGNAL (endCompletion()),this,SLOT (endCompleteNick()) );
+// TODO: Needs to be re-implemented
+//    connect(channelInput,SIGNAL (nickCompletion()),this,SLOT (completeNick()) );
+//    connect(channelInput,SIGNAL (endCompletion()),this,SLOT (endCompleteNick()) );
     connect(channelInput,SIGNAL (textPasted(const QString&)),this,SLOT (textPasted(const QString&)) );
 
     connect(getTextView(), SIGNAL(textPasted(bool)), channelInput, SLOT(paste(bool)));
@@ -280,7 +280,8 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
     if(nicknameCombobox->lineEdit())
         connect(nicknameCombobox->lineEdit(), SIGNAL (lostFocus()),this,SLOT(nicknameComboboxChanged()));
 
-    nicknameList.setAutoDelete(true);
+    // TODO: To be removed
+//    nicknameList.setAutoDelete(true);
 
     setLog(Preferences::log());
 
@@ -320,32 +321,8 @@ ChannelWindow::~ChannelWindow()
 {
     kdDebug() << "ChannelWindow::~ChannelWindow(" << getName() << ")" << endl;
 
-    // Purge nickname list
-    purgeNicks();
-
     // Unlink this channel from channel list
 //    m_server->removeChannel(this);
-}
-
-ChannelNickPtr ChannelWindow::getOwnChannelNick()
-{
-    return m_ownChannelNick;
-}
-
-ChannelNickPtr ChannelWindow::getChannelNick(const QString &ircnick)
-{
-//    return m_server->getChannelNick(getName(), ircnick);
-    return 0;
-}
-
-void ChannelWindow::purgeNicks()
-{
-    // Purge nickname list
-    nicknameList.clear();
-
-    // clear stats counter
-    nicks=0;
-    ops=0;
 }
 
 void ChannelWindow::showOptionsDialog()
@@ -391,7 +368,7 @@ void ChannelWindow::popupCommand(int id)
     QString args;
     QString question;
     bool raw=false;
-    QStringList nickList = getSelectedNickList();
+    QStringList nickList = m_channel->getSelectedNickList();
 
     switch(id)
     {
@@ -578,6 +555,8 @@ void ChannelWindow::doubleClickCommand(QListViewItem* item)
     }
 }
 
+// TODO: Migrate to using Icecap::Channel instead
+/*
 void ChannelWindow::completeNick()
 {
     int pos, oldPos;
@@ -653,10 +632,10 @@ void ChannelWindow::completeNick()
             else if(Preferences::nickCompletionMode() == 0)
             {
                 if(mode == '\0') {
-                    QPtrListIterator<Nick> it(nicknameList);
+                    QPtrListIterator<Icecap::ChannelPresence> it(nicknameList);
                     uint timeStamp = 0;
                     int listPosition = 0;
-                    Nick* nick = 0;
+                    Icecap::ChannelPresence* nick = 0;
 
                     while(it.current() != 0)
                     {
@@ -749,6 +728,7 @@ void ChannelWindow::completeNick()
     channelInput->setCursorPosition(0, pos);
 }
 
+// TODO: Migrate to using Icecap::Channel instead
 // make sure to step back one position when completion ends so the user starts
 // with the last complete they made
 void ChannelWindow::endCompleteNick()
@@ -756,6 +736,7 @@ void ChannelWindow::endCompleteNick()
     if(completionPosition) completionPosition--;
     else completionPosition=nicknameList.count()-1;
 }
+*/
 
 void ChannelWindow::setName(const QString& newName)
 {
@@ -816,6 +797,7 @@ void ChannelWindow::channelPassthroughCommand()
     }
 }
 
+// TODO: Re-implement commented code
 void ChannelWindow::sendChannelText(const QString& sendLine)
 {
     // create a work copy
@@ -824,7 +806,7 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
 //        outputAll = m_server->parseWildcards(outputAll,m_server->getNickname(),getName(),getKey(),
-//            getSelectedNickList(),QString::null);
+//            m_channel->getSelectedNickList(),QString::null);
     }
 
     // Send all strings, one after another
@@ -868,30 +850,13 @@ void ChannelWindow::setNickname(const QString& newNickname)
     nicknameCombobox->setCurrentText(newNickname);
 }
 
-QStringList ChannelWindow::getSelectedNickList()
-{
-    QStringList result;
-
-    if (channelCommand)
-        result.append(textView->getContextNick());
-    else
-    {
-        Nick* nick=nicknameList.first();
-
-        while(nick)
-        {
-            if(nick->isSelected()) result.append(nick->getNickname());
-            nick=nicknameList.next();
-        }
-    }
-
-    return result;
-}
-
+/*
+// TODO: Migrate to using Icecap::Channel
+// Used by NickListView::updateActions
 ChannelNickList ChannelWindow::getSelectedChannelNicks()
 {
     ChannelNickList result;
-    Nick* nick=nicknameList.first();
+    Icecap::ChannelPresence* nick=nicknameList.first();
 
     while(nick)
     {
@@ -912,6 +877,7 @@ ChannelNickList ChannelWindow::getSelectedChannelNicks()
     return result;
 
 }
+*/
 
 void ChannelWindow::channelLimitChanged()
 {
@@ -964,10 +930,11 @@ void ChannelWindow::modeButtonClicked(int id,bool on)
     m_server->queue(command.arg(getName()).arg((on) ? "+" : "-").arg(mode[id]).arg(args));
 }
 
+// TODO: Re-implement commented code
 void ChannelWindow::quickButtonClicked(const QString &buttonText)
 {
     // parse wildcards (toParse,nickname,channelName,nickList,queryName,parameter)
-//    QString out=m_server->parseWildcards(buttonText,m_server->getNickname(),getName(),getKey(),getSelectedNickList(),QString::null);
+//    QString out=m_server->parseWildcards(buttonText,m_server->getNickname(),getName(),getKey(),m_channel->getSelectedNickList(),QString::null);
     QString out = "";
 
     // are there any newlines in the definition?
@@ -978,55 +945,8 @@ void ChannelWindow::quickButtonClicked(const QString &buttonText)
         channelInput->setText(out);
 }
 
-void ChannelWindow::addNickname(ChannelNickPtr channelnick)
-{
-
-    QString nickname = channelnick->loweredNickname();
-
-    Nick* nick=0;
-    Nick* lookNick;
-    QPtrListIterator<Nick> it(nicknameList);
-
-    while((lookNick = it.current()) != 0)
-    {
-        if(lookNick->loweredNickname() == nickname)
-        {
-            nick = lookNick;
-            break;
-        }
-
-        ++it;
-    }
-
-    if(nick == 0)
-    {
-        fastAddNickname(channelnick);
-
-        if(channelnick->isAnyTypeOfOp())
-        {
-            adjustOps(1);
-        }
-
-        adjustNicks(1);
-        requestNickListSort();
-    }
-    else
-    {
-        Q_ASSERT(false); // We shouldn't be adding someone that is already in the channel.
-    }
-}
-
-// Use with caution! Does not sort or check for duplicates!
-void ChannelWindow::fastAddNickname(ChannelNickPtr channelnick)
-{
-    Q_ASSERT(channelnick);
-    if(!channelnick) return;
-    Nick* nick = new Nick(nicknameListView, channelnick);
-    // nicks get sorted later
-    nicknameList.append(nick);
-}
-
-void ChannelWindow::nickRenamed(const QString &oldNick, const NickInfo& nickInfo)
+// TODO: Re-implement commented code
+void ChannelWindow::nickRenamed(const QString &oldNick, const Icecap::ChannelPresence& nickInfo)
 {
 
     /* Did we change our nick name? */
@@ -1047,8 +967,8 @@ void ChannelWindow::nickRenamed(const QString &oldNick, const NickInfo& nickInfo
 */
 }
 
-
-void ChannelWindow::kickNick(ChannelNickPtr channelNick, const ChannelNick &kicker, const QString &reason)
+// TODO: Re-implement commented code
+void ChannelWindow::kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason)
 {
 /*
     QString displayReason = reason;
@@ -1121,7 +1041,7 @@ void ChannelWindow::kickNick(ChannelNickPtr channelNick, const ChannelNick &kick
             adjustOps(-1);
 
         adjustNicks(-1);
-        Nick* nick = getNickByName(channelNick->getNickname());
+        Icecap::ChannelPresence* nick = m_channel->getNickByName(channelNick->getNickname());
 
         if(nick == 0)
         {
@@ -1133,22 +1053,6 @@ void ChannelWindow::kickNick(ChannelNickPtr channelNick, const ChannelNick &kick
         }
     }
 */
-}
-
-Nick* ChannelWindow::getNickByName(const QString &lookname)
-{
-    QString lcLookname = lookname.lower();
-    QPtrListIterator<Nick> it(nicknameList);
-
-    while(it.current() != 0)
-    {
-        if(it.current()->loweredNickname() == lcLookname)
-            return it.current();
-
-        ++it;
-    }
-
-    return 0;
 }
 
 void ChannelWindow::adjustNicks(int value)
@@ -1238,13 +1142,14 @@ void ChannelWindow::setTopicAuthor(const QString& newAuthor)
     }
 }
 
+// TODO: Re-implement commented code
 void ChannelWindow::updateMode(const QString& sourceNick, char mode, bool plus, const QString &parameter)
 {
     //Note for future expansion: doing m_server->getChannelNick(getName(), sourceNick);  may not return a valid channelNickPtr if the
     //mode is updated by the server.
 /*
     QString message(QString::null);
-    ChannelNickPtr parameterChannelNick=m_server->getChannelNick(getName(), parameter);
+    Icecap::ChannelPresence parameterChannelNick=m_server->getChannelNick(getName(), parameter);
 
     bool fromMe=false;
     bool toMe=false;
@@ -1993,29 +1898,6 @@ void ChannelWindow::changeNickname(const QString& newNickname)
         m_server->queue("NICK "+newNickname);
 }
 
-void ChannelWindow::resetNickList()
-{
-    nicknameListView->setUpdatesEnabled(false);
-    purgeNicks();
-}
-
-void ChannelWindow::addPendingNickList(const QStringList& pendingChannelNickList)
-{
-    if(pendingChannelNickList.isEmpty())
-      return;
-
-    if (!m_processingTimer)
-    {
-        m_processingTimer = new QTimer(this);
-        connect(m_processingTimer, SIGNAL(timeout()), this, SLOT(processPendingNicks()));
-    }
-
-    m_pendingChannelNickLists.append(pendingChannelNickList);
-
-    if (!m_processingTimer->isActive())
-        m_processingTimer->start(0);
-}
-
 void ChannelWindow::childAdjustFocus()
 {
     channelInput->setFocus();
@@ -2025,10 +1907,12 @@ void ChannelWindow::childAdjustFocus()
 void ChannelWindow::refreshModeButtons()
 {
     bool enable = true;
+/*
     if(getOwnChannelNick())
     {
         enable=getOwnChannelNick()->isAnyTypeOfOp();
     } // if not channel nick, then enable is true - fall back to assuming they are op
+*/
 
     //don't disable the mode buttons since you can't then tell if they are enabled or not.
     //needs to be fixed somehow
@@ -2064,16 +1948,18 @@ void ChannelWindow::cycleChannel()
 //    m_server->sendJoinCommand(getName());
 }
 
+// TODO: Needs re-implementing
 void ChannelWindow::autoUserhost()
 {
+/*
     if(Preferences::autoUserhost() && !Preferences::autoWhoContinuousEnabled())
     {
         int limit = 5;
 
         QString nickString;
-        QPtrList<Nick> nickList = getNickList();
-        QPtrListIterator<Nick> it(nickList);
-        Nick* nick;
+        QPtrList<Icecap::ChannelPresence> nickList = getNickList();
+        QPtrListIterator<Icecap::ChannelPresence> it(nickList);
+        Icecap::ChannelPresence* nick;
 
         while((nick = it.current()) != 0)
         {
@@ -2088,6 +1974,7 @@ void ChannelWindow::autoUserhost()
 
 //        if(!nickString.isEmpty()) m_server->requestUserhost(nickString);
     }
+*/
 }
 
 void ChannelWindow::setAutoUserhost(bool state)
@@ -2111,7 +1998,7 @@ void ChannelWindow::setAutoUserhost(bool state)
             QListViewItem* item=nicknameListView->itemAtIndex(0);
             while(item)
             {
-                Nick* lookNick=getNickByName(item->text(1));
+                Icecap::ChannelPresence* lookNick = m_channel->getNickByName (item->text(1));
                 if(lookNick) item->setText(2,lookNick->getHostmask());
                 item=item->itemBelow();
             }
@@ -2190,6 +2077,7 @@ bool ChannelWindow::closeYourself()
     return false;
 }
 
+/*
 //Used to disable functions when not connected
 void ChannelWindow::serverOnline(bool online)
 {
@@ -2201,12 +2089,12 @@ void ChannelWindow::serverOnline(bool online)
     }
     else
     {
-        purgeNicks();
         //channelInput->setEnabled(false);
         getTextView()->setNickAndChannelContextMenusEnabled(false);
         nicknameCombobox->setEnabled(false);
     }
 }
+*/
 
 void ChannelWindow::showTopic(bool show)
 {
@@ -2226,74 +2114,6 @@ void ChannelWindow::showTopic(bool show)
         {
             topicSplitterHidden = true;
             topicLine->parentWidget()->hide();
-        }
-    }
-}
-
-void ChannelWindow::processPendingNicks()
-{
-    QString nickname = m_pendingChannelNickLists.first()[m_currentIndex];
-
-    bool admin = false;
-    bool owner = false;
-    bool op = false;
-    bool halfop = false;
-    bool voice = false;
-
-    // Remove possible mode characters from nickname and store the resulting mode
-//    m_server->mangleNicknameWithModes(nickname, admin, owner, op, halfop, voice);
-
-    // TODO: make these an enumeration in KApplication or somewhere, we can use them as well
-    unsigned int mode = (admin  ? 16 : 0) +
-                        (owner  ?  8 : 0) +
-                        (op     ?  4 : 0) +
-                        (halfop ?  2 : 0) +
-                        (voice  ?  1 : 0);
-
-    // Check if nick is already in the nicklist
-    if (!getNickByName(nickname))
-    {
-/*
-        ChannelNickPtr nick = m_server->addNickToJoinedChannelsList(getName(), nickname);
-        Q_ASSERT(nick);
-        nick->setMode(mode);
-
-        fastAddNickname(nick);
-
-        if (nick->isAdmin() || nick->isOwner() || nick->isOp() || nick->isHalfOp())
-            m_opsToAdd++;
-
-        m_currentIndex++;
-*/
-    }
-    else
-    {
-        m_pendingChannelNickLists.first().pop_front();
-    }
-
-    if (m_pendingChannelNickLists.first().count() <= m_currentIndex)
-    {
-        adjustNicks(m_pendingChannelNickLists.first().count());
-        adjustOps(m_opsToAdd);
-        m_pendingChannelNickLists.pop_front();
-        m_currentIndex = 0;
-        m_opsToAdd = 0;
-    }
-
-    if (m_pendingChannelNickLists.isEmpty())
-    {
-        m_processingTimer->stop();
-        nicknameListView->sort();
-        sortNickList();
-        nicknameListView->setUpdatesEnabled(true);
-        nicknameListView->triggerUpdate();
-        if (!m_firstAutoWhoDone)
-        {
-            if(Preferences::autoWhoContinuousEnabled())
-            {
-                autoWho();
-            }
-            m_firstAutoWhoDone = true;
         }
     }
 }
@@ -2357,7 +2177,7 @@ void ChannelWindow::requestNickListSort()
 
 void ChannelWindow::sortNickList()
 {
-    nicknameList.sort();
+//    nicknameList.sort();
     nicknameListView->resort();
 
     if(m_delayedSortTimer)
@@ -2430,7 +2250,7 @@ void ChannelWindow::append(const QString& nickname,const QString& message)
 {
 /*
     if(nickname != getServer()->getNickname()) {
-        Nick* nick = getNickByName(nickname);
+        Icecap::ChannelPresence* nick = m_channel->getNickByName(nickname);
 
         if(nick) {
             nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
@@ -2444,7 +2264,7 @@ void ChannelWindow::appendAction(const QString& nickname,const QString& message,
 {
 /*
     if(nickname != getServer()->getNickname()) {
-        Nick* nick = getNickByName(nickname);
+        Icecap::ChannelPresence* nick = m_channel->getNickByName(nickname);
 
         if(nick) {
             nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
@@ -2453,130 +2273,6 @@ void ChannelWindow::appendAction(const QString& nickname,const QString& message,
 */
 
     ChatWindow::appendAction(nickname, message, usenotifications);
-}
-
-//
-// NickList
-//
-
-NickList::NickList() : QPtrList<Nick>()
-{
-    m_compareMethod = NickList::AlphaNumeric;
-}
-
-void NickList::setCompareMethod(CompareMethod method)
-{
-    m_compareMethod = method;
-}
-
-int NickList::compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
-{
-    if(m_compareMethod == NickList::TimeStamp) {
-        int returnValue = static_cast<Nick*>(item2)->getChannelNick()->timeStamp() - static_cast<Nick*>(item1)->getChannelNick()->timeStamp();
-
-        if(returnValue == 0) {
-            returnValue = QString::compare(static_cast<Nick*>(item1)->loweredNickname(),
-                                           static_cast<Nick*>(item2)->loweredNickname());
-        }
-
-        return returnValue;
-    }
-
-    return QString::compare(static_cast<Nick*>(item1)->loweredNickname(),
-                            static_cast<Nick*>(item2)->loweredNickname());
-}
-
-QString NickList::completeNick(const QString& pattern, bool& complete, QStringList& found,
-			       bool skipNonAlfaNum, bool caseSensitive)
-{
-    found.clear();
-    QString prefix = "^";
-    QString newNick;
-    QString prefixCharacter = Preferences::prefixCharacter();
-    NickList foundNicks;
-    foundNicks.setCompareMethod(NickList::TimeStamp);
-
-    if((pattern.find(QRegExp("^(\\d|\\w)")) != -1) && skipNonAlfaNum)
-    {
-        prefix = "^([^\\d\\w]|[\\_]){0,}";
-    }
-
-    QRegExp regexp(prefix + QRegExp::escape(pattern));
-    regexp.setCaseSensitive(caseSensitive);
-    QPtrListIterator<Nick> it(*this);
-
-    while(it.current() != 0)
-    {
-        newNick = it.current()->getNickname();
-
-        if(!prefix.isEmpty() && newNick.contains(prefixCharacter))
-        {
-            newNick = newNick.section( prefixCharacter,1 );
-        }
-
-        if(newNick.find(regexp) != -1)
-        {
-            foundNicks.append(it.current());
-        }
-
-        ++it;
-    }
-
-    foundNicks.sort();
-
-    QPtrListIterator<Nick> it2(foundNicks);
-
-    while(it2.current() != 0)
-    {
-        found.append(it2.current()->getNickname());
-        ++it2;
-    }
-
-    if(found.count() > 1)
-    {
-        bool ok = true;
-        unsigned int patternLength = pattern.length();
-        QString firstNick = found[0];
-        unsigned int firstNickLength = firstNick.length();
-        unsigned int foundCount = found.count();
-
-        while(ok && ((patternLength) < firstNickLength))
-        {
-            ++patternLength;
-            QStringList tmp = found.grep(firstNick.left(patternLength), caseSensitive);
-
-            if(tmp.count() != foundCount)
-            {
-                ok = false;
-                --patternLength;
-            }
-        }
-
-        complete = false;
-        return firstNick.left(patternLength);
-    }
-    else if(found.count() == 1)
-    {
-        complete = true;
-        return found[0];
-    }
-
-    return QString();
-}
-
-bool NickList::containsNick(const QString& nickname)
-{
-    QPtrListIterator<Nick> it(*this);
-
-    while (it.current() != 0)
-    {
-        if (it.current()->getNickname()==nickname)
-            return true;
-
-        ++it;
-    }
-
-    return false;
 }
 
 #include "channelwindow.moc"

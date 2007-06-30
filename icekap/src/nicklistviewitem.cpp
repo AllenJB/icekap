@@ -17,8 +17,7 @@
 
 #include "nicklistviewitem.h"
 #include "konversationapplication.h"
-#include "nick.h"
-#include "nickinfo.h"
+#include "icecapchannelpresence.h"
 #include "nicklistview.h"
 #include "images.h"
 
@@ -26,7 +25,7 @@ NickListViewItem::NickListViewItem(KListView* parent,
 QListViewItem *after,
 const QString& passed_label,
 const QString& passed_label2,
-Nick *n) :
+Icecap::ChannelPresence *n) :
 KListViewItem(parent,after,QString::null,passed_label,passed_label2)
 {
     Q_ASSERT(n);
@@ -34,8 +33,8 @@ KListViewItem(parent,after,QString::null,passed_label,passed_label2)
     m_flags = 0;
 
     m_height = height();
-    connect(nick->getChannelNick(), SIGNAL(channelNickChanged()), SLOT(refresh()));
-    connect(nick->getNickInfo(), SIGNAL(nickInfoChanged()), SLOT(refresh()));
+    connect(nick, SIGNAL(channelNickChanged()), SLOT(refresh()));
+    connect(nick, SIGNAL(nickInfoChanged()), SLOT(refresh()));
 
     refresh();
 }
@@ -47,11 +46,10 @@ NickListViewItem::~NickListViewItem()
 void NickListViewItem::refresh()
 {
     int flags = 0;
-    NickInfo* nickInfo = nick->getNickInfo();
     bool away = false;
 
-    if ( nickInfo )
-        away = nickInfo->isAway();
+//    if ( nickInfo )
+        away = nick->isAway();
 
     if(away)
         flags=1;
@@ -111,19 +109,17 @@ void NickListViewItem::refresh()
 
 QString NickListViewItem::calculateLabel1()
 {
-    NickInfoPtr nickinfo = nick->getNickInfo();
-
-    if(Preferences::showRealNames() && !nick->getNickInfo()->getRealName().isEmpty())
+    if(Preferences::showRealNames() && !nick->getRealName().isEmpty())
     {
-        return nick->getNickInfo()->getNickname() + " (" + nick->getNickInfo()->getRealName() + ')';
+        return nick->getNickname() + " (" + nick->getRealName() + ')';
     }
 
-    return nick->getNickInfo()->getNickname();
+    return nick->getNickname();
 }
 
 QString NickListViewItem::calculateLabel2()
 {
-    return nick->getNickInfo()->getHostmask();
+    return nick->getHostmask();
 }
 
 int NickListViewItem::compare(QListViewItem* item,int col,bool ascending) const
@@ -181,9 +177,8 @@ int NickListViewItem::compare(QListViewItem* item,int col,bool ascending) const
 void NickListViewItem::paintCell(QPainter * p, const QColorGroup & cg, int column, int width, int align )
 {
     QColorGroup cg2 = cg;
-    NickInfo* nickInfo = nick->getNickInfo();
 
-    if(nickInfo->isAway())
+    if(nick->isAway())
     {
         cg2.setColor(QColorGroup::Text, kapp->palette().disabled().text());
     }
@@ -206,9 +201,12 @@ int NickListViewItem::getSortingValue() const
     return flags;
 }
 
-Nick *NickListViewItem::getNick()
+Icecap::ChannelPresence *NickListViewItem::getNick()
 {
     return nick;
 }
 
 #include "nicklistviewitem.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

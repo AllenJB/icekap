@@ -7,11 +7,17 @@
 
 #include "icecapchannel.h"
 
+// #include <klistview.h>
+
 #include "channelwindow.h"
 #include "viewcontainer.h"
+#include "nicklistview.h"
+#include "ircview.h"
+
 #include "icecapmypresence.h"
 
 // TODO: Handle GUI tab closing
+// TODO: Switch topic to a signal based system
 namespace Icecap
 {
 
@@ -21,9 +27,10 @@ namespace Icecap
         m_name = name;
         connected = false;
         windowIsActive = false;
+        QObject::setName (QString ("channel"+name).ascii());
 
         // Connect to server event stream (command results)
-        connect (m_mypresence->server(), SIGNAL (event(Cmd)), this, SLOT (eventFilter(Cmd)));
+        connect (m_mypresence->server(), SIGNAL (Icecap::event(Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
     }
 
     Channel::Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap)
@@ -37,6 +44,9 @@ namespace Icecap
         windowIsActive = false;
 
         if (connected) init ();
+
+        // Connect to server event stream (command results)
+        connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
     }
 
     void Channel::init ()
@@ -46,6 +56,16 @@ namespace Icecap
         windowIsActive = true;
         window = getViewContainer()->addChannel (this);
 
+        // Initialise nick listView items
+        NickListView* listView = window->getNickListView ();
+        QPtrListIterator<ChannelPresence> it( presenceList );
+        ChannelPresence* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            current->setListView (listView);
+        }
+
+
         // TODO: This could be done with signals instead
         if (topic.length () > 0) {
             if (topicSetBy.length () > 0) {
@@ -54,6 +74,14 @@ namespace Icecap
                 window->setTopic (topicSetBy, topic);
             }
         }
+
+        Cmd listNames;
+        listNames.tag = "cn";
+        listNames.command = "channel names";
+        listNames.parameterList.insert ("channel", m_name);
+        listNames.parameterList.insert ("mypresence", m_mypresence->name ());
+        listNames.parameterList.insert ("network", m_mypresence->network()->name ());
+        m_mypresence->server()->queueCommand (listNames);
 
 //        m_mypresence->server()->queue (QString ("chplist;channel names;mypresence=%1;network=%2;channel=%3").arg(m_mypresence->name()).arg(m_mypresence->network()->name()).arg(m_name));
 
@@ -105,14 +133,18 @@ namespace Icecap
     void Channel::presenceAdd (const ChannelPresence* user)
     {
         presenceList.append (user);
+        if (windowIsActive) {
+            append ("--CHDEBUG--", QString ("Added presence: %1 :: %2").arg (user->getNickname ()).arg (user->getHostmask()));
+        }
     }
 
     ChannelPresence* Channel::presence (const QString& userName) {
+        QString lookupName = userName.lower ();
         QPtrListIterator<ChannelPresence> it( presenceList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
-            if (current->name () == userName) {
+            if (current->loweredNickname () == lookupName) {
                 return current;
             }
         }
@@ -155,32 +187,40 @@ namespace Icecap
 
     void Channel::append(const QString& nickname,const QString& message)
     {
+        if (!windowIsActive) return;
         window->append (nickname, message);
     }
 
     void Channel::appendAction(const QString& nickname,const QString& message, bool usenotifications)
     {
+        if (!windowIsActive) return;
         window->appendAction (nickname, message, usenotifications);
     }
 
     void Channel::appendCommandMessage (const QString& command, const QString& message, bool important,
         bool parseURL, bool self)
     {
+        if (!windowIsActive) return;
         window->appendCommandMessage(command, message, important, parseURL, self);
     }
 
     void Channel::eventFilter (Cmd result)
     {
+        append ("--CHDEBUG--", QString ("Received event: %1 -> %2 -- %3 :: %4 :: network: %5 :: channel: %6").arg (m_mypresence->name()).arg (name()).arg (result.tag).arg (result.sentCommand).arg (result.network).arg (result.channel));
+
         Network* network = m_mypresence->network();
         // Is the event relevent to this channel?
         if ((result.channel == m_name) && (result.mypresence == m_mypresence->name()) && (result.network == network->name())) {
             // Response to request for channel list
             // TODO: Do we need to deal with user initiated channel lists in a different way?
             if (result.sentCommand == "channel names") {
+                append ("--CHDEBUG--", QString ("Received event for channel names: %1 -> %2 -- %3").arg (m_mypresence->name()).arg (name()).arg (result.tag));
+
                 QString presenceName = result.parameterList.find ("presence").data ();
                 Presence *user = network->presence (presenceName);
                 // If the user doesn't exist, create it
                 if (user == 0) {
+                    append ("--CHDEBUG--", QString ("User %1 does not exist on this network yet. Creating with address %2").arg (presenceName).arg (result.parameterList.find ("address").data ()));
                     user = new Presence (presenceName, result.parameterList.find ("address").data ());
                     network->presenceAdd (user);
                 }
@@ -189,7 +229,13 @@ namespace Icecap
                 if (result.parameterList.contains ("irc_mode")) {
                     channelUser->setModes (result.parameterList.find ("irc_mode").data ());
                 }
+
+                if (windowIsActive) {
+                    channelUser->setListView (window->getNickListView ());
+                }
+
                 presenceAdd (channelUser);
+                emit presenceJoined (channelUser);
             }
         }
     }
@@ -205,6 +251,38 @@ namespace Icecap
         return m_name.isNull();
     }
 
+    QStringList Channel::getSelectedNickList()
+    {
+        QStringList result;
+
+        if (window->getChannelCommand ())
+            result.append (window->getTextView()->getContextNick());
+        else
+        {
+            QPtrListIterator<ChannelPresence> it( presenceList );
+            ChannelPresence* current;
+            while ( (current = it.current()) != 0 ) {
+                ++it;
+                if (current->isSelected ()) {
+                    result.append (current->getNickname ());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    bool Channel::containsNick (QString nickname) {
+        QPtrListIterator<ChannelPresence> it( presenceList );
+        ChannelPresence* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if (current->name () == nickname) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 #include "icecapchannel.moc"

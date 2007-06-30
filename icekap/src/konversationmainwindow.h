@@ -21,10 +21,8 @@
 #include <kmainwindow.h>
 #include <kaction.h>
 
-// #include "channel.h"
 #include "preferences.h"
 #include "ssllabel.h"
-#include "nickinfo.h"
 #include "icecapserver.h"
 
 class KToggleAction;

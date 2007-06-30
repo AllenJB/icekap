@@ -37,6 +37,7 @@
 #include "ircviewbox.h"
 #include "common.h"
 #include "topiclabel.h"
+#include "icecapchannelpresence.h"
 
 Query::Query(QWidget* parent) : ChatWindow(parent)
 {
@@ -404,7 +405,7 @@ void Query::childAdjustFocus()
     queryInput->setFocus();
 }
 
-void Query::setNickInfo(const NickInfoPtr & nickInfo)
+void Query::setNickInfo(Icecap::ChannelPresence* nickInfo)
 {
     if(m_nickInfo)
         disconnect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
@@ -460,7 +461,7 @@ void Query::nickInfoChanged()
 */
 }
 
-NickInfoPtr Query::getNickInfo()
+Icecap::ChannelPresence* Query::getNickInfo()
 {
     return m_nickInfo;
 }

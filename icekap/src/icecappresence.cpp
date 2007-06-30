@@ -14,6 +14,8 @@ namespace Icecap
     {
         m_name = name;
         m_connected = false;
+        m_away = false;
+        m_realName = "Unimplemented";
     }
 
     Presence::Presence (const QString& name, const QString& address)
@@ -21,6 +23,8 @@ namespace Icecap
         m_name = name;
         m_address = address;
         m_connected = false;
+        m_away = false;
+        m_realName = "Unimplemented";
     }
 
     void Presence::setName (const QString& name)

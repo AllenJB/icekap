@@ -61,6 +61,12 @@ namespace Icecap
             ChannelPresence* presence (const QString& userName);
             ChannelPresence* presenceByAddress (const QString& userAddress);
 
+            bool containsNick (const QString nickname);
+            ChannelPresence* getNickByName (const QString& name) { return presence (name); }
+
+            QStringList getSelectedNickList();
+
+
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* getViewContainer() const;
 
@@ -72,8 +78,11 @@ namespace Icecap
             bool operator== (Channel compareTo);
             bool isNull ();
 
-        private slots:
-            void eventFilter (Cmd result);
+        signals:
+            void presenceJoined (ChannelPresence* presence);
+
+        public slots:
+            void eventFilter (Icecap::Cmd result);
 
         private:
             void init ();
