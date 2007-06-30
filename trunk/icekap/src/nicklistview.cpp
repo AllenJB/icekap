@@ -208,8 +208,10 @@ void NickListView::updateActions()
     int notifyCounter = 0;
 
 //    int serverGroupId = channel->getServer()->serverGroupSettings()->id();
-	int serverGroupId = 0;
+    int serverGroupId = 0;
 
+/*
+    // TODO: Update to use Icecap::Channel
     ChannelNickList nickList=channel->getSelectedChannelNicks();
     ChannelNickList::ConstIterator it;
 
@@ -223,6 +225,7 @@ void NickListView::updateActions()
         if (Preferences::isNotify(serverGroupId,(*it)->getNickname()))
             ++notifyCounter;
     }
+*/
 
     if (ignoreCounter)
         popup->setItemVisible(Konversation::IgnoreNick, true);
@@ -258,7 +261,7 @@ bool NickListView::acceptDrag (QDropEvent* event) const
             {
                 QString first = uris.first();
 
-                if (first.startsWith("irc://") || channel->getNickList().containsNick(first))
+                if (first.startsWith("irc://") || channel->getChannel()->containsNick(first))
                     return false;
             }
             else
@@ -272,3 +275,6 @@ bool NickListView::acceptDrag (QDropEvent* event) const
 }
 
 #include "nicklistview.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

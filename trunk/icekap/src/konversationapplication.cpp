@@ -1121,25 +1121,6 @@ void KonversationApplication::splitNick_Server(const QString& nick_server, QStri
     serverOrGroup = nickServer.section("@",1);
 }
 
-NickInfoPtr KonversationApplication::getNickInfo(const QString &ircnick, const QString &serverOrGroup)
-{
-/*
-    NickInfoPtr nickInfo;
-    QString lserverOrGroup = serverOrGroup.lower();
-    for(IcecapServer* lookServer = serverList.first(); lookServer; lookServer = serverList.next())
-    {
-        if(lserverOrGroup.isEmpty()
-            || lookServer->getServerName().lower()==lserverOrGroup
-            || lookServer->getServerGroup().lower()==lserverOrGroup)
-        {
-            nickInfo = lookServer->getNickInfo(ircnick);
-            if(nickInfo) return nickInfo;         //If we found one
-        }
-    }
-*/
-    return 0;
-}
-
 // auto replace on input/output
 QString KonversationApplication::doAutoreplace(const QString& text,bool output)
 {

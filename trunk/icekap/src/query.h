@@ -16,7 +16,6 @@
 #include <qstring.h>
 
 #include "chatwindow.h"
-#include "nickinfo.h"
 
 /*
   @author Dario Abatianni
@@ -36,6 +35,10 @@ namespace Konversation {
   class TopicLabel;
 }
 
+namespace Icecap {
+    class ChannelPresence;
+}
+
 class Query : public ChatWindow
 {
     Q_OBJECT
@@ -47,12 +50,12 @@ class Query : public ChatWindow
         /** This will always be called soon after this object is created.
          *  @param nickInfo A nickinfo that must exist.
          */
-        void setNickInfo(const NickInfoPtr & nickInfo);
+        void setNickInfo(Icecap::ChannelPresence* nickInfo);
         /** It seems that this does _not_ guaranttee to return non null.
          *  The problem is when you open a query to someone, then the go offline.
          *  This should be fixed maybe?  I don't know.
          */
-        NickInfoPtr getNickInfo();
+        Icecap::ChannelPresence* getNickInfo();
         virtual QString getTextInLine();
         virtual bool closeYourself();
         virtual bool canBeFrontView();
@@ -108,8 +111,11 @@ class Query : public ChatWindow
         QLabel* addresseelogoimage;
         QLabel* awayLabel;
         IRCInput* queryInput;
-        NickInfoPtr m_nickInfo;
+        Icecap::ChannelPresence* m_nickInfo;
 
         bool m_initialShow;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

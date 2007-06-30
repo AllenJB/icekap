@@ -52,6 +52,7 @@
 
 IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
+    setName (QString ("server"+name).ascii());
     quickConnect = true;
 
     m_server.setName (name);
@@ -945,10 +946,13 @@ Icecap::IcecapOutputFilter* IcecapServer::getOutputFilter ()
 
 void IcecapServer::queueCommand (Icecap::Cmd command)
 {
-    uint last = commandsPending.end().key();
+    uint last = 0;
+    if (commandsPending.size() > 0) {
+        last = commandsPending.end().key();
+    }
     uint next = last++;
     QString parameters;
-    if (command.parameters.length() < 1) {
+    if (command.parameters.length() > 0) {
         parameters = command.parameters;
     } else {
         QMap<QString,QString>::const_iterator end = command.parameterList.end();
@@ -977,11 +981,27 @@ void IcecapServer::queueCommand (QString& command)
 
 void IcecapServer::emitEvent (Icecap::Cmd result)
 {
+    // If the command wasn't on the event system, exit now
+    if (! result.tag.contains (".")) return;
+
     // Grab the original command and attach any parameters
     QStringList tagPart = QStringList::split (".", result.tag);
     uint id = tagPart[0].toUInt();
+    if (! commandsPending.contains (id)) {
+        return;
+    }
+
+    // Skip the last+1 response for lists
+    // TODO: This is a bad way of handling this, since there may be some commands which are expected to return no parameters
+    // We always get id and time parameters, so discount 2 items on parameterList (parameters should never be used anyway)
+    if ((result.parameters.length() < 1) && (result.parameterList.size() < 3)) {
+        if (result.status == "+") {
+            commandsPending.remove (id);
+        }
+        return;
+    }
+
     Icecap::Cmd sendCmd = commandsPending.find (id).data();
-    result.tag = tagPart[1];
     result.sentCommand = sendCmd.command;
     result.sentParameterList = sendCmd.parameterList;
     // TODO: Get rid of sentParameters
@@ -1005,7 +1025,9 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
         commandsPending.remove (id);
     }
 
+    result.tag = tagPart[1];
     emit event (result);
+    appendStatusMessage ("DEBUG", QString ("Emitted event: %1 --").arg (result.tag));
 }
 
 #include "icecapserver.moc"

@@ -18,10 +18,10 @@
 
 #include <qtimer.h>
 #include <qstring.h>
+
 #include "icecapserver.h"
 #include "chatwindow.h"
-#include "channelnick.h"
-#include "nick.h"
+// #include "nicklist.h"
 
 /*
   @author Dario Abatianni
@@ -57,28 +57,8 @@ namespace Konversation
 namespace Icecap
 {
     class Channel;
+    class ChannelPresence;
 }
-
-class NickList : public QPtrList<Nick>
-{
-    public:
-        NickList();
-
-        typedef enum CompareMethod { AlphaNumeric, TimeStamp };
-
-        QString completeNick(const QString& pattern, bool& complete, QStringList& found,
-                             bool skipNonAlfaNum, bool caseSensitive);
-
-        void setCompareMethod(CompareMethod method);
-
-        bool containsNick(const QString& nickname);
-
-    protected:
-        virtual int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2);
-
-    private:
-        CompareMethod m_compareMethod;
-};
 
 class ChannelWindow : public ChatWindow
 {
@@ -104,6 +84,8 @@ class ChannelWindow : public ChatWindow
         virtual void setServer(IcecapServer* newServer);
 //        virtual void setIdentity(const Identity *newIdentity);
 
+        Icecap::Channel* getChannel () { return m_channel; }
+
 //Unsure of future placement and/or continued existence of these members
         int numberOfNicks() const { return nicks; }
         int numberOfOps() const { return ops; }
@@ -112,43 +94,23 @@ class ChannelWindow : public ChatWindow
         virtual QString getChannelEncodingDefaultDesc();
         virtual bool isInsertSupported() { return true; }
 
-    protected:
-        // use with caution! does not check for duplicates
-        void fastAddNickname(ChannelNickPtr channelnick);
-
-
     public slots:
         void setNickname(const QString& newNickname);
         void scheduleAutoWho();
         void setAutoUserhost(bool state);
 
-
     protected slots:
         void autoUserhost();
         void autoWho();
-        virtual void serverOnline(bool online);
-
 
 //Nicklist
     public:
-        ChannelNickPtr getOwnChannelNick();
-        ChannelNickPtr getChannelNick(const QString &ircnick);
-
-        void kickNick(ChannelNickPtr channelNick, const ChannelNick &kicker, const QString &reason);
-        void addNickname(ChannelNickPtr channelNick);
-        void nickRenamed(const QString &oldNick, const NickInfo& channelnick);
-        void resetNickList();
-        void addPendingNickList(const QStringList& pendingChannelNickList);
-        Nick *getNickByName(const QString& lookname);
-        NickList getNickList() { return nicknameList; }
+        void kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason);
+        void nickRenamed(const QString &oldNick, const Icecap::ChannelPresence& channelnick);
 
         void adjustNicks(int value);
         void adjustOps(int value);
         virtual void emitUpdateInfo();
-
-    protected slots:
-        void purgeNicks();
-        void processPendingNicks();
 
 //Topic
     public:
@@ -233,9 +195,10 @@ class ChannelWindow : public ChatWindow
         ///TODO: kill this, it has been reimplemented at the ChatWindow level
         bool allowNotifications() { return m_allowNotifications; }
 
-        ChannelNickList getSelectedChannelNicks();
-        ///TODO: this looks like a half-arsed overload.
-        QStringList getSelectedNickList();
+// TODO: Re-implement to use Icecap::Channel
+// Used by NickListView::updateActions
+//        ChannelNickList getSelectedChannelNicks();
+        bool getChannelCommand () { return channelCommand; }
 
         NickListView* getNickListView() const { return nicknameListView; }
 
@@ -260,8 +223,8 @@ class ChannelWindow : public ChatWindow
         void setAllowNotifications(bool allow) { m_allowNotifications = allow; }
 
     protected slots:
-        void completeNick(); ///< I guess this is a GUI function, might be nice to have at DCOP level though --argonel
-        void endCompleteNick();
+//        void completeNick(); ///< I guess this is a GUI function, might be nice to have at DCOP level though --argonel
+//        void endCompleteNick();
         void quickButtonClicked(const QString& definition);
         void modeButtonClicked(int id,bool on);
         void channelLimitChanged();
@@ -341,7 +304,6 @@ class ChannelWindow : public ChatWindow
         QPtrList<QuickButton> buttonList;
 
 //Members from here to end are not GUI
-        NickList nicknameList;
         QTimer userhostTimer;
 
         QStringList m_topicHistory;
@@ -353,7 +315,6 @@ class ChannelWindow : public ChatWindow
         bool m_firstAutoWhoDone;
         QTimer m_whoTimer; ///< For continuous auto /WHO
 
-        QValueList<QStringList> m_pendingChannelNickLists;
         int m_opsToAdd;
         uint m_currentIndex;
 
@@ -361,7 +322,6 @@ class ChannelWindow : public ChatWindow
         QTimer* m_delayedSortTimer;
 
         QStringList m_modeList;
-        ChannelNickPtr m_ownChannelNick;
 
         bool pendingNicks; ///< are there still nicks to be added by /names reply?
         int nicks; ///< How many nicks on the channel
@@ -371,7 +331,6 @@ class ChannelWindow : public ChatWindow
 
         Konversation::ChannelOptionsDialog *m_optionsDialog;
 
-//        Icecap::MyPresence* mypresence;
         Icecap::Channel* m_channel;
 };
 #endif

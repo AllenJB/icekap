@@ -18,7 +18,10 @@
 
 #include <klistview.h>
 
-class Nick;
+namespace Icecap
+{
+    class ChannelPresence;
+}
 
 /*
   @author Matthias Gierlings
@@ -33,13 +36,13 @@ class NickListViewItem : public QObject, public KListViewItem
             QListViewItem *after,
             const QString &passed_label,
             const QString &passed_label2,
-            Nick *n);
+            Icecap::ChannelPresence *n);
         ~NickListViewItem();
 
         // returns a number thar represents the sorting order for the nicknames
         int getSortingValue() const;
         // get the Nick object
-        Nick *getNick();
+        Icecap::ChannelPresence *getNick();
 
         virtual void paintCell(QPainter * p, const QColorGroup & cg, int column, int width, int align);
         virtual int compare(QListViewItem* item,int col,bool ascending) const;
@@ -51,7 +54,7 @@ class NickListViewItem : public QObject, public KListViewItem
         void refreshed();
 
     protected:
-        Nick *nick;
+        Icecap::ChannelPresence *nick;
 
         QString label;
 
@@ -62,3 +65,6 @@ class NickListViewItem : public QObject, public KListViewItem
         bool m_away;
 };
 #endif
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

@@ -21,7 +21,6 @@
 #include "preferences.h"
 #include "osd.h"
 #include "identity.h"
-#include "nickinfo.h"
 
 class QCString;
 
@@ -87,13 +86,6 @@ class KonversationApplication : public KUniqueApplication
          *  @param serverOrGroup This is modified to contain the servername, servergroup or an empty string.
          */
         static void splitNick_Server(const QString& nick_server, QString &ircnick, QString &serverOrGroup);
-
-        /** Tries to find a nickinfo for a given ircnick on a given ircserver.
-         *  @param ircnick The case-insensitive ircnick of the person you want to find.  e.g. "johnflux"
-         *  @param serverOrGroup The case-insensitive server name (e.g. "irc.kde.org") or server group name (e.g. "freenode"), or null to search all servers
-         *  @return A nickinfo for this user and server if one is found.
-         */
-        NickInfoPtr getNickInfo(const QString &ircnick, const QString &serverOrGroup);
 
         bool validateIdentity(IdentityPtr identity, bool interactive=true);
 

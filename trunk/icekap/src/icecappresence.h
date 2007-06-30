@@ -33,6 +33,12 @@ namespace Icecap
             QString address () { return m_address; }
             bool connected () { return m_connected; }
 
+            QString getRealName () { return m_realName; }
+
+            QString loweredNickname () { return m_name.lower (); }
+
+            bool isAway () const { return m_away; }
+
             void setName (const QString& name);
             void setAddress (const QString& address);
             void setConnected (bool status);
@@ -47,7 +53,9 @@ namespace Icecap
             QString m_name;
             QString m_address;
             QString m_modes;
+            QString m_realName;
             bool m_connected;
+            bool m_away;
     };
 
 }

@@ -59,7 +59,8 @@ namespace Konversation
         connect(m_channel, SIGNAL(topicHistoryChanged()), this, SLOT(refreshTopicHistory()));
 
         connect(m_channel, SIGNAL(modesChanged()), this, SLOT(refreshModes()));
-        connect(m_channel->getOwnChannelNick(), SIGNAL(channelNickChanged()), this, SLOT(refreshEnableModes()));
+// TODO: Reimplement
+//        connect(m_channel->getOwnChannelNick(), SIGNAL(channelNickChanged()), this, SLOT(refreshEnableModes()));
 
         connect(this, SIGNAL(cancelClicked()), this, SLOT(hide()));
         connect(this, SIGNAL(okClicked()), this, SLOT(changeOptions()));
@@ -185,8 +186,10 @@ namespace Konversation
             m_widget->topicPreview->clear();
     }
 
+    // TODO: Reimplement
     void ChannelOptionsDialog::refreshEnableModes()
     {
+/*
         bool enable = m_channel->getOwnChannelNick()->isAnyTypeOfOp();
         m_widget->otherModesList->setEnabled(enable);
         m_widget->topicEdit->setReadOnly(!enable && m_widget->topicModeChBox->isChecked());
@@ -204,6 +207,7 @@ namespace Konversation
         m_widget->banList->setItemsRenameable(enable);
         m_widget->addBan->setEnabled(enable);
         m_widget->removeBan->setEnabled(enable);
+*/
     }
 
     void ChannelOptionsDialog::refreshAllowedChannelModes()
@@ -489,3 +493,6 @@ namespace Konversation
 }
 
 #include "channeloptionsdialog.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

@@ -2151,6 +2151,7 @@ void ViewContainer::toggleChannelNicklists()
     emit updateChannelAppearance();
 }
 
+/*
 Query* ViewContainer::addQuery(IcecapServer* server, const NickInfoPtr& nickInfo, bool weinitiated)
 {
     QString name = nickInfo->getNickname();
@@ -2171,6 +2172,7 @@ Query* ViewContainer::addQuery(IcecapServer* server, const NickInfoPtr& nickInfo
 
     return query;
 }
+*/
 
 void ViewContainer::updateQueryChrome(ChatWindow* view, const QString& name)
 {

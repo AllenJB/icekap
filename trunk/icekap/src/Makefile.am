@@ -14,17 +14,17 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 	nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \
 	ignore.cpp nicklistview.cpp ircinput.cpp ignorelistviewitem.cpp images.cpp quickbutton.cpp chatwindow.cpp \
-	query.cpp konversationapplication.cpp nick.cpp \
+	query.cpp konversationapplication.cpp \
 	icecapinputfilter.cpp \
 	channelwindow.cpp ircview.cpp icecapserver.cpp main.cpp \
 	log_preferences.ui tabs_preferencesui.ui tabs_preferences.cpp \
 	chatwindowappearance_preferences.ui irccolorchooserui.ui colorsappearance_preferences.ui \
 		irccolorchooser.cpp channellistviewitem.cpp osd.cpp trayicon.cpp \
-		logfilereader.cpp multilineedit.cpp nickinfo.cpp \
+		logfilereader.cpp multilineedit.cpp \
 		konversationsound.cpp \
 	quickconnectdialog.cpp serverlistdialog.cpp \
 	icecapquickconnectdialog.cpp \
-		channelnick.cpp insertchardialog.cpp \
+		insertchardialog.cpp \
 		irccharsets.cpp editnotifydialog.cpp common.cpp sslsocket.cpp \
 		servergroupsettings.cpp icecapserversettings.cpp serversettings.cpp servergroupdialog.cpp 	ssllabel.cpp serverdialog.cpp \
 		channeldialog.cpp identitydialog.cpp topiclabel.cpp 	channeloptionsui.ui \
