@@ -264,7 +264,7 @@ pd;presence disconnect;network=freenode;mypresence=AllenJB|icecap
 	cl;>;id=2504;time=1176414051.5;network=freenode;mypresence=ajbi;channel=#allenjb2
 	cl;+;id=2505;time=1176414051.5;
 
---- channel partisans
+--- channel part
 
 cp;channel part;mypresence=ajbi;network=freenode;channel=#allenjb
 *;channel_part;id=2509;time=1176414534;network=freenode;mypresence=ajbi;channel=#allenjb;deinit
@@ -361,3 +361,50 @@ chjoin;+;id=637;time=1179050271.9;
 [21:01] >> cn;>;id=17260;time=1181851293.4;presence=ajbi;address=n=ajbi@spc2-ashf2-0-0-cust498.asfd.broadband.ntl.com
 [21:01] >> cn;>;id=17261;time=1181851293.4;presence=AllenJB;address=n=ajb42@pdpc/supporter/sustaining/Athon-Solo;mode=op;irc_mode=@
 [21:01] >> cn;+;id=17262;time=1181851293.4;
+
+--- Changing modes
+TODO:
+1. bans -- NB. icecap appears to have no support for these currently
+2. quiet (Freenode) -- NB. icecap appears to have no support for these currently
+3. User (global) modes
+
+11:02:08  -!- mode/#allenjb [+o ajbi] by AllenJB
+[11:00] >> *;channel_presence_mode_changed;id=23606;time=1183284041.6;network=freenode;mypresence=ajbi;channel=#allenjb;presence=AllenJB;source_presence=AllenJB;remove=voice;irc_remove=+;mode=op;irc_mode=@
+
+11:02:21  -!- mode/#allenjb [-o ajbi] by AllenJB
+[11:02] >> *;channel_presence_mode_changed;id=23609;time=1183284125.3;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;add=op;irc_add=@;mode=op;irc_mode=@+
+
+11:02:46  -!- mode/#allenjb [+vv ajbi AllenJB] by AllenJB
+[11:02] >> *;channel_presence_mode_changed;id=23611;time=1183284137.6;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;remove=op;irc_remove=@;mode=voice;irc_mode=+
+[11:02] >> *;channel_presence_mode_changed;id=23613;time=1183284162.9;network=freenode;mypresence=ajbi;channel=#allenjb;presence=AllenJB;source_presence=AllenJB;add=voice;irc_add=+;mode=op;irc_mode=@+
+
+11:02:53  -!- mode/#allenjb [-vv ajbi AllenJB] by AllenJB
+[11:02] >> *;channel_presence_mode_changed;id=23615;time=1183284169.3;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;remove=voice;irc_remove=+;mode=;irc_mode=
+[11:02] >> *;channel_presence_mode_changed;id=23616;time=1183284169.3;network=freenode;mypresence=ajbi;channel=#allenjb;presence=AllenJB;source_presence=AllenJB;remove=voice;irc_remove=+;mode=op;irc_mode=@
+
+11:03:17  -!- mode/#allenjb [+ov ajbi AllenJB] by AllenJB
+[11:03] >> *;channel_presence_mode_changed;id=23618;time=1183284193.4;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;add=op;irc_add=@;mode=op;irc_mode=@
+[11:03] >> *;channel_presence_mode_changed;id=23619;time=1183284193.4;network=freenode;mypresence=ajbi;channel=#allenjb;presence=AllenJB;source_presence=AllenJB;add=voice;irc_add=+;mode=op;irc_mode=@+
+
+11:03:21  -!- mode/#allenjb [-ov ajbi AllenJB] by AllenJB
+[11:03] >> *;channel_presence_mode_changed;id=23621;time=1183284197.9;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;remove=op;irc_remove=@;mode=;irc_mode=
+[11:03] >> *;channel_presence_mode_changed;id=23622;time=1183284197.9;network=freenode;mypresence=ajbi;channel=#allenjb;presence=AllenJB;source_presence=AllenJB;remove=voice;irc_remove=+;mode=op;irc_mode=@
+
+11:07:58  -!- mode/#allenjb [+ov ajbi ajbi] by AllenJB
+[11:07] >> *;channel_presence_mode_changed;id=23627;time=1183284474.6;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;add=op;irc_add=@;mode=op;irc_mode=@
+[11:07] >> *;channel_presence_mode_changed;id=23628;time=1183284474.6;network=freenode;mypresence=ajbi;channel=#allenjb;presence=ajbi;source_presence=AllenJB;add=voice;irc_add=+;mode=op;irc_mode=@+
+
+--- Channel modes
+11:26:27  -!- mode/#allenjb [+m] by AllenJB
+[11:26] >> *;channel_changed;id=23666;time=1183285584.2;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=m
+11:26:33  -!- mode/#allenjb [-m] by AllenJB
+[11:26] >> *;channel_changed;id=23668;time=1183285590.4;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=
+11:26:38  -!- mode/#allenjb [+mt] by AllenJB
+[11:26] >> *;channel_changed;id=23670;time=1183285595;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=mt
+11:26:46  -!- mode/#allenjb [-mt] by AllenJB
+[11:26] >> *;channel_changed;id=23672;time=1183285602.5;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=
+11:27:25  -!- mode/#allenjb [+mt] by AllenJB
+[11:27] >> *;channel_changed;id=23674;time=1183285641.5;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=mt
+11:27:28  -!- mode/#allenjb [-mt] by AllenJB
+[11:27] >> *;channel_changed;id=23676;time=1183285645.1;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=
+

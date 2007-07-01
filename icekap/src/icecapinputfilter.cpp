@@ -175,11 +175,11 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     {
         // Do nothing
     }
+/*
     else if ((eventName == "channel_presence_removed") || (eventName == "channel_presence_added"))
     {
         // Do nothing
     }
-/*
     else if (eventName != "msg") {
         processTextEvent = false;
     }
@@ -245,7 +245,7 @@ bool IcecapInputFilter::isAChannel(const QString &check)
     return true;
 }
 
-// TODO: What's this used for?
+// TODO: What's this used for? Possible "is this sender on the ignore list"?
 bool IcecapInputFilter::isIgnore(const QString &sender, Ignore::Type type)
 {
     bool doIgnore = false;

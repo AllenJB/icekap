@@ -845,7 +845,7 @@ void IcecapServer::networkAdd (const QString& protocol, const QString& name)
     if (network (name) != 0) {
         return;
     }
-    networkList.append (new Icecap::Network (protocol, name));
+    networkList.append (new Icecap::Network (this, protocol, name));
 }
 
 void IcecapServer::networkRemove (Icecap::Network* network)

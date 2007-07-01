@@ -54,7 +54,7 @@ namespace Icecap
 //            void setTopic (const QString& newTopic);
             void setConnected (bool newStatus);
 
-            void presenceAdd (const ChannelPresence* user);
+            void presenceAdd (ChannelPresence* user);
             void presenceRemove (const ChannelPresence* user);
             void presenceRemoveByName (const QString& userName);
             void presenceRemoveByAddress (const QString& userAddress);
