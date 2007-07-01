@@ -17,6 +17,7 @@
 // TODO: Away status (message?)
 // TODO: idle time
 // TODO: How do we know when it's safe to delere a Presence?
+// TODO: If we don't have information like the address for a user, request it
 namespace Icecap
 {
 
@@ -29,13 +30,13 @@ namespace Icecap
             Presence (const QString& name);
             Presence (const QString& name, const QString& address);
 
-            QString name () { return m_name; }
-            QString address () { return m_address; }
-            bool connected () { return m_connected; }
+            QString name () const { return m_name; }
+            QString address () const { return m_address; }
+            bool connected () const { return m_connected; }
 
-            QString getRealName () { return m_realName; }
+            QString getRealName () const { return m_realName; }
 
-            QString loweredNickname () { return m_name.lower (); }
+            QString loweredNickname () const { return m_name.lower (); }
 
             bool isAway () const { return m_away; }
 
@@ -45,6 +46,8 @@ namespace Icecap
 
             bool operator== (Presence compareTo);
             bool isNull ();
+
+            void update (QMap<QString, QString> parameterList);
 
         signals:
             void presenceChanged (const Presence* presence, QString field);

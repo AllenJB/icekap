@@ -55,6 +55,15 @@ namespace Icecap
         return (m_name.isNull());
     }
 
+    // TODO: What other information can we get here? Modes? Away status?
+    // TODO: idle_started
+    void Presence::update (QMap<QString, QString> parameterList)
+    {
+        if (parameterList.contains ("address")) {
+            setAddress (parameterList["address"]);
+        }
+    }
+
 }
 
 #include "icecappresence.moc"
