@@ -78,7 +78,7 @@ class StatusPanel : public IcecapStatusPanel
         QString oldNick;
 
         StatusPanel* statusPanel;
-        Icecap::MyPresence* m_mypresence;
+//        Icecap::MyPresence* m_mypresence;
 };
 #endif
 
