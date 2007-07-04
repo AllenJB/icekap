@@ -50,8 +50,10 @@ namespace Icecap
         /// What will be seen in the IRCView (multiline)
         QStringList outputList;
         /// What will be sent to the server
+        // TODO: Is this used by anything now?
         QString toServer;
         /// What will be sent to the server (multiline)
+        // TODO: Is this used by anything now?
         QStringList toServerList;
         /// Prefix string. eg. "-->" or "***"
         QString typeString;
@@ -60,17 +62,17 @@ namespace Icecap
     };
 
 
-    class IcecapOutputFilter : public QObject
+    class OutputFilter : public QObject
     {
         Q_OBJECT
 
         public:
-            explicit IcecapOutputFilter(IcecapServer* server);
-            ~IcecapOutputFilter();
+            explicit OutputFilter(IcecapServer* server);
+            ~OutputFilter();
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
-            OutputFilterResult parse(const QString& myNick,const QString& line,const QString& name);
-            OutputFilterResult parse(const QString& myNick,const QString& line, Channel* channel);
+            OutputFilterResult parse (const QString& myNick, const QString& line, const QString& networkName = "", const QString& mypresenceName = "", const QString& channelName = "");
+//            OutputFilterResult parse (const QString& myNick, const QString& line, Network* network, MyPresence* mypresence, Channel* channel);
             bool replaceAliases(QString& line);
 
         signals:
@@ -95,11 +97,10 @@ namespace Icecap
             void setCommandChar();
 
         protected:
-            OutputFilterResult parseNetwork (const QString& parameter);
-            OutputFilterResult parseMyPresence (const QString& parameter);
-            OutputFilterResult parseChannel (const QString& parameter);
-            OutputFilterResult parseGateway (const QString& parameter);
-            OutputFilterResult parseAutoReq ();
+            OutputFilterResult parseNetwork (QStringList& parameter);
+            OutputFilterResult parseMyPresence (QStringList& parameter);
+            OutputFilterResult parseChannel (QStringList& parameter);
+            OutputFilterResult parseGateway (QStringList& parameter);
 
             void parseServer(const QString& parameter);
             void parseReconnect();

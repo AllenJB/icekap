@@ -213,74 +213,82 @@ namespace Icecap
             }
 
             ChannelPresence* channelUser = new ChannelPresence (this, user);
-            if (ev.parameterList.contains ("irc_mode")) {
-                channelUser->setIRCModes (ev.parameterList["irc_mode"]);
-            }
-
             if (ev.parameterList.contains ("mode")) {
                 channelUser->setMode (ev.parameterList["mode"]);
             }
 
             presenceAdd (channelUser);
         }
-        else if ((ev.tag == "*") && (ev.command == "channel_changed"))
-        {
-            if (ev.parameterList.contains ("topic")) {
-                setTopic (ev.parameterList["topic"], ev.parameterList["topic_set_by"], ev.parameterList["timestamp"]);
-                appendCommandMessage(i18n("Topic"), i18n("The channel topic is \"%1\"").arg(ev.parameterList["topic"]));
+        else if (ev.tag == "*") {
+            if (ev.command == "channel_changed")
+            {
+                if (ev.parameterList.contains ("topic")) {
+                    setTopic (ev.parameterList["topic"], ev.parameterList["topic_set_by"], ev.parameterList["timestamp"]);
+                    appendCommandMessage(i18n("Topic"), i18n("The channel topic is \"%1\"").arg(ev.parameterList["topic"]));
+                }
             }
-        }
-        else if ((ev.tag == "*") && (ev.command == "msg")) {
-            // TODO: Do we need to escape the presence name too?
-            QString escapedMsg = ev.parameterList["msg"];
-            escapedMsg.replace ("\\.", ";");
-            if ((ev.parameterList.contains ("type")) && (ev.parameterList["type"] == "action")) {
-                appendAction (ev.parameterList["presence"], escapedMsg);
-            } else {
-                append (ev.parameterList["presence"], escapedMsg);
+            else if (ev.command == "msg") {
+                // TODO: Do we need to escape the presence name too?
+                QString escapedMsg = ev.parameterList["msg"];
+                escapedMsg.replace ("\\.", ";");
+                if ((ev.parameterList.contains ("type")) && (ev.parameterList["type"] == "action")) {
+                    appendAction (ev.parameterList["presence"], escapedMsg);
+                } else {
+                    append (ev.parameterList["presence"], escapedMsg);
+                }
             }
-        }
-        else if ((ev.tag == "*") && (ev.command == "channel_presence_added"))
-        {
-            QString presenceName = ev.parameterList["presence"];
-            Presence *user = network->presence (presenceName);
-            // If the user doesn't exist, create it
-            if (user == 0) {
-                user = new Presence (presenceName, ev.parameterList["address"]);
-                network->presenceAdd (user);
-            }
+            else if (ev.command == "channel_presence_added")
+            {
+                QString presenceName = ev.parameterList["presence"];
+                Presence *user = network->presence (presenceName);
+                // If the user doesn't exist, create it
+                if (user == 0) {
+                    user = new Presence (presenceName, ev.parameterList["address"]);
+                    network->presenceAdd (user);
+                }
 
-            ChannelPresence* channelUser = new ChannelPresence (this, user);
-            if (ev.parameterList.contains ("irc_mode")) {
-                channelUser->setIRCModes (ev.parameterList["irc_mode"]);
-            }
+                ChannelPresence* channelUser = new ChannelPresence (this, user);
+                if (ev.parameterList.contains ("mode")) {
+                    channelUser->setMode (ev.parameterList["mode"]);
+                }
 
-            if (ev.parameterList.contains ("mode")) {
-                channelUser->setMode (ev.parameterList["mode"]);
+                presenceAdd (channelUser);
+                if (! ev.parameterList.contains ("init")) {
+                    appendCommandMessage ("-->", i18n ("Join: %1 (%2)").arg (presenceName).arg (channelUser->address()));
+                }
             }
-
-            presenceAdd (channelUser);
-            if (! ev.parameterList.contains ("init")) {
-                appendCommandMessage ("-->", i18n ("Join: %1 (%2)").arg (presenceName).arg (channelUser->address()));
+            else if (ev.command == "channel_presence_removed")
+            {
+                presenceRemoveByName (ev.parameterList["presence"]);
+                appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]));
             }
-        }
-        else if ((ev.tag == "*") && (ev.command == "channel_presence_removed"))
-        {
-            presenceRemoveByName (ev.parameterList["presence"]);
-            appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]));
-        }
-        else if ((ev.tag == "*") && (ev.command == "channel_presence_mode_changed"))
-        {
-            ChannelPresence* user = presence (ev.parameterList["presence"]);
-            user->setIRCModes (ev.parameterList["irc_mode"]);
-            if (ev.parameterList.contains ("add")) {
-                user->modeChange (true, ev.parameterList["add"]);
-                appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
-            } else if (ev.parameterList.contains ("remove")) {
-                user->modeChange (false, ev.parameterList["remove"]);
-                appendCommandMessage (i18n ("Modes"), i18n ("Mode change: -%1 %2 by %3").arg (ev.parameterList["remove"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
+            else if (ev.command == "channel_presence_mode_changed")
+            {
+                ChannelPresence* user = presence (ev.parameterList["presence"]);
+                if (ev.parameterList.contains ("add")) {
+                    user->modeChange (true, ev.parameterList["add"]);
+                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
+                } else if (ev.parameterList.contains ("remove")) {
+                    user->modeChange (false, ev.parameterList["remove"]);
+                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: -%1 %2 by %3").arg (ev.parameterList["remove"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
+                }
             }
-        }
+            else if (ev.command == "channel_connection_init")
+            {
+                setConnected (true);
+                m_mypresence->appendStatusMessage (i18n ("Channel"), "Connected to channel: "+ ev.channel);
+            }
+            else if (ev.command == "channel_connection_deinit")
+            {
+                setConnected (false);
+                // TODO: Move this down to mypresence?
+                if (ev.parameterList["reason"].length () > 0) {
+                    m_mypresence->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel +": "+ ev.parameterList["reason"]);
+                } else {
+                    m_mypresence->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel);
+                }
+            }
+        } // end if (ev.tag == "*")
     }
 
 

@@ -38,7 +38,6 @@ ChatWindow::ChatWindow(QWidget* parent) : QVBox(parent)
     parentWidget=parent;
     firstLog=true;
     m_server=0;
-//    m_mypresence = 0;
     m_notificationsEnabled = true;
     m_channelEncodingSupported = false;
     m_currentTabNotify = Konversation::tnfNone;

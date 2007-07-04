@@ -36,9 +36,7 @@
 #include "icecapserversettings.h"
 #include "icecapnetwork.h"
 #include "icecapmypresence.h"
-// #include "texteventhandler.h"
 
-class TextEventHandler;
 class IcecapStatusPanel;
 class Identity;
 class RawLog;
@@ -89,7 +87,7 @@ class IcecapServer : public QObject
         bool connected() const  { return alreadyConnected; }
 
         IcecapInputFilter* getInputFilter() { return &inputFilter; }
-        Icecap::IcecapOutputFilter* getOutputFilter () { return outputFilter; }
+        Icecap::OutputFilter* getOutputFilter () { return outputFilter; }
 
         void appendStatusMessage(const QString& type,const QString& message);
         void appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL = true);
@@ -117,8 +115,7 @@ class IcecapServer : public QObject
         void networkRemove (Icecap::Network* network);
         void networkRemove (const QString& name);
         Icecap::Network* network (const QString& name);
-//        QValueList<Icecap::Network> getNetworkList () { return networkList; }
-        void networkListDisplay ();
+        QStringList networkListDisplay ();
 
         void mypresenceAdd (Icecap::MyPresence* mypresence);
         void mypresenceAdd (const QString& name, const QString& networkName);
@@ -129,17 +126,19 @@ class IcecapServer : public QObject
         // TODO: These may need to return a pointer / reference
         Icecap::MyPresence* mypresence (const QString& name, Icecap::Network* network);
         Icecap::MyPresence* mypresence (const QString& name, const QString& networkName);
-        void presenceListDisplay ();
+        QStringList presenceListDisplay ();
         void mypresenceClear () { mypresenceList.clear(); }
 
         void requestNetworkList ();
         void requestMypresenceList ();
         void requestChannelList ();
 
-        TextEventHandler* getTextEventHandler () { return textEventHnd; }
-
         /// Called by InputFilter. Emit an event down the events channel (after associating any relevent information from the original command sent to the server)
         void emitEvent (Icecap::Cmd command);
+
+        /// Called by OutputFilter. Emit a message down the messages channel so that individual windows can choose whether or not to display it. Only involved in local command results.
+        // TODO: Is there any reason to actually use this?
+        void emitMessage (Icecap::ClientMsg msg);
 
         /// Queue a command to be sent to the server (and record the parameters in case we need them later)
         void queueCommand (Icecap::Cmd command);
@@ -166,6 +165,8 @@ class IcecapServer : public QObject
 
         /// Used for sending out results to commands - associates parameter values sent to the server with the result
         void event (Icecap::Cmd result);
+        /// Used for sending out client messages (eg. local command results) to be displayed on client windows
+        void message (Icecap::ClientMsg msg);
 
     public slots:
         void lookupFinished();
@@ -181,7 +182,6 @@ class IcecapServer : public QObject
 
         void reconnect();
         void disconnect();
-//        void connectToNewServer(const QString& server, const QString& port, const QString& password);
         void showSSLDialog();
 
         void eventFilter (Icecap::Cmd result);
@@ -247,7 +247,7 @@ class IcecapServer : public QObject
         QStringList outputBuffer;
 
         IcecapInputFilter inputFilter;
-        Icecap::IcecapOutputFilter* outputFilter;
+        Icecap::OutputFilter* outputFilter;
 
         IcecapStatusPanel* statusView;
         RawLog* rawLog;
@@ -268,8 +268,6 @@ class IcecapServer : public QObject
 
         QPtrList<Icecap::Network> networkList;
         QPtrList<Icecap::MyPresence> mypresenceList;
-
-        TextEventHandler* textEventHnd;
 
         /// Used to maintain information on commands sent to the server so we can use parameter values when the response comes back.
         QMap<uint, Icecap::Cmd> commandsPending;

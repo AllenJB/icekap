@@ -207,8 +207,11 @@ class ChatWindow : public QVBox
         /** A pointer to the server this chatwindow is part of.
          *  Not always non-null - e.g. for konsolepanel
          */
+        // m_server is currently only used for online status and something regarding log files
+        // m_server and m_presence are used by ViewTree for deciding what to do with windows
         IcecapServer* m_server;
         Icecap::MyPresence* m_mypresence;
+
         Identity identity;
         QFile logfile;
         WindowType type;

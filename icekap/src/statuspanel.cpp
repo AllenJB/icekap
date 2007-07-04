@@ -80,9 +80,15 @@ StatusPanel::~StatusPanel()
 {
 }
 
+Icecap::MyPresence* StatusPanel::getMyPresence()
+{
+    return m_mypresence;
+}
+
 void StatusPanel::setMyPresence (Icecap::MyPresence* mypresence)
 {
-    IcecapStatusPanel::setMyPresence (mypresence);
+    m_mypresence = mypresence;
+    setServer (mypresence->server());
     nicknameCombobox->clear();
 //    nicknameCombobox->insertStringList(mypresence->getNicknameList());
 //    nicknameCombobox->setCurrentText (mypresence->getNickname (0));
@@ -268,9 +274,9 @@ void StatusPanel::sendStatusText(const QString& sendLine)
         outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
     }
 */
-//    Icecap::IcecapOutputFilter* outputFilter = mypresence->getOutputFilter ();
-    Icecap::IcecapOutputFilter* outputFilter = m_server->getOutputFilter ();
-//    Icecap::IcecapOutputFilter* outputFilter = mypresence->server()->getOutputFilter ();
+//    Icecap::OutputFilter* outputFilter = mypresence->getOutputFilter ();
+    Icecap::OutputFilter* outputFilter = m_server->getOutputFilter ();
+//    Icecap::OutputFilter* outputFilter = mypresence->server()->getOutputFilter ();
 
 
     // Send all strings, one after another

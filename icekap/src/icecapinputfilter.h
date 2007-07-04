@@ -24,7 +24,6 @@
   @author Dario Abatianni
 */
 
-class TextEventHandler;
 class IcecapServer;
 class QWidget;
 class Query;
@@ -98,7 +97,6 @@ class IcecapInputFilter : public QObject
         bool myplistInProgress;
         bool chlistInProgress;
 
-        TextEventHandler* textEventHnd;
 };
 #endif
 

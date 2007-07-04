@@ -41,7 +41,6 @@
 #include "common.h"
 #include "notificationhandler.h"
 #include "blowfish.h"
-#include "texteventhandler.h"
 
 #include <config.h>
 // TODO: Remove unnecessary / unsupported crap from constructor
@@ -64,8 +63,6 @@ IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, co
     m_server.setPort(port.toInt());
     m_server.setPassword(password);
     m_server.setSSLEnabled(useSSL);
-
-    textEventHnd = new TextEventHandler (this);
 
     init (viewContainer);
 }
@@ -114,7 +111,7 @@ void IcecapServer::init(ViewContainer* viewContainer)
     addRawLog(true);
 
     inputFilter.setServer(this);
-    outputFilter = new Icecap::IcecapOutputFilter(this);
+    outputFilter = new Icecap::OutputFilter(this);
 
     connectToServer();
 
@@ -393,7 +390,7 @@ void IcecapServer::setKeyForRecipient(const QString& recipient, const QCString& 
     keyMap[recipient] = key;
 }
 
-// TODO: This should be handled by IcecapOutputFilter
+// TODO: This should be handled by OutputFilter
 void IcecapServer::quitServer()
 {
     QString command(Preferences::commandChar()+"QUIT");
@@ -809,16 +806,18 @@ void IcecapServer::disconnect()
     }
 }
 
-void IcecapServer::networkListDisplay ()
+QStringList IcecapServer::networkListDisplay ()
 {
-    appendMessageToFrontmost ("Network", "Network List (Local Copy):");
+    QStringList result;
+    result.append ("Network List:");
     QPtrListIterator<Icecap::Network> it( networkList );
     Icecap::Network* current;
     while ( (current = it.current()) != 0 ) {
         ++it;
-        appendMessageToFrontmost ("Network", "Network: "+ current->protocol() +" - "+ current->name());
+        result.append (QString ("Network: %1 - %2").arg (current->protocol()).arg (current->name()));
     }
-    appendMessageToFrontmost("Network", "End of Network List (Local Copy)");
+    result.append ("End of Network List");
+    return result;
 }
 
 Icecap::Network* IcecapServer::network (const QString& name)
@@ -920,16 +919,19 @@ void IcecapServer::mypresenceRemove (const QString& name, const QString& network
     mypresenceRemove (name, network (networkName));
 }
 
-void IcecapServer::presenceListDisplay ()
+QStringList IcecapServer::presenceListDisplay ()
 {
-    appendMessageToFrontmost ("Presence", "Presence List (Local Copy):");
+    QStringList result;
+
+    result.append ("Presence List:");
     QPtrListIterator<Icecap::MyPresence> it( mypresenceList );
     Icecap::MyPresence* current;
     while ( (current = it.current()) != 0 ) {
         ++it;
-        appendMessageToFrontmost ("Presence", "Presence: "+ current->name() +" - "+ current->network()->name ());
+        result.append (QString ("Presence: %1 - %2").arg (current->name()).arg (current->network()->name()));
     }
-    appendMessageToFrontmost("Presence", "End of Presence List (Local Copy)");
+    result.append ("End of Presence List");
+    return result;
 }
 
 // TODO: Replace parameters with parameterList
@@ -941,7 +943,7 @@ void IcecapServer::queueCommand (Icecap::Cmd command)
     } else {
         QMap<QString,QString>::const_iterator end = command.parameterList.end();
         for ( QMap<QString,QString>::const_iterator it = command.parameterList.begin(); it != end; ++it ) {
-            parameters += ";"+ it.key() +"="+ it.data();
+            parameters += it.key() +"="+ it.data() +";";
         }
     }
 
@@ -985,7 +987,7 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
 {
     // Events don't have a send command, so skip all the processing
     if (result.tag == "*") {
-        appendStatusMessage ("Debug", QString ("event emitted :: %1 :: %2 :: m: %3 :: n: %4 :: c: %5 :: p: %6").arg (result.tag).arg (result.command).arg (result.mypresence).arg (result.network).arg (result.channel).arg (paramsToText (result.parameterList)));
+//        appendStatusMessage ("Debug", QString ("event emitted :: %1 :: %2 :: m: %3 :: n: %4 :: c: %5 :: p: %6").arg (result.tag).arg (result.command).arg (result.mypresence).arg (result.network).arg (result.channel).arg (paramsToText (result.parameterList)));
         emit event (result);
         return;
     }
@@ -1014,6 +1016,10 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
 
     Icecap::Cmd sendCmd = commandsPending.find (id).data();
     result.sentCommand = sendCmd.command;
+    // If the returned message has not command, set it to be the sent command
+    if (result.command.length () < 1) {
+        result.command = sendCmd.command;
+    }
     result.sentParameterList = sendCmd.parameterList;
     // TODO: Get rid of sentParameters
     result.sentParameters = sendCmd.parameters;
@@ -1038,6 +1044,9 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
 
     result.tag = tagPart[1];
     emit event (result);
+//    appendStatusMessage ("Debug", QString ("event emitted :: tag: %1 :: cmd: %2 :: m: %3 :: n: %4 :: c: %5 :: p: %6").arg (result.tag).arg (result.command).arg (result.mypresence).arg (result.network).arg (result.channel).arg (paramsToText (result.parameterList)));
+//    appendStatusMessage ("Debug", QString ("event(2) :: tag: %1 :: sC: %2 :: sP: %3 :: sPL: %4 :: er: %5").arg (result.tag).arg (result.sentCommand).arg (result.sentParameters).arg (paramsToText (result.sentParameterList)).arg (result.error));
+
 }
 
 // TODO: Implement duplicate checking
@@ -1064,11 +1073,48 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
         if (event.status == ">") {
             if (mypresence (event.parameterList["mypresence"], event.parameterList["network"]) == 0) {
                 mypresenceAdd (event.parameterList["mypresence"], event.parameterList["network"]);
+                if (event.parameterList.contains ("joined")) {
+                    mypresence (event.parameterList["mypresence"], event.parameterList["network"])->setConnected (true);
+                }
             }
 
             mypresence (event.parameterList["mypresence"], event.parameterList["network"])->channelAdd (event.parameterList["channel"], event.parameterList);
         }
     }
+
+    else if ((event.tag == "*") && (event.command == "preauth")) {
+        appendStatusMessage (i18n("Welcome"), "Successfully connected to Icecap server.");
+    }
+    else if (event.command == "network remove") {
+        if (event.status == "-") {
+            if (event.error == "notfound") {
+                appendStatusMessage (i18n ("Network"), i18n ("Remove Network: %1: Specified network not found.").arg (event.network));
+            } else {
+                appendStatusMessage (i18n ("Network"), i18n ("Remove Network: %1: An unknown error occurred.").arg (event.network));
+            }
+        } else if (event.status == "+") {
+            appendStatusMessage (i18n ("Network"), i18n ("Network %1 removed").arg (event.network));
+        }
+    }
+    else if (event.tag == "*")
+    {
+        if (event.command == "network_init") {
+            networkAdd (event.parameterList["protocol"], event.network);
+            appendStatusMessage (i18n("Network"), i18n ("Network added: [%1] %2").arg (event.parameterList["protocol"]).arg (event.network));
+        } else if (event.command == "network_deinit") {
+            networkRemove (event.network);
+            appendStatusMessage (i18n("Network"), i18n ("Network deleted: %2").arg (event.network));
+        } else if (event.command == "local_presence_init") {
+            mypresenceAdd (event.mypresence, event.network);
+            appendStatusMessage (i18n("Presence"), i18n ("Presence added: [%1] %2").arg (event.mypresence).arg (event.network));
+        } else if (event.command == "local_presence_deinit") {
+            mypresenceRemove (event.mypresence, event.network);
+            appendStatusMessage (i18n("Presence"), i18n ("Presence deleted: [%1] %2").arg (event.mypresence).arg (event.network));
+
+        }
+
+    }
+
 }
 
 QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
@@ -1079,6 +1125,11 @@ QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
         parameters += ";"+ it.key() +"="+ it.data();
     }
     return parameters;
+}
+
+void IcecapServer::emitMessage (Icecap::ClientMsg msg)
+{
+    emit message (msg);
 }
 
 #include "icecapserver.moc"

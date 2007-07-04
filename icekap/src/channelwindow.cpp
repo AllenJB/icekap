@@ -815,12 +815,12 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
     {
         QString output(outList[index]);
 
-//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_mypresence->getNickname(),output,getName());
-        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_mypresence->name(),output, m_channel);
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse (m_mypresence->name(), output, m_mypresence->network()->name(), m_mypresence->name(), m_channel->name());
 
         // Is there something we need to display for ourselves?
         if(!result.output.isEmpty())
         {
+            // TODO: Are all of these used?
             if(result.type == Icecap::Action) appendAction(m_mypresence->name(), result.output);
             else if(result.type == Icecap::Command) appendCommandMessage(result.typeString, result.output);
             else if(result.type == Icecap::Program) appendServerMessage(result.typeString, result.output);
@@ -836,10 +836,11 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
             }
         }
 
+        // TODO: Can we get rid of this now we have IcecapServer->queueCommand()?
         // Send anything else to the server
         if (!result.toServer.isEmpty()) {
             m_server->queue(result.toServer);
-        } else {
+        } else if (!result.toServerList.count()) {
             m_server->queueList(result.toServerList);
         }
     } // for
