@@ -269,16 +269,14 @@ void StatusPanel::sendStatusText(const QString& sendLine)
     // create a work copy
     QString outputAll(sendLine);
     // replace aliases and wildcards
-/*
+    m_mypresence->appendStatusMessage ("DEBUG", "outputAll before: "+ outputAll);
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
-        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);
+        outputAll = m_server->parseWildcards (outputAll, m_mypresence->name(), QString::null, QString::null, QString::null, QString::null);
     }
-*/
-//    Icecap::OutputFilter* outputFilter = mypresence->getOutputFilter ();
-    Icecap::OutputFilter* outputFilter = m_server->getOutputFilter ();
-//    Icecap::OutputFilter* outputFilter = mypresence->server()->getOutputFilter ();
+    m_mypresence->appendStatusMessage ("DEBUG", "outputAll after: "+ outputAll);
 
+    Icecap::OutputFilter* outputFilter = m_server->getOutputFilter ();
 
     // Send all strings, one after another
     QStringList outList=QStringList::split('\n',outputAll);
@@ -287,9 +285,7 @@ void StatusPanel::sendStatusText(const QString& sendLine)
         QString output(outList[index]);
 
         // encoding stuff is done in Server()
-        // TODO: Need to fix this bit - it's causing a crash currently
-//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse("", output, QString::null);
-        Icecap::OutputFilterResult result = outputFilter->parse("", output, QString::null);
+        Icecap::OutputFilterResult result = outputFilter->parse("", output, m_mypresence->network()->name(), m_mypresence->name());
 
         if(!result.output.isEmpty())
         {
