@@ -28,6 +28,9 @@ namespace Icecap
         connected = false;
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
+
+        // Connect to server event stream (command results)
+        connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
     }
 
     Channel::Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap)
@@ -41,14 +44,14 @@ namespace Icecap
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
 
+        // Connect to server event stream (command results)
+        connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
+
         if (connected) init ();
     }
 
     void Channel::init ()
     {
-        // Connect to server event stream (command results)
-        connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
-
         if (windowIsActive) return;
 
         if (m_mypresence->connected() == false) {
@@ -280,16 +283,16 @@ namespace Icecap
             else if (ev.command == "channel_connection_init")
             {
                 setConnected (true);
-                m_mypresence->appendStatusMessage (i18n ("Channel"), "Connected to channel: "+ ev.channel);
+                appendCommandMessage (i18n ("Channel"), "Connected to channel: "+ ev.channel);
             }
             else if (ev.command == "channel_connection_deinit")
             {
                 setConnected (false);
                 // TODO: Move this down to mypresence?
                 if (ev.parameterList["reason"].length () > 0) {
-                    m_mypresence->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel +": "+ ev.parameterList["reason"]);
+                    appendCommandMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel +": "+ ev.parameterList["reason"]);
                 } else {
-                    m_mypresence->appendStatusMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel);
+                    appendCommandMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel);
                 }
             }
         } // end if (ev.tag == "*")
