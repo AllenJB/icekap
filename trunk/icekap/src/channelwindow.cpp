@@ -805,8 +805,8 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
     // replace aliases and wildcards
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
-//        outputAll = m_server->parseWildcards(outputAll,m_server->getNickname(),getName(),getKey(),
-//            m_channel->getSelectedNickList(),QString::null);
+        outputAll = m_server->parseWildcards(outputAll,m_mypresence->name(), getName(), getKey(),
+            m_channel->getSelectedNickList(), QString::null);
     }
 
     // Send all strings, one after another

@@ -1057,6 +1057,15 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
         }
     }
 
+    // Is this ever going to get detected?
+    else if ((event.status == "-") && (event.error == "bad")) {
+        appendStatusMessage ("Error", "Bad command format: "+ event.sentCommand);
+    }
+
+    else if ((event.status == "-") && (event.error == "unknown")) {
+        appendStatusMessage ("Error", "Unrecognised command: "+ event.sentCommand);
+    }
+
     // MyPresence lists are handled here instead of Network because you can't list only presences on a given Network
     else if (event.sentCommand == "presence list") {
         if (event.status == ">") {
@@ -1130,6 +1139,90 @@ QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
 void IcecapServer::emitMessage (Icecap::ClientMsg msg)
 {
     emit message (msg);
+}
+
+QString IcecapServer::parseWildcards(const QString& toParse,
+const QString& sender,
+const QString& channelName,
+const QString& channelKey,
+const QString& nick,
+const QString& parameter)
+{
+    return parseWildcards(toParse,sender,channelName,channelKey,QStringList::split(' ',nick),parameter);
+}
+
+QString IcecapServer::parseWildcards(const QString& toParse,
+    const QString& sender,
+    const QString& channelName,
+    const QString& channelKey,
+    const QStringList& nickList,
+    const QString& /*parameter*/)
+{
+    // TODO: parameter handling, since parameters are not functional yet
+
+    // store the parsed version
+    QString out;
+
+    // default separator
+    QString separator(" ");
+
+    int index = 0, found = 0;
+    QChar toExpand;
+
+    while ((found = toParse.find('%',index)) != -1)
+    {
+                                                  // append part before the %
+        out.append(toParse.mid(index,found-index));
+        index = found + 1;                        // skip the part before, including %
+        if (index >= (int)toParse.length())
+            break;                                // % was the last char (not valid)
+        toExpand = toParse.at(index++);
+        if (toExpand == 's')
+        {
+            found = toParse.find('%',index);
+            if (found == -1)                      // no other % (not valid)
+                break;
+            separator = toParse.mid(index,found-index);
+            index = found + 1;                    // skip separator, including %
+        }
+        else if (toExpand == 'u')
+        {
+            out.append(nickList.join(separator));
+        }
+        else if (toExpand == 'c')
+        {
+            if(!channelName.isEmpty())
+                out.append(channelName);
+        }
+        else if (toExpand == 'o')
+        {
+            out.append(sender);
+        }
+        else if (toExpand == 'k')
+        {
+            if(!channelKey.isEmpty())
+                out.append(channelKey);
+        }
+/*
+        else if (toExpand == 'K')
+        {
+            if(!m_serverGroup->serverByIndex(m_currentServerIndex).password().isEmpty())
+                out.append(m_serverGroup->serverByIndex(m_currentServerIndex).password());
+        }
+*/
+        else if (toExpand == 'n')
+        {
+            out.append("\n");
+        }
+        else if (toExpand == 'p')
+        {
+            out.append("%");
+        }
+    }
+
+                                                  // append last part
+    out.append(toParse.mid(index,toParse.length()-index));
+    return out;
 }
 
 #include "icecapserver.moc"
