@@ -201,7 +201,6 @@ namespace Icecap
         }
 
         // Response to request for channel list
-        // TODO: Do we need to deal with user initiated channel lists in a different way?
         if (ev.sentCommand == "channel names") {
             if (ev.status == "-") {
                 // TODO: Error handling
@@ -288,7 +287,6 @@ namespace Icecap
             else if (ev.command == "channel_connection_deinit")
             {
                 setConnected (false);
-                // TODO: Move this down to mypresence?
                 if (ev.parameterList["reason"].length () > 0) {
                     appendCommandMessage (i18n ("Channel"), "Disconnected from channel: "+ ev.channel +": "+ ev.parameterList["reason"]);
                 } else {

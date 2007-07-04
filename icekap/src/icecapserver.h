@@ -148,6 +148,10 @@ class IcecapServer : public QObject
 
         QString paramsToText (QMap<QString,QString> parameterList);
 
+        QString parseWildcards(const QString& toParse, const QString& nickname, const QString& channelName, const QString &channelKey, const QStringList &nickList, const QString& parameter);
+        QString parseWildcards(const QString& toParse, const QString& nickname, const QString& channelName, const QString &channelKey, const QString& nick, const QString& parameter);
+
+
     signals:
         /// will be connected to KonversationApplication::removeServer()
         void deleted(IcecapServer* myself);

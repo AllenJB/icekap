@@ -303,8 +303,14 @@ namespace Icecap
             // Forward unknown commands to server
             else
             {
+                Icecap::Cmd command;
+                command.tag = "raw";
+                command.command = inputLine.mid (1);
+                m_server->queueCommand (command);
+/*
                 result.toServer = inputLine.mid(1);
                 result.type = Message;
+*/
             }
         }
         // Ordinary message to channel/query?
@@ -320,10 +326,16 @@ namespace Icecap
         // Eveything else goes to the server unchanged
         else
         {
+            Icecap::Cmd command;
+            command.tag = "raw";
+            command.command = inputLine;
+            m_server->queueCommand (command);
+/*
             result.toServer = inputLine;
             result.output = inputLine;
             result.typeString = i18n("Raw");
             result.type = Program;
+*/
         }
 
         return result;
