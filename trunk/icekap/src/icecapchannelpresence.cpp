@@ -25,10 +25,16 @@ namespace Icecap
 
     ChannelPresence::ChannelPresence (Channel* channel, Presence* presence)
     {
+        QObject::setName (QString ("chap_"+ presence->name()).ascii());
         m_channel = channel;
         m_presence = presence;
         m_modes = "";
         m_listView = 0;
+        m_owner = false;
+        m_admin = false;
+        m_op = false;
+        m_halfop = false;
+        m_voice = false;
     }
 
     ChannelPresence::~ChannelPresence ()
@@ -38,43 +44,31 @@ namespace Icecap
 
     // TODO: Warning for unrecognised modes
     // TODO: Get rid of m_modes (still used for operator== )
+    // TODO: Convert remaining modes to icecap equivalents
     void ChannelPresence::setMode (const QString& modes)
     {
         m_modes = modes;
 
-        m_owner  = modes.contains ("q");
-        m_admin  = modes.contains ("a");
-        m_op     = modes.contains ("op");
-        m_halfop = modes.contains ("h");
-        m_voice  = modes.contains ("voice");
+//        m_owner  = modes.contains ("q");
+//        m_admin  = modes.contains ("a");
+        m_op     = (modes == "op");
+//        m_halfop = modes.contains ("h");
+        m_voice  = (modes == "voice");
 
         emit modeChanged (modes);
+        emit channelNickChanged ();
     }
 
+    // TODO: Add remaining icecap mode names
     void ChannelPresence::modeChange (const bool add, const QString& mode)
     {
         if (mode == "voice") {
             m_voice = add;
         }
         else if (mode == "op") {
-            m_op == add;
+            m_op = add;
         }
-    }
-
-
-    // TODO: Warning for unrecognised modes
-    // TODO: Get rid of m_IRCmodes
-    void ChannelPresence::setIRCModes (const QString& modes)
-    {
-        m_ircModes = modes;
-/*
-        m_owner  = modes.contains ("q");
-        m_admin  = modes.contains ("a");
-        m_op     = modes.contains ("@");
-        m_halfop = modes.contains ("h");
-        m_voice  = modes.contains ("+");
-*/
-//        emit modeChanged (modes);
+        emit channelNickChanged();
     }
 
     bool ChannelPresence::isSelected () const
@@ -84,8 +78,7 @@ namespace Icecap
 
     bool ChannelPresence::operator== (ChannelPresence compareTo)
     {
-        return ((m_modes == compareTo.m_modes) &&
-            (m_channel == compareTo.m_channel) &&
+        return ((m_channel == compareTo.m_channel) &&
             (m_presence == compareTo.m_presence));
     }
 

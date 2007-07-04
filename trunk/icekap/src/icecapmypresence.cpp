@@ -192,20 +192,51 @@ namespace Icecap
             return;
         }
 
-        if ((ev.tag == "*") && (ev.command == "msg"))
+        if (ev.tag == "*")
         {
-            QString escapedMsg = ev.parameterList["msg"];
-            escapedMsg.replace ("\\.", ";");
-            if (ev.parameterList["presence"].length () < 1) {
-                if (ev.parameterList["irc_target"] == "AUTH") {
-                    appendStatusMessage (ev.parameterList["irc_target"], escapedMsg);
-                } else {
-                    appendStatusMessage (i18n("Message"), escapedMsg);
+            if (ev.command == "msg")
+            {
+                QString escapedMsg = ev.parameterList["msg"];
+                escapedMsg.replace ("\\.", ";");
+                if (ev.parameterList["presence"].length () < 1) {
+                    if (ev.parameterList["irc_target"] == "AUTH") {
+                        appendStatusMessage (ev.parameterList["irc_target"], escapedMsg);
+                    } else {
+                        appendStatusMessage (i18n("Message"), escapedMsg);
+                    }
+                } else if (ev.parameterList["irc_target"] == "$*") {
+                    appendStatusMessage (ev.parameterList["presence"], escapedMsg);
                 }
-            } else if (ev.parameterList["irc_target"] == "$*") {
-                appendStatusMessage (ev.parameterList["presence"], escapedMsg);
             }
-        }
+            else if ( ev.command == "channel_init" ) {
+                channelAdd (ev.channel);
+                appendStatusMessage ( i18n("Channel"), i18n ("Channel %1 added.").arg (ev.channel));
+            } else if ( ev.command == "channel_deinit" ) {
+                channelRemove (ev.channel);
+                appendStatusMessage ( i18n("Channel"), i18n ("Channel %1 deleted.").arg (ev.channel));
+            } else if (ev.command == "gateway_connecting") {
+                setState (Icecap::SSConnecting);
+                QString message = i18n ("Connecting to gateway: %1:%2").arg(ev.parameterList["ip"]).arg (ev.parameterList["port"]);
+                appendStatusMessage (i18n ("Gateway"), message);
+            } else
+            if (ev.command == "gateway_connected") {
+                QString message = i18n ("Connected to gateway: %1:%2 - in_charsets: %3 - out_charset: %4").arg(ev.parameterList["ip"]).arg (ev.parameterList["port"]).arg (ev.parameterList["in_charsets"]).arg (ev.parameterList["out_charset"]);
+                appendStatusMessage (i18n ("Gateway"), message);
+            }
+            else if (ev.command == "gateway_disconnected") {
+                appendStatusMessage (i18n ("Gateway"), i18n ("Disconnected from gateway."));
+            }
+            else if (ev.command == "gateway_motd") {
+                appendStatusMessage (i18n ("MOTD"), ev.parameterList["data"]);
+            }
+            else if (ev.command == "gateway_motd_end") {
+                appendStatusMessage (i18n ("MOTD"), i18n ("End of MOTD."));
+            }
+            else if (ev.command == "gateway_logged_in") {
+                appendStatusMessage (i18n ("Gateway"), i18n ("Logged in to gateway."));
+            }
+
+        } // end if (ev.tag == "*")
     }
 
 }

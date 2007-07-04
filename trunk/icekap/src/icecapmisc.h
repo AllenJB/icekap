@@ -14,8 +14,15 @@
 #ifndef ICECAPMISC_H
 #define ICECAPMISC_H
 
+#include <qmap.h>
+#include <qstring.h>
+#include <qstringlist.h>
+
 namespace Icecap
 {
+
+    // Used for the event stream coming from InputFilter via Server
+    // TODO: Ensure no code uses sentParameters or parameters
     typedef struct
     {
         QString tag;
@@ -24,6 +31,8 @@ namespace Icecap
         QMap<QString,QString> parameterList;
         // Use of parameters is discourages - use parameterList instead
         QString parameters;
+        // Used only when status is "-"
+        QString error;
 
         // The below values are only used for the IcecapServer::event slot
         QString sentCommand;
@@ -34,6 +43,17 @@ namespace Icecap
         // Use of sentParameters is discouraged - use sentParameterList instead
         QString sentParameters;
     } Cmd;
+
+    // Used for the message stream coming from OutputFilter via Server
+    // Contains messages to be displayed in the client view (ie. local responses to commands)
+    typedef struct
+    {
+        QString network;
+        QString mypresence;
+        QString channel;
+        QString message;
+        QStringList multilineMsg;
+    } ClientMsg;
 }
 
 #endif

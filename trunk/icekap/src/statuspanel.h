@@ -48,6 +48,7 @@ class StatusPanel : public IcecapStatusPanel
         virtual void emitUpdateInfo();
 
         virtual void setMyPresence (Icecap::MyPresence* mypresence);
+        virtual Icecap::MyPresence* getMyPresence ();
 
     signals:
         void sendFile();
@@ -77,6 +78,7 @@ class StatusPanel : public IcecapStatusPanel
         QString oldNick;
 
         StatusPanel* statusPanel;
+        Icecap::MyPresence* m_mypresence;
 };
 #endif
 

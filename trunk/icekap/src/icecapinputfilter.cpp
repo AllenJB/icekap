@@ -35,7 +35,6 @@
 #include "statuspanel.h"
 #include "common.h"
 #include "notificationhandler.h"
-#include "texteventhandler.h"
 
 #include <kresolver.h>
 
@@ -53,7 +52,6 @@ IcecapInputFilter::~IcecapInputFilter()
 void IcecapInputFilter::setServer(IcecapServer* newServer)
 {
     server=newServer;
-    textEventHnd = server->getTextEventHandler ();
 }
 
 void IcecapInputFilter::parseLine(const QString& a_newLine)
@@ -130,77 +128,22 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         // eventually icecap will implement authentication so we'll need to add support for that
 
         // Send the welcome signal, so the server class knows we are connected properly
+        // TODO: Can we get rid of this welcome signal now that we have the event signal?
         emit welcome("");
         m_connecting = true;
-    }
-    else if (eventName == "network_init")
-    {
-        server->networkAdd (parameterMap["protocol"], parameterMap["network"]);
-    }
-    else if (eventName == "network_deinit")
-    {
-        server->networkRemove (parameterMap["network"]);
-    }
-    else if (eventName == "local_presence_init")
-    {
-        server->mypresenceAdd (parameterMap ["mypresence"], parameterMap["network"]);
-    }
-    else if (eventName == "local_presence_deinit")
-    {
-        server->mypresenceRemove (parameterMap ["mypresence"], parameterMap["network"]);
-    }
-    else if (eventName == "channel_init")
-    {
-        server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelAdd (parameterMap["channel"]);
-    }
-    else if (eventName == "channel_deinit")
-    {
-        server->mypresence (parameterMap["mypresence"], parameterMap["network"])->channelRemove (parameterMap["channel"]);
-    }
-    else if (eventName == "channel_connection_init")
-    {
-        server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"])->setConnected (true);
-    }
-    else if (eventName == "channel_connection_deinit")
-    {
-        server->mypresence(parameterMap["mypresence"], parameterMap["network"])->channel (parameterMap["channel"])->setConnected (false);
-    }
-    else if (eventName == "gateway_connecting")
-    {
-        Icecap::MyPresence* myp = server->mypresence(parameterMap["mypresence"], parameterMap["network"]);
-        myp->setState (Icecap::SSConnecting);
-        QString message = i18n ("Connecting to gateway: %1:%2").arg(parameterMap["ip"]).arg (parameterMap["port"]);
-    }
-    else if ((eventName == "gateway_disconnected") || (eventName == "gateway_motd") || (eventName == "gateway_motd_end"))
-    {
-        // Do nothing
-    }
-/*
-    else if ((eventName == "channel_presence_removed") || (eventName == "channel_presence_added"))
-    {
-        // Do nothing
-    }
-    else if (eventName != "msg") {
-        processTextEvent = false;
-    }
-*/
-    else {
-        // If there's no specific handler, we send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
-        // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
-        Icecap::Cmd result;
-        result.tag = "*";
-        result.command = eventName;
-        result.parameterList = parameterMap;
-        result.network = parameterMap["network"];
-        result.mypresence = parameterMap["mypresence"];
-        result.channel = parameterMap["channel"];
-        server->emitEvent (result);
-        processTextEvent = false;
+        // Don't return or anything - we want this to go through the event system
     }
 
-    if (processTextEvent) {
-        textEventHnd->processEvent(eventName, parameterMap);
-    }
+    // Send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
+    // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
+    Icecap::Cmd result;
+    result.tag = "*";
+    result.command = eventName;
+    result.parameterList = parameterMap;
+    result.network = parameterMap["network"];
+    result.mypresence = parameterMap["mypresence"];
+    result.channel = parameterMap["channel"];
+    server->emitEvent (result);
 }
 
 void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList)
@@ -212,6 +155,12 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     // TODO: Is there an easier way to do this?
     // TODO: Should this be moved up to parseLine?
     // TODO: Better handling for keys that appear multiple times
+    QString error;
+    if (status == "-") {
+        error = parameterList[0];
+        parameterList.pop_front ();
+    }
+
     QMap<QString, QString> parameterMap;
     QStringList::const_iterator end = parameterList.end();
     for ( QStringList::const_iterator it = parameterList.begin(); it != end; ++it ) {
@@ -229,6 +178,9 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
     Icecap::Cmd result;
     result.tag = tag;
     result.status = status;
+    if (result.status == "-") {
+        result.error = error;
+    }
     result.parameterList = parameterMap;
     server->emitEvent (result);
 }

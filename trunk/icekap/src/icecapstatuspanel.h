@@ -52,6 +52,7 @@ class IcecapStatusPanel : public ChatWindow
 
         virtual void setNotificationsEnabled(bool enable);
 
+
     signals:
         void sendFile();
 

@@ -37,9 +37,7 @@ namespace Icecap
             ~ChannelPresence ();
 
             QString modes () { return m_modes; }
-            QString ircModes () { return m_ircModes; }
             void setMode (const QString& modes);
-            void setIRCModes (const QString& modes);
             void modeChange (const bool add, const QString& mode);
 
             Presence* presence () { return m_presence; }
@@ -78,13 +76,19 @@ namespace Icecap
 
         signals:
             // TODO: Do we want to change this to be an indicator for each mode - ie: modeChanged (QString type, bool value) ?
+            // TODO: Do we actually want this at all?
             void modeChanged (QString modes);
+
+            void channelNickChanged ();
+
+            // TODO: err, actually put some code in for this =P
+            // This is only here to shut up the debug messages
+            void nickInfoChanged ();
 
         private:
             Presence* m_presence;
             Channel* m_channel;
             QString m_modes;
-            QString m_ircModes;
 
             bool m_op;
             bool m_admin;
