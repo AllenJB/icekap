@@ -72,7 +72,6 @@ namespace Icecap
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
             OutputFilterResult parse (const QString& myNick, const QString& line, const QString& networkName = "", const QString& mypresenceName = "", const QString& channelName = "");
-//            OutputFilterResult parse (const QString& myNick, const QString& line, Network* network, MyPresence* mypresence, Channel* channel);
             bool replaceAliases(QString& line);
 
         signals:

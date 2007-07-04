@@ -23,7 +23,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-// #include "channel.h"
 #include "icecapstatuspanel.h"
 #include "konversationapplication.h"
 #include "ircinput.h"
@@ -85,6 +84,7 @@ void IcecapStatusPanel::sendStatusText(const QString& sendLine)
     QString outputAll(sendLine);
     // replace aliases and wildcards
 /*
+    TODO: Fix this so we don't need a nickname (because this status panel is used for the Icecap server, where no nickname exists)
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
         outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), QString::null, QString::null, QString::null, QString::null);

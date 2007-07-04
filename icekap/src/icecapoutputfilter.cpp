@@ -89,7 +89,8 @@ namespace Icecap
                 // restore "%<1>" as "%%"
                 aliasReplace.replace("%\x01","%%");
                 // modify line
-                line=aliasReplace;
+                // BUGFIX: Don't strip the command char
+                line=cc + aliasReplace;
                 // return "replaced"
                 return true;
             }
@@ -247,6 +248,7 @@ namespace Icecap
         else
 
         if (line.startsWith (commandChar +"join"))
+            // TODO: Error handling
         {
             Icecap::Cmd command;
             command.tag = "join";
@@ -258,11 +260,16 @@ namespace Icecap
             m_server->queueCommand (command);
         }
         else if (line.startsWith (commandChar +"part"))
+            // TODO: Error handling
         {
             Icecap::Cmd command;
             command.tag = "part";
             command.command = "channel part";
-            command.parameterList.insert ("channel", parameters[0]);
+            if (parameters[0].length () < 1) {
+                command.parameterList.insert ("channel", channelName);
+            } else {
+                command.parameterList.insert ("channel", parameters[0]);
+            }
             command.parameterList.insert ("network", networkName);
             command.parameterList.insert ("mypresence", mypresenceName);
 
