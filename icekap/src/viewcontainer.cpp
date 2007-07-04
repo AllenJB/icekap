@@ -1159,7 +1159,6 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
 
             break;
 
-/*
         case ChatWindow::Query:
             if (Preferences::tabNotificationsLeds())
                 iconSet = images->getMsgsLed(false);
@@ -1189,7 +1188,6 @@ void ViewContainer::addView(ChatWindow* view, const QString& label, bool weiniti
             }
 
             break;
-*/
 
         case ChatWindow::Status:
             if (Preferences::tabNotificationsLeds())

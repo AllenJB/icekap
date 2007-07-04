@@ -51,6 +51,10 @@ namespace Icecap
 
         if (windowIsActive) return;
 
+        if (m_mypresence->connected() == false) {
+            m_mypresence->setConnected (true);
+        }
+
         windowIsActive = true;
         window = getViewContainer()->addChannel (this);
 

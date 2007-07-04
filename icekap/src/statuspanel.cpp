@@ -87,8 +87,9 @@ Icecap::MyPresence* StatusPanel::getMyPresence()
 
 void StatusPanel::setMyPresence (Icecap::MyPresence* mypresence)
 {
-    m_mypresence = mypresence;
-    setServer (mypresence->server());
+    IcecapStatusPanel::setMyPresence (mypresence);
+//    m_mypresence = mypresence;
+//    setServer (mypresence->server());
     nicknameCombobox->clear();
 //    nicknameCombobox->insertStringList(mypresence->getNicknameList());
 //    nicknameCombobox->setCurrentText (mypresence->getNickname (0));
