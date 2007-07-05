@@ -22,6 +22,7 @@
 #include "common.h"
 
 #include "icecapmypresence.h"
+#include "icecapchannel.h"
 
 /*
   @author Dario Abatianni
@@ -72,8 +73,11 @@ class ChatWindow : public QVBox
          *  @return The server it is associated with, or null if none.
          */
         IcecapServer* getServer();
+
         Icecap::MyPresence* getMyPresence ();
         void setMyPresence (Icecap::MyPresence* p_mypresence);
+
+        Icecap::Channel* getChannel () { return m_channel; }
 
 //        virtual void setIdentity(const Identity *newIdentity);
         void setTextView(IRCView* newView);
@@ -211,6 +215,7 @@ class ChatWindow : public QVBox
         // m_server and m_presence are used by ViewTree for deciding what to do with windows
         IcecapServer* m_server;
         Icecap::MyPresence* m_mypresence;
+        Icecap::Channel* m_channel;
 
         Identity identity;
         QFile logfile;

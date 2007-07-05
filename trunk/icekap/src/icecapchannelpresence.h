@@ -27,6 +27,7 @@ namespace Icecap
 
     class Channel;
 
+    // TODO: nickColor support
     class ChannelPresence : public QObject
     {
         Q_OBJECT
@@ -73,6 +74,8 @@ namespace Icecap
             QString getHostmask () const { return m_presence->address (); }
 
             bool isAway () const { return m_presence->isAway (); }
+
+            uint getNickColor () { return m_presence->getNickColor (); }
 
         signals:
             // TODO: Do we want to change this to be an indicator for each mode - ie: modeChanged (QString type, bool value) ?

@@ -73,13 +73,16 @@ namespace Icecap
             void append(const QString& nickname,const QString& message);
             void appendAction(const QString& nickname,const QString& message, bool usenotifications = false);
             void appendCommandMessage (const QString& command, const QString& message, bool important = true,
-                bool parseURL = true, bool self = false);
+            bool parseURL = true, bool self = false);
+
+            uint numberOfNicks ();
+            uint numberOfOps ();
 
             bool operator== (Channel compareTo);
             bool isNull ();
 
         signals:
-            void presenceJoined (ChannelPresence* presence);
+            void userListUpdated ();
 
         public slots:
             void eventFilter (Icecap::Cmd result);
@@ -94,6 +97,9 @@ namespace Icecap
             QString modes;
             bool connected;
             QPtrList<ChannelPresence> presenceList;
+
+            // number of ops of any type
+            uint m_numberOfOps;
 
             MyPresence* m_mypresence;
             ViewContainer* m_viewContainerPtr;

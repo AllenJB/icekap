@@ -300,6 +300,9 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
     setName (channel->name());
     setMyPresence (channel->mypresence());
 
+    // Emitted whenever the channel user list changes (ie. users are added or removed)
+    // Specificically used for updating the "n nicks, n ops" label
+    connect (m_channel, SIGNAL (userListUpdated ()), this, SLOT (userListUpdated ()));
     updateAppearance();
 }
 
@@ -1056,6 +1059,7 @@ void ChannelWindow::kickNick(Icecap::ChannelPresence channelNick, const Icecap::
 */
 }
 
+// TODO: What does this do? Where is it used?
 void ChannelWindow::adjustNicks(int value)
 {
     if((nicks == 0) && (value <= 0))
@@ -1073,6 +1077,7 @@ void ChannelWindow::adjustNicks(int value)
     emitUpdateInfo();
 }
 
+// TODO: What does this do? Where is it used?
 void ChannelWindow::adjustOps(int value)
 {
     if((ops == 0) && (value <= 0))
@@ -1093,10 +1098,15 @@ void ChannelWindow::adjustOps(int value)
 void ChannelWindow::emitUpdateInfo()
 {
     QString info = getName() + " - ";
-    info += i18n("%n nick", "%n nicks", numberOfNicks());
-    info += i18n(" (%n op)", " (%n ops)", numberOfOps());
+    info += i18n("%n nick", "%n nicks", m_channel->numberOfNicks());
+    info += i18n(" (%n op)", " (%n ops)", m_channel->numberOfOps());
 
     emit updateInfo(info);
+}
+
+void ChannelWindow::userListUpdated ()
+{
+    emitUpdateInfo ();
 }
 
 void ChannelWindow::setTopic(const QString &newTopic)
@@ -2250,10 +2260,10 @@ void ChannelWindow::clearBanList()
 void ChannelWindow::append(const QString& nickname,const QString& message)
 {
 /*
-    if(nickname != getServer()->getNickname()) {
-        Icecap::ChannelPresence* nick = m_channel->getNickByName(nickname);
+    if(nickname != m_mypresence->getNickname()) {
+        Icecap::ChannelPresence* nick = m_channel->presence (nickname);
 
-        if(nick) {
+        if (nick) {
             nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
         }
     }

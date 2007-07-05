@@ -16,6 +16,7 @@ namespace Icecap
         m_connected = false;
         m_away = false;
         m_realName = "Unimplemented";
+        m_nickColor = 0;
     }
 
     Presence::Presence (const QString& name, const QString& address)
@@ -25,6 +26,7 @@ namespace Icecap
         m_connected = false;
         m_away = false;
         m_realName = "Unimplemented";
+        m_nickColor = 0;
     }
 
     void Presence::setName (const QString& name)
@@ -62,6 +64,22 @@ namespace Icecap
         if (parameterList.contains ("address")) {
             setAddress (parameterList["address"]);
         }
+    }
+
+    uint Presence::getNickColor()
+    {
+        // do we already have a color?
+        if(!m_nickColor)
+        {
+            int nickvalue = 0;
+            for (uint index = 0; index < m_name.length(); index++)
+            {
+                nickvalue += m_name[index].unicode();
+            }
+            m_nickColor = (nickvalue % 8) + 1;
+        }
+        // return color offset -1 (since we store it +1 for 0 checking)
+        return m_nickColor-1;
     }
 
 }
