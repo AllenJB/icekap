@@ -282,9 +282,9 @@ namespace Icecap
                 }
                 presenceRemoveByName (ev.parameterList["presence"]);
                 if (ev.parameterList["type"] == "quit") {
-                    appendCommandMessage ("<--", i18n ("Quit: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]).arg (userAddress));
+                    appendCommandMessage ("<--", i18n ("Quit: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
                 } else {
-                    appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]).arg (userAddress));
+                    appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
                 }
                 emit userListUpdated ();
             }
