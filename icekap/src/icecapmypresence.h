@@ -75,6 +75,8 @@ namespace Icecap
 
             void appendStatusMessage(const QString& type,const QString& message);
 
+            uint getNickColor ();
+
         public slots:
             void eventFilter (Icecap::Cmd result);
 

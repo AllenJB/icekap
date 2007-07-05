@@ -38,6 +38,8 @@ namespace Icecap
 
             QString loweredNickname () const { return m_name.lower (); }
 
+            uint getNickColor ();
+
             bool isAway () const { return m_away; }
 
             void setName (const QString& name);
@@ -59,6 +61,7 @@ namespace Icecap
             QString m_realName;
             bool m_connected;
             bool m_away;
+            uint m_nickColor;
     };
 
 }

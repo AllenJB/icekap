@@ -28,6 +28,7 @@ namespace Icecap
         connected = false;
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
+        m_numberOfOps = 0;
 
         // Connect to server event stream (command results)
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
@@ -43,6 +44,7 @@ namespace Icecap
         }
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
+        m_numberOfOps = 0;
 
         // Connect to server event stream (command results)
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
@@ -222,15 +224,19 @@ namespace Icecap
             if (ev.parameterList.contains ("mode")) {
                 channelUser->setMode (ev.parameterList["mode"]);
             }
+            if (channelUser->isAnyTypeOfOp ()) {
+                m_numberOfOps++;
+            }
 
             presenceAdd (channelUser);
+            emit userListUpdated ();
         }
         else if (ev.tag == "*") {
             if (ev.command == "channel_changed")
             {
                 if (ev.parameterList.contains ("topic")) {
                     setTopic (ev.parameterList["topic"], ev.parameterList["topic_set_by"], ev.parameterList["timestamp"]);
-                    appendCommandMessage(i18n("Topic"), i18n("The channel topic is \"%1\"").arg(ev.parameterList["topic"]));
+                    appendCommandMessage(i18n("Topic"), i18n("%1 changed the topic to: %2").arg (ev.parameterList["topic_set_by"]).arg(ev.parameterList["topic"]));
                 }
             }
             else if (ev.command == "msg") {
@@ -262,15 +268,30 @@ namespace Icecap
                 if (! ev.parameterList.contains ("init")) {
                     appendCommandMessage ("-->", i18n ("Join: %1 (%2)").arg (presenceName).arg (channelUser->address()));
                 }
+                if (channelUser->isAnyTypeOfOp ()) {
+                    m_numberOfOps++;
+                }
+                emit userListUpdated ();
             }
             else if (ev.command == "channel_presence_removed")
             {
+                ChannelPresence* user = presence (ev.parameterList["presence"]);
+                QString userAddress = user->address ();
+                if (user->isAnyTypeOfOp ()) {
+                    m_numberOfOps--;
+                }
                 presenceRemoveByName (ev.parameterList["presence"]);
-                appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]));
+                if (ev.parameterList["type"] == "quit") {
+                    appendCommandMessage ("<--", i18n ("Quit: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]).arg (userAddress));
+                } else {
+                    appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (ev.parameterList["reason"]).arg (userAddress));
+                }
+                emit userListUpdated ();
             }
             else if (ev.command == "channel_presence_mode_changed")
             {
                 ChannelPresence* user = presence (ev.parameterList["presence"]);
+                bool beforeVal = user->isAnyTypeOfOp ();
                 if (ev.parameterList.contains ("add")) {
                     user->modeChange (true, ev.parameterList["add"]);
                     appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
@@ -278,6 +299,14 @@ namespace Icecap
                     user->modeChange (false, ev.parameterList["remove"]);
                     appendCommandMessage (i18n ("Modes"), i18n ("Mode change: -%1 %2 by %3").arg (ev.parameterList["remove"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
                 }
+                if (user->isAnyTypeOfOp () != beforeVal) {
+                    if (beforeVal) {
+                        m_numberOfOps--;
+                    } else {
+                        m_numberOfOps++;
+                    }
+                }
+                emit userListUpdated ();
             }
             else if (ev.command == "channel_connection_init")
             {
@@ -338,6 +367,27 @@ namespace Icecap
             }
         }
         return false;
+    }
+
+    uint Channel::numberOfNicks () {
+        return presenceList.count ();
+    }
+
+    // TODO: Implement some sort of counter for this instead of looping all entries every time
+    uint Channel::numberOfOps () {
+        return m_numberOfOps;
+/*
+        int retVal = 0;
+        QPtrListIterator<ChannelPresence> it( presenceList );
+        ChannelPresence* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if (current->isAnyTypeOfOp ()) {
+                retVal++;
+            }
+        }
+        return retVal;
+*/
     }
 }
 

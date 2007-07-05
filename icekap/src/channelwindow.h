@@ -84,7 +84,7 @@ class ChannelWindow : public ChatWindow
         virtual void setServer(IcecapServer* newServer);
 //        virtual void setIdentity(const Identity *newIdentity);
 
-        Icecap::Channel* getChannel () { return m_channel; }
+//        Icecap::Channel* getChannel () { return m_channel; }
 
 //Unsure of future placement and/or continued existence of these members
         int numberOfNicks() const { return nicks; }
@@ -98,6 +98,7 @@ class ChannelWindow : public ChatWindow
         void setNickname(const QString& newNickname);
         void scheduleAutoWho();
         void setAutoUserhost(bool state);
+        void userListUpdated ();
 
     protected slots:
         void autoUserhost();
@@ -331,7 +332,7 @@ class ChannelWindow : public ChatWindow
 
         Konversation::ChannelOptionsDialog *m_optionsDialog;
 
-        Icecap::Channel* m_channel;
+//        Icecap::Channel* m_channel;
 };
 #endif
 

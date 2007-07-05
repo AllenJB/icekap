@@ -467,9 +467,10 @@ bool doHighlight, bool parseURL, bool self)
     // Highlight
     QString ownNick;
 
-    if (m_server)
+    // TODO: Do we need some conditionals put back in here?
+    if (m_chatWin->getChannel())
     {
-//        ownNick = m_server->getNickname();
+        ownNick = m_chatWin->getChannel()->mypresence()->name();
     }
 
     if(doHighlight && (whoSent != ownNick) && !self)
@@ -587,13 +588,12 @@ QString IRCView::createNickLine(const QString& nick, bool encapsulateNick)
 
     if(Preferences::useColoredNicks() && m_server)
     {
-        QString nickColor;
-/*
-        if (nick != m_server->getNickname())
-            nickColor = Preferences::nickColor(m_server->obtainNickInfo(nick)->getNickColor()).name();
-        else
-            nickColor =  Preferences::nickColor(8).name();
-*/
+        QString nickColor =  Preferences::nickColor(8).name();
+//        TODO: Recode this
+        Icecap::Channel* channel = m_chatWin->getChannel();
+        if (nick != channel->mypresence()->name())
+            nickColor = Preferences::nickColor(channel->presence (nick)->getNickColor()).name();
+
         if(nickColor == "#000000")
         {
             nickColor = "#000001";                    // HACK Working around QTextBrowser's auto link coloring
@@ -936,6 +936,7 @@ void IRCView::doAppend(const QString& newLine, bool important, bool self)
     if (!m_autoTextToSend.isEmpty() && m_server)
     {
 /*
+        TODO: Recorde this; What does it do?
         // replace placeholders in autoText
         QString sendText = m_server->parseWildcards(m_autoTextToSend,m_server->getNickname(),
             QString::null, QString::null, QString::null, QString::null);
