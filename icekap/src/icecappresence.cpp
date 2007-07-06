@@ -33,18 +33,21 @@ namespace Icecap
     {
         m_name = name;
         emit presenceChanged (this, "name");
+        emit nickInfoChanged ();
     }
 
     void Presence::setAddress (const QString& address)
     {
         m_address = address;
         emit presenceChanged (this, "address");
+        emit nickInfoChanged ();
     }
 
     void Presence::setConnected (bool status)
     {
         m_connected = status;
         emit presenceChanged (this, "connected");
+        emit nickInfoChanged ();
     }
 
     bool Presence::operator== (Presence compareTo)
@@ -63,6 +66,9 @@ namespace Icecap
     {
         if (parameterList.contains ("address")) {
             setAddress (parameterList["address"]);
+        }
+        if (parameterList.contains ("name")) {
+            setName (parameterList["name"]);
         }
     }
 

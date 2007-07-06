@@ -71,9 +71,6 @@ class ChannelWindow : public ChatWindow
         virtual bool canBeFrontView();
         virtual bool searchView();
 
-        virtual void append(const QString& nickname,const QString& message);
-        virtual void appendAction(const QString& nickname,const QString& message, bool usenotifications = false);
-
 //General administrative stuff
     public:
         void setName(const QString& newName);
@@ -82,13 +79,8 @@ class ChannelWindow : public ChatWindow
 
         virtual void setMyPresence (Icecap::MyPresence* p_mypresence);
         virtual void setServer(IcecapServer* newServer);
-//        virtual void setIdentity(const Identity *newIdentity);
-
-//        Icecap::Channel* getChannel () { return m_channel; }
 
 //Unsure of future placement and/or continued existence of these members
-        int numberOfNicks() const { return nicks; }
-        int numberOfOps() const { return ops; }
         virtual void setChannelEncoding(const QString& encoding);
         virtual QString getChannelEncoding();
         virtual QString getChannelEncodingDefaultDesc();
@@ -99,6 +91,7 @@ class ChannelWindow : public ChatWindow
         void scheduleAutoWho();
         void setAutoUserhost(bool state);
         void userListUpdated ();
+        void nicknameChanged ();
 
     protected slots:
         void autoUserhost();
@@ -107,10 +100,7 @@ class ChannelWindow : public ChatWindow
 //Nicklist
     public:
         void kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason);
-        void nickRenamed(const QString &oldNick, const Icecap::ChannelPresence& channelnick);
 
-        void adjustNicks(int value);
-        void adjustOps(int value);
         virtual void emitUpdateInfo();
 
 //Topic
@@ -331,8 +321,6 @@ class ChannelWindow : public ChatWindow
         bool m_allowNotifications; ///<TODO: remove this, its been implemented on the chatwindow object
 
         Konversation::ChannelOptionsDialog *m_optionsDialog;
-
-//        Icecap::Channel* m_channel;
 };
 #endif
 

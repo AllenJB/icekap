@@ -75,8 +75,8 @@ namespace Icecap
             void appendCommandMessage (const QString& command, const QString& message, bool important = true,
             bool parseURL = true, bool self = false);
 
-            uint numberOfNicks ();
-            uint numberOfOps ();
+            uint numberOfNicks () { return presenceList.count (); }
+            uint numberOfOps () { return m_numberOfOps; }
 
             bool operator== (Channel compareTo);
             bool isNull ();
