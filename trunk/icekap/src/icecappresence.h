@@ -42,6 +42,7 @@ namespace Icecap
 
             bool isAway () const { return m_away; }
 
+            // TODO: Are these ever used directly?
             void setName (const QString& name);
             void setAddress (const QString& address);
             void setConnected (bool status);
@@ -53,6 +54,7 @@ namespace Icecap
 
         signals:
             void presenceChanged (const Presence* presence, QString field);
+            void nickInfoChanged ();
 
         private:
             QString m_name;

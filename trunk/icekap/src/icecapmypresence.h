@@ -22,8 +22,15 @@ class StatusPanel;
 class ViewContainer;
 class IcecapServer;
 
+// Small note on this class and how things work in Icekap:
+// This class has nothing to do with the users own presence as shown in nick lists on channels
+// For that we sort of cheat and just treat it the same as any other network / channel presence
+// Unless someone can come up with a good reason to change this, this is the way it will stay.
+
 namespace Icecap
 {
+    class Presence;
+
     typedef enum
     {
         SSDisconnected,
@@ -38,7 +45,6 @@ namespace Icecap
         public:
             // TODO: Do we really need all these constructors?
             MyPresence (): m_name(0) {}
-            MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName);
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork);
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString, QString>& parameterMap);
 //            ~MyPresence ();
@@ -52,10 +58,10 @@ namespace Icecap
             QString getServerName() const { return m_network->name(); };
             IcecapServer* server() { return m_server; };
             State state () { return m_state; };
+            Presence* presence () { return m_presence; }
 
-            void setNetwork (Network* newNetwork);
             void setConnected (bool newStatus);
-            void setAutoconnect (bool newStatus);
+            void setAutoconnect (bool newStatus) { m_autoconnect = newStatus; }
             void setState (State state);
 
             Channel* channel (const QString& channelName);
@@ -64,10 +70,11 @@ namespace Icecap
             void channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap);
             void channelRemove (const Channel* channel);
             void channelRemove (const QString& channelName);
-            void channelClear ();
+            // TODO: Is this used?
+            void channelClear () { channelList.clear (); }
 
             bool operator== (MyPresence* compareTo);
-            bool isNull ();
+            bool isNull () { return m_name.isNull (); }
 
             void setViewContainer(ViewContainer* newViewContainer) { m_viewContainerPtr = newViewContainer; }
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
@@ -80,6 +87,9 @@ namespace Icecap
         public slots:
             void eventFilter (Icecap::Cmd result);
 
+        signals:
+            void nameChanged ();
+
         private:
             void init ();
 
@@ -91,6 +101,7 @@ namespace Icecap
             bool m_autoconnect;
             QPtrList<Channel> channelList;
             Network* m_network;
+            Presence* m_presence;
 
             ViewContainer* m_viewContainerPtr;
             StatusPanel* statusView;

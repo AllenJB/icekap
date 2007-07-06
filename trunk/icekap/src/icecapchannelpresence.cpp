@@ -35,6 +35,8 @@ namespace Icecap
         m_op = false;
         m_halfop = false;
         m_voice = false;
+
+        connect (m_presence, SIGNAL (nickInfoChanged()), this, SLOT (emitNickInfoChanged()));
     }
 
     ChannelPresence::~ChannelPresence ()

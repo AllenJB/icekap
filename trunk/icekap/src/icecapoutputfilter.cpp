@@ -196,7 +196,6 @@ namespace Icecap
     }
 
     OutputFilterResult OutputFilter::parse (const QString& myNick, const QString& originalLine, const QString& networkName, const QString& mypresenceName, const QString& channelName)
-//    OutputFilterResult OutputFilter::parse (const QString& myNick, const QString& originalLine, Network* network, MyPresence* mypresence, Channel* channel)
     {
         setCommandChar();
 
@@ -275,6 +274,29 @@ namespace Icecap
 
             m_server->queueCommand (command);
         }
+        else if (line.startsWith (commandChar +"topic"))
+        {
+            Icecap::Cmd command;
+            command.tag = "topic";
+            command.command = "channel change";
+            command.parameterList.insert ("network", networkName);
+            command.parameterList.insert ("mypresence", mypresenceName);
+            command.parameterList.insert ("channel", channelName);
+            command.parameterList.insert ("topic", parameters.join (" "));
+
+            m_server->queueCommand (command);
+        }
+        else if (line.startsWith (commandChar +"nick"))
+        {
+            Icecap::Cmd command;
+            command.tag = "nick";
+            command.command = "presence change";
+            command.parameterList.insert ("network", networkName);
+            command.parameterList.insert ("mypresence", mypresenceName);
+            command.parameterList.insert ("name", parameters[0]);
+
+            m_server->queueCommand (command);
+        }
         else
 
         // Convert double command chars at the beginning to single ones
@@ -314,10 +336,6 @@ namespace Icecap
                 command.tag = "raw";
                 command.command = inputLine.mid (1);
                 m_server->queueCommand (command);
-/*
-                result.toServer = inputLine.mid(1);
-                result.type = Message;
-*/
             }
         }
         // Ordinary message to channel/query?
@@ -337,12 +355,6 @@ namespace Icecap
             command.tag = "raw";
             command.command = inputLine;
             m_server->queueCommand (command);
-/*
-            result.toServer = inputLine;
-            result.output = inputLine;
-            result.typeString = i18n("Raw");
-            result.type = Program;
-*/
         }
 
         return result;

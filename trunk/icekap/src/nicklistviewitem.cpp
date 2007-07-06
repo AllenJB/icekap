@@ -48,8 +48,7 @@ void NickListViewItem::refresh()
     int flags = 0;
     bool away = false;
 
-//    if ( nickInfo )
-        away = nick->isAway();
+    away = nick->isAway();
 
     if(away)
         flags=1;

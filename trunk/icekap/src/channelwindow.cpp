@@ -309,8 +309,9 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
 void ChannelWindow::setMyPresence (Icecap::MyPresence* p_mypresence)
 {
     ChatWindow::setMyPresence (p_mypresence);
-    setServer (p_mypresence->server());
-    setNickname (p_mypresence->name());
+    connect (p_mypresence, SIGNAL (nameChanged()), this, SLOT (nicknameChanged ()));
+    setServer (m_mypresence->server());
+    setNickname (m_mypresence->presence()->name());
 }
 
 void ChannelWindow::setServer(IcecapServer *server)
@@ -326,6 +327,11 @@ ChannelWindow::~ChannelWindow()
 
     // Unlink this channel from channel list
 //    m_server->removeChannel(this);
+}
+
+void ChannelWindow::nicknameChanged ()
+{
+    setNickname (m_mypresence->presence()->name());
 }
 
 void ChannelWindow::showOptionsDialog()
@@ -950,28 +956,6 @@ void ChannelWindow::quickButtonClicked(const QString &buttonText)
 }
 
 // TODO: Re-implement commented code
-void ChannelWindow::nickRenamed(const QString &oldNick, const Icecap::ChannelPresence& nickInfo)
-{
-
-    /* Did we change our nick name? */
-    QString newNick = nickInfo.getNickname();
-/*
-    if(newNick == m_server->getNickname()) // Check newNick because  m_server->getNickname() is already updated to new nick
-    {
-        setNickname(newNick);
-        appendCommandMessage(i18n("Nick"),i18n("You are now known as %1.").arg(newNick), false, true, true);
-    }
-    else
-    {
-        // No, must've been someone else
-        appendCommandMessage(i18n("Nick"),i18n("%1 is now known as %2.").arg(oldNick).arg(newNick),false);
-    }
-
-    nicknameListView->sort();
-*/
-}
-
-// TODO: Re-implement commented code
 void ChannelWindow::kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason)
 {
 /*
@@ -1057,42 +1041,6 @@ void ChannelWindow::kickNick(Icecap::ChannelPresence channelNick, const Icecap::
         }
     }
 */
-}
-
-// TODO: What does this do? Where is it used?
-void ChannelWindow::adjustNicks(int value)
-{
-    if((nicks == 0) && (value <= 0))
-    {
-        return;
-    }
-
-    nicks += value;
-
-    if(nicks < 0)
-    {
-        nicks = 0;
-    }
-
-    emitUpdateInfo();
-}
-
-// TODO: What does this do? Where is it used?
-void ChannelWindow::adjustOps(int value)
-{
-    if((ops == 0) && (value <= 0))
-    {
-        return;
-    }
-
-    ops += value;
-
-    if(ops < 0)
-    {
-        ops = 0;
-    }
-
-    emitUpdateInfo();
 }
 
 void ChannelWindow::emitUpdateInfo()
@@ -2188,7 +2136,6 @@ void ChannelWindow::requestNickListSort()
 
 void ChannelWindow::sortNickList()
 {
-//    nicknameList.sort();
     nicknameListView->resort();
 
     if(m_delayedSortTimer)
@@ -2255,35 +2202,6 @@ void ChannelWindow::clearBanList()
   m_BanList.clear();
 
   emit banListCleared();
-}
-
-void ChannelWindow::append(const QString& nickname,const QString& message)
-{
-/*
-    if(nickname != m_mypresence->getNickname()) {
-        Icecap::ChannelPresence* nick = m_channel->presence (nickname);
-
-        if (nick) {
-            nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
-        }
-    }
-*/
-    ChatWindow::append(nickname, message);
-}
-
-void ChannelWindow::appendAction(const QString& nickname,const QString& message, bool usenotifications)
-{
-/*
-    if(nickname != getServer()->getNickname()) {
-        Icecap::ChannelPresence* nick = m_channel->getNickByName(nickname);
-
-        if(nick) {
-            nick->getChannelNick()->setTimeStamp(QDateTime::currentDateTime().toTime_t());
-        }
-    }
-*/
-
-    ChatWindow::appendAction(nickname, message, usenotifications);
 }
 
 #include "channelwindow.moc"

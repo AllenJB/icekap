@@ -83,10 +83,10 @@ namespace Icecap
             void modeChanged (QString modes);
 
             void channelNickChanged ();
-
-            // TODO: err, actually put some code in for this =P
-            // This is only here to shut up the debug messages
             void nickInfoChanged ();
+
+        public slots:
+            void emitNickInfoChanged () { emit nickInfoChanged (); }
 
         private:
             Presence* m_presence;

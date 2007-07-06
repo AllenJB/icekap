@@ -230,16 +230,31 @@ namespace Icecap
 
             presenceAdd (channelUser);
             emit userListUpdated ();
+            window->getNickListView ()->startResortTimer ();
         }
-        else if (ev.tag == "*") {
+        else if (ev.sentCommand == "channel change")
+        {
+            if (ev.error == "noperm") {
+                appendCommandMessage (i18n ("Modes"), i18n ("Permission Denied"));
+            }
+        }
+        else if (ev.tag == "*")
+        {
             if (ev.command == "channel_changed")
             {
                 if (ev.parameterList.contains ("topic")) {
                     setTopic (ev.parameterList["topic"], ev.parameterList["topic_set_by"], ev.parameterList["timestamp"]);
-                    appendCommandMessage(i18n("Topic"), i18n("%1 changed the topic to: %2").arg (ev.parameterList["topic_set_by"]).arg(ev.parameterList["topic"]));
+                    if (! ev.parameterList.contains ("init")) {
+                        appendCommandMessage(i18n("Topic"), i18n("%1 changed the topic to: %2").arg (ev.parameterList["topic_set_by"]).arg(ev.parameterList["topic"]));
+                    }
+                }
+                else if (ev.parameterList.contains ("initial_presences_added"))
+                {
+                    window->getNickListView ()->startResortTimer ();
                 }
             }
-            else if (ev.command == "msg") {
+            else if (ev.command == "msg")
+            {
                 // TODO: Do we need to escape the presence name too?
                 QString escapedMsg = ev.parameterList["msg"];
                 escapedMsg.replace ("\\.", ";");
@@ -281,10 +296,12 @@ namespace Icecap
                     m_numberOfOps--;
                 }
                 presenceRemoveByName (ev.parameterList["presence"]);
-                if (ev.parameterList["type"] == "quit") {
-                    appendCommandMessage ("<--", i18n ("Quit: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
-                } else {
-                    appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
+                if (! ev.parameterList.contains ("deinit")) {
+                    if (ev.parameterList["type"] == "quit") {
+                        appendCommandMessage ("<--", i18n ("Quit: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
+                    } else {
+                        appendCommandMessage ("<--", i18n ("Part: %1 (%2) :: %3").arg (ev.parameterList["presence"]).arg (userAddress).arg (ev.parameterList["reason"]));
+                    }
                 }
                 emit userListUpdated ();
             }
@@ -369,26 +386,6 @@ namespace Icecap
         return false;
     }
 
-    uint Channel::numberOfNicks () {
-        return presenceList.count ();
-    }
-
-    // TODO: Implement some sort of counter for this instead of looping all entries every time
-    uint Channel::numberOfOps () {
-        return m_numberOfOps;
-/*
-        int retVal = 0;
-        QPtrListIterator<ChannelPresence> it( presenceList );
-        ChannelPresence* current;
-        while ( (current = it.current()) != 0 ) {
-            ++it;
-            if (current->isAnyTypeOfOp ()) {
-                retVal++;
-            }
-        }
-        return retVal;
-*/
-    }
 }
 
 #include "icecapchannel.moc"

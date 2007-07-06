@@ -62,11 +62,11 @@ void NicklistBehavior_Config::setNickList(const QString &sortingOrder)
     QChar mode=sortingOrder[index-1];
     // find appropriate description
     if(mode=='-') new KListViewItem(sortOrder,mode,i18n("Normal Users"));
-    if(mode=='v') new KListViewItem(sortOrder,mode,i18n("Voice (+v)"));
-    if(mode=='h') new KListViewItem(sortOrder,mode,i18n("Halfops (+h)"));
-    if(mode=='o') new KListViewItem(sortOrder,mode,i18n("Operators (+o)"));
-    if(mode=='p') new KListViewItem(sortOrder,mode,i18n("Channel Admins (+p)"));
-    if(mode=='q') new KListViewItem(sortOrder,mode,i18n("Channel Owners (+q)"));
+    if(mode=='v') new KListViewItem(sortOrder,mode,i18n("Voice"));
+    if(mode=='h') new KListViewItem(sortOrder,mode,i18n("Halfops"));
+    if(mode=='o') new KListViewItem(sortOrder,mode,i18n("Operators"));
+    if(mode=='p') new KListViewItem(sortOrder,mode,i18n("Channel Admins"));
+    if(mode=='q') new KListViewItem(sortOrder,mode,i18n("Channel Owners"));
   }
 }
 

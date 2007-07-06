@@ -17,7 +17,7 @@
 
 #include <klistview.h>
 #include "channelwindow.h"
-// #include "nicklisttooltip.h"
+//#include "nicklisttooltip.h"
 #include "images.h"
 #include "common.h"
 

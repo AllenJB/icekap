@@ -14,25 +14,10 @@
 
 #include "icecapmisc.h"
 #include "icecapserver.h"
+#include "icecappresence.h"
 
 namespace Icecap
 {
-
-    MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName)
-    {
-        m_server = server;
-        m_name = newName;
-        m_connected = false;
-        m_autoconnect = false;
-        statusViewActive = false;
-        setState (SSDisconnected);
-        m_viewContainerPtr = viewContainer;
-
-        // Connect to server event stream (command results)
-        connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
-
-    }
-
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork)
     {
         m_server = server;
@@ -46,7 +31,6 @@ namespace Icecap
 
         // Connect to server event stream (command results)
         connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
-
     }
 
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString,QString>& parameterMap)
@@ -62,6 +46,20 @@ namespace Icecap
         // Connect to server event stream (command results)
         connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
 
+        QString presenceName;
+        if (parameterMap.contains ("name")) {
+            presenceName = parameterMap["name"];
+        } else {
+            presenceName = parameterMap["presence"];
+        }
+
+        if (m_network->presence (presenceName)) {
+            m_presence = m_network->presence (presenceName);
+        } else {
+            Presence* presence = new Presence (presenceName);
+            m_network->presenceAdd (presence);
+            m_presence = presence;
+        }
 
         m_viewContainerPtr = viewContainer;
         if (m_connected) {
@@ -74,6 +72,24 @@ namespace Icecap
     {
         setConnected (parameterMap.contains ("connected"));
         setAutoconnect (parameterMap.contains ("autoconnect"));
+        if ((parameterMap.contains ("name")) || (parameterMap.contains ("presence")))
+        {
+            QString presenceName;
+            if (parameterMap.contains ("name")) {
+                presenceName = parameterMap["name"];
+            } else {
+                presenceName = parameterMap["presence"];
+            }
+
+            if (m_network->presence (presenceName)) {
+                m_presence = m_network->presence (presenceName);
+            } else {
+                Presence* presence = new Presence (presenceName);
+                m_network->presenceAdd (presence);
+                m_presence = presence;
+            }
+        }
+        emit nameChanged ();
     }
 
     void MyPresence::init ()
@@ -85,12 +101,6 @@ namespace Icecap
         statusView->setServer (m_server);
     }
 
-
-    void MyPresence::setNetwork (Network* newNetwork)
-    {
-        m_network = newNetwork;
-    }
-
     void MyPresence::setConnected (bool newStatus)
     {
         m_connected = newStatus;
@@ -98,11 +108,6 @@ namespace Icecap
             setState (SSConnected);
             init ();
         }
-    }
-
-    void MyPresence::setAutoconnect (bool newStatus)
-    {
-        m_autoconnect = newStatus;
     }
 
     Channel* MyPresence::channel (const QString& channelName)
@@ -153,19 +158,9 @@ namespace Icecap
         channelList.remove (channel (channelName));
     }
 
-    void MyPresence::channelClear ()
-    {
-        channelList.clear ();
-    }
-
     bool MyPresence::operator== (MyPresence* compareTo)
     {
         return ( (m_name == compareTo->name()) && (m_network->name() == compareTo->network()->name()) );
-    }
-
-    bool MyPresence::isNull ()
-    {
-        return m_name.isNull();
     }
 
     void MyPresence::setState (State state)
@@ -184,7 +179,6 @@ namespace Icecap
             m_server->appendStatusMessage (type, message);
         }
     }
-
 
     void MyPresence::eventFilter (Icecap::Cmd ev)
     {
@@ -234,6 +228,13 @@ namespace Icecap
             }
             else if (ev.command == "gateway_logged_in") {
                 appendStatusMessage (i18n ("Gateway"), i18n ("Logged in to gateway."));
+            }
+            else if (ev.command == "presence_changed")
+            {
+                if (ev.parameterList["presence"] == m_name)
+                {
+                    emit nameChanged ();
+                }
             }
 
         } // end if (ev.tag == "*")
