@@ -10,8 +10,8 @@
   Copyright (C) 2005 Eike Hein <sho@eikehein.com>
 */
 
-#ifndef QUERY_H
-#define QUERY_H
+#ifndef QUERYWINDOW_H
+#define QUERYWINDOW_H
 
 #include <qstring.h>
 
@@ -36,26 +36,31 @@ namespace Konversation {
 }
 
 namespace Icecap {
-    class ChannelPresence;
+    class Presence;
+    class Query;
 }
 
-class Query : public ChatWindow
+class QueryWindow : public ChatWindow
 {
     Q_OBJECT
 
     public:
-        explicit Query(QWidget* parent);
-        ~Query();
+        explicit QueryWindow(QWidget* parent);
+        ~QueryWindow();
 
-        /** This will always be called soon after this object is created.
+        // Must be called at object creation time
+        void setQuery (Icecap::Query* query);
+
+        /**
          *  @param nickInfo A nickinfo that must exist.
          */
-        void setNickInfo(Icecap::ChannelPresence* nickInfo);
+        // TODO: Is this used externally?
+        void setNickInfo(Icecap::Presence* nickInfo);
         /** It seems that this does _not_ guaranttee to return non null.
          *  The problem is when you open a query to someone, then the go offline.
          *  This should be fixed maybe?  I don't know.
          */
-        Icecap::ChannelPresence* getNickInfo();
+        Icecap::Presence* getNickInfo();
         virtual QString getTextInLine();
         virtual bool closeYourself();
         virtual bool canBeFrontView();
@@ -111,7 +116,8 @@ class Query : public ChatWindow
         QLabel* addresseelogoimage;
         QLabel* awayLabel;
         IRCInput* queryInput;
-        Icecap::ChannelPresence* m_nickInfo;
+        Icecap::Presence* m_nickInfo;
+        Icecap::Query* m_query;
 
         bool m_initialShow;
 };

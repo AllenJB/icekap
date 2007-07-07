@@ -26,25 +26,27 @@ namespace Icecap
         Q_OBJECT
 
         public:
-            Presence (): m_name(0) {}
             Presence (const QString& name);
             Presence (const QString& name, const QString& address);
 
             QString name () const { return m_name; }
-            QString address () const { return m_address; }
-            bool connected () const { return m_connected; }
+            QString getNickname () const { return m_name; }
+            QString loweredNickname () const { return m_name.lower (); }
 
             QString getRealName () const { return m_realName; }
 
-            QString loweredNickname () const { return m_name.lower (); }
+            QString address () const { return m_address; }
+            QString getHostmask () const { return m_address; }
+
+            bool connected () const { return m_connected; }
 
             uint getNickColor ();
 
             bool isAway () const { return m_away; }
 
-            // TODO: Are these ever used directly?
+            // TODO: Is this ever used directly?
             void setName (const QString& name);
-            void setAddress (const QString& address);
+
             void setConnected (bool status);
 
             bool operator== (Presence compareTo);
@@ -53,7 +55,6 @@ namespace Icecap
             void update (QMap<QString, QString> parameterList);
 
         signals:
-            void presenceChanged (const Presence* presence, QString field);
             void nickInfoChanged ();
 
         private:

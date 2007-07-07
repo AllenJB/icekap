@@ -806,7 +806,6 @@ void ChannelWindow::channelPassthroughCommand()
     }
 }
 
-// TODO: Re-implement commented code
 void ChannelWindow::sendChannelText(const QString& sendLine)
 {
     // create a work copy

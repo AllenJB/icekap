@@ -31,7 +31,6 @@
 #include "konversationapplication.h"
 #include "commit.h"
 #include "version.h"
-#include "query.h"
 #include "statuspanel.h"
 #include "common.h"
 #include "notificationhandler.h"

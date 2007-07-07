@@ -36,7 +36,7 @@
 #include "urlcatcher.h"
 #include "statuspanel.h"
 #include "channelwindow.h"
-#include "query.h"
+#include "querywindow.h"
 #include "rawlog.h"
 #include "channellistpanel.h"
 // #include "nicksonline.h"
@@ -2151,14 +2151,16 @@ void ViewContainer::toggleChannelNicklists()
     emit updateChannelAppearance();
 }
 
-/*
-Query* ViewContainer::addQuery(IcecapServer* server, const NickInfoPtr& nickInfo, bool weinitiated)
+QueryWindow* ViewContainer::addQuery(Icecap::Query* iquery, bool weinitiated)
 {
-    QString name = nickInfo->getNickname();
-    Query* query=new Query(m_tabWidget);
-    query->setServer(server);
-    query->setNickInfo(nickInfo);
-    addView(query, name, weinitiated);
+//    QString name = ;
+    QueryWindow* query = new QueryWindow (m_tabWidget);
+    query->setQuery (iquery);
+/*
+    query->setServer (server);
+    query->setNickInfo (nickInfo);
+*/
+    addView (query, iquery->presence()->getNickname(), weinitiated);
 
     // About to increase the number of queries, so enable the close action
     if (m_queryViewCount == 0)
@@ -2168,11 +2170,10 @@ Query* ViewContainer::addQuery(IcecapServer* server, const NickInfoPtr& nickInfo
 
     connect(query, SIGNAL(updateTabNotification(ChatWindow*,const Konversation::TabNotifyType&)), this, SLOT(setViewNotification(ChatWindow*,const Konversation::TabNotifyType&)));
     connect(query, SIGNAL(updateQueryChrome(ChatWindow*, const QString &)), this, SLOT(updateQueryChrome(ChatWindow*, const QString &)));
-    connect(server, SIGNAL(awayState(bool)), query, SLOT(indicateAway(bool)));
+//    connect(server, SIGNAL(awayState(bool)), query, SLOT(indicateAway(bool)));
 
     return query;
 }
-*/
 
 void ViewContainer::updateQueryChrome(ChatWindow* view, const QString& name)
 {

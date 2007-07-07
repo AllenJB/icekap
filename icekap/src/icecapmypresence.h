@@ -17,6 +17,7 @@
 #include "icecapchannel.h"
 #include "icecapmisc.h"
 #include "icecapnetwork.h"
+#include "icecapquery.h"
 
 class StatusPanel;
 class ViewContainer;
@@ -30,6 +31,7 @@ class IcecapServer;
 namespace Icecap
 {
     class Presence;
+    class Query;
 
     typedef enum
     {
@@ -73,6 +75,12 @@ namespace Icecap
             // TODO: Is this used?
             void channelClear () { channelList.clear (); }
 
+            Query* query (const QString& presenceName);
+            // Returns the new query object
+            Query* queryAdd (const QString& presenceName);
+            void queryRemove (const QString& presenceName);
+            void queryRemove (Query* query);
+
             bool operator== (MyPresence* compareTo);
             bool isNull () { return m_name.isNull (); }
 
@@ -100,6 +108,7 @@ namespace Icecap
             bool m_connected;
             bool m_autoconnect;
             QPtrList<Channel> channelList;
+            QPtrList<Query> queryList;
             Network* m_network;
             Presence* m_presence;
 
