@@ -117,6 +117,8 @@ namespace Icecap
 
             QString addNickToEmptyNickList(const QString& nick, const QString& parameter);
 
+            bool isAChannel (const QString& name);
+
         private:
             QString destination;
             QString commandChar;

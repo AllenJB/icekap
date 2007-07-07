@@ -50,6 +50,7 @@ namespace Icecap
             bool isNull () { return m_name.isNull(); }
 
         public slots:
+            // TODO: What's this used for? Don't forget that networks are not mypresence specific
             void eventFilter (Icecap::Cmd result);
 
         private:

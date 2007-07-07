@@ -28,8 +28,8 @@
 #include <kstringhandler.h>
 #include <kpopupmenu.h>
 
-// #include "channel.h"
-#include "query.h"
+#include "querywindow.h"
+
 #include "icecapserver.h"
 #include "konversationapplication.h"
 #include "ircinput.h"
@@ -37,10 +37,12 @@
 #include "ircviewbox.h"
 #include "common.h"
 #include "topiclabel.h"
-#include "icecapchannelpresence.h"
+#include "icecappresence.h"
+#include "icecapquery.h"
 
-Query::Query(QWidget* parent) : ChatWindow(parent)
+QueryWindow::QueryWindow (QWidget* parent) : ChatWindow(parent)
 {
+    m_nickInfo = 0;
     // don't setName here! It will break logfiles!
     //   setName("QueryWidget");
     setType(ChatWindow::Query);
@@ -122,11 +124,11 @@ Query::Query(QWidget* parent) : ChatWindow(parent)
     setLog(Preferences::log());
 }
 
-Query::~Query()
+QueryWindow::~QueryWindow ()
 {
 }
 
-void Query::setName(const QString& newName)
+void QueryWindow::setName(const QString& newName)
 {
     if(ChatWindow::getName() == newName) return;  // no change, so return
 
@@ -148,7 +150,7 @@ void Query::setName(const QString& newName)
     }
 }
 
-void Query::queryTextEntered()
+void QueryWindow::queryTextEntered()
 {
     QString line=queryInput->text();
     queryInput->clear();
@@ -166,7 +168,7 @@ void Query::queryTextEntered()
     }
 }
 
-void Query::queryPassthroughCommand()
+void QueryWindow::queryPassthroughCommand()
 {
     QString commandChar = Preferences::commandChar();
     QString line = queryInput->text();
@@ -184,14 +186,14 @@ void Query::queryPassthroughCommand()
     }
 }
 
-void Query::sendQueryText(const QString& sendLine)
+void QueryWindow::sendQueryText(const QString& sendLine)
 {
     // create a work copy
     QString outputAll(sendLine);
     // replace aliases and wildcards
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
-//        outputAll = m_server->parseWildcards(outputAll, m_server->getNickname(), getName(), QString::null, QString::null, QString::null);
+        outputAll = m_server->parseWildcards(outputAll, m_mypresence->presence()->getNickname(), getName(), QString::null, QString::null, QString::null);
     }
 
     // Send all strings, one after another
@@ -201,26 +203,26 @@ void Query::sendQueryText(const QString& sendLine)
         QString output(outList[index]);
 
         // encoding stuff is done in Server()
-//        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse(m_server->getNickname(), output, getName());
+        Icecap::OutputFilterResult result = m_server->getOutputFilter()->parse (m_mypresence->presence()->getNickname(), output, m_mypresence->network()->name(), m_mypresence->name(), m_query->presence()->name());
 
-/*
         if(!result.output.isEmpty())
         {
-            if(result.type == Icecap::Action) appendAction(m_server->getNickname(), result.output);
-            else if(result.type == Konversation::Command) appendCommandMessage(result.typeString, result.output);
-            else if(result.type == Konversation::Program) appendServerMessage(result.typeString, result.output);
+            if(result.type == Icecap::Action) appendAction(m_mypresence->presence()->getNickname(), result.output);
+            else if(result.type == Icecap::Command) appendCommandMessage(result.typeString, result.output);
+            else if(result.type == Icecap::Program) appendServerMessage(result.typeString, result.output);
             else if(!result.typeString.isEmpty()) appendQuery(result.typeString, result.output);
-            else appendQuery(m_server->getNickname(), result.output);
+            else appendQuery(m_mypresence->presence()->getNickname(), result.output);
         }
         else if (result.outputList.count())
         {
-            Q_ASSERT(result.type==Konversation::Message);
+            Q_ASSERT(result.type==Icecap::Message);
             for ( QStringList::Iterator it = result.outputList.begin(); it != result.outputList.end(); ++it )
             {
-//                append(m_server->getNickname(), *it);
+                append(m_mypresence->presence()->getNickname(), *it);
             }
         }
 
+        // TODO: Ensure this isn't used anywhere, then remove it
         if (result.toServerList.count())
         {
             m_server->queueList(result.toServerList);
@@ -229,11 +231,10 @@ void Query::sendQueryText(const QString& sendLine)
         {
             m_server->queue(result.toServer);
         }
-*/
     } // for
 }
 
-void Query::updateAppearance()
+void QueryWindow::updateAppearance()
 {
     QColor fg;
     QColor bg;
@@ -280,7 +281,7 @@ void Query::updateAppearance()
     ChatWindow::updateAppearance();
 }
 
-void Query::textPasted(const QString& text)
+void QueryWindow::textPasted(const QString& text)
 {
     if(m_server)
     {
@@ -296,7 +297,7 @@ void Query::textPasted(const QString& text)
     }
 }
 
-void Query::indicateAway(bool show)
+void QueryWindow::indicateAway(bool show)
 {
     // QT does not redraw the label properly when they are not on screen
     // while getting hidden, so we remember the "soon to be" state here.
@@ -315,7 +316,7 @@ void Query::indicateAway(bool show)
 }
 
 // fix QTs broken behavior on hidden QListView pages
-void Query::showEvent(QShowEvent*)
+void QueryWindow::showEvent(QShowEvent*)
 {
     if(awayChanged)
     {
@@ -331,7 +332,7 @@ void Query::showEvent(QShowEvent*)
     }
 }
 
-void Query::popup(int id)
+void QueryWindow::popup(int id)
 {
     // get the nickname to the context menu popup
     QString name=textView->getContextNick();
@@ -387,7 +388,7 @@ void Query::popup(int id)
             break;
 
         default:
-            kdDebug() << "Query::popup(): Popup id " << id << " does not belong to me!" << endl;
+            kdDebug() << "QueryWindow::popup(): Popup id " << id << " does not belong to me!" << endl;
             break;
     }
 
@@ -395,29 +396,29 @@ void Query::popup(int id)
     textView->clearContextNick();
 }
 
-void Query::sendFileMenu()
+void QueryWindow::sendFileMenu()
 {
     emit sendFile(getName());
 }
 
-void Query::childAdjustFocus()
+void QueryWindow::childAdjustFocus()
 {
     queryInput->setFocus();
 }
 
-void Query::setNickInfo(Icecap::ChannelPresence* nickInfo)
+void QueryWindow::setNickInfo(Icecap::Presence* nickInfo)
 {
-    if(m_nickInfo)
+    if(m_nickInfo != 0)
         disconnect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
 
     m_nickInfo = nickInfo;
     Q_ASSERT(m_nickInfo); if(!m_nickInfo) return;
-//    setName(m_nickInfo->getNickname());
-//    connect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
+    setName(m_nickInfo->getNickname());
+    connect(m_nickInfo, SIGNAL(nickInfoChanged()), this, SLOT(nickInfoChanged()));
     nickInfoChanged();
 }
 
-void Query::nickInfoChanged()
+void QueryWindow::nickInfoChanged()
 {
 /*
     if(m_nickInfo)
@@ -461,40 +462,40 @@ void Query::nickInfoChanged()
 */
 }
 
-Icecap::ChannelPresence* Query::getNickInfo()
+Icecap::Presence* QueryWindow::getNickInfo()
 {
     return m_nickInfo;
 }
 
-QString Query::getTextInLine() { return queryInput->text(); }
+QString QueryWindow::getTextInLine() { return queryInput->text(); }
 
-bool Query::canBeFrontView()        { return true; }
-bool Query::searchView()       { return true; }
+bool QueryWindow::canBeFrontView()        { return true; }
+bool QueryWindow::searchView()       { return true; }
 
-void Query::appendInputText(const QString& s)
+void QueryWindow::appendInputText(const QString& s)
 {
     queryInput->setText(queryInput->text() + s);
 }
 
                                                   // virtual
-void Query::setChannelEncoding(const QString& encoding)
+void QueryWindow::setChannelEncoding(const QString& encoding)
 {
 //    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
 }
 
-QString Query::getChannelEncoding()               // virtual
+QString QueryWindow::getChannelEncoding()               // virtual
 {
 //    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
 	return "utf8";
 }
 
-QString Query::getChannelEncodingDefaultDesc()    // virtual
+QString QueryWindow::getChannelEncodingDefaultDesc()    // virtual
 {
 //    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
 	return "Unimplemented (utf8)";
 }
 
-bool Query::closeYourself()
+bool QueryWindow::closeYourself()
 {
     int result=KMessageBox::warningContinueCancel(
         this,
@@ -505,14 +506,14 @@ bool Query::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
-//        m_server->removeQuery(this);
+        m_mypresence->queryRemove (m_query);
         return true;
     }
 
     return false;
 }
 
-void Query::serverOnline(bool online)
+void QueryWindow::serverOnline(bool online)
 {
     //queryInput->setEnabled(online);
     getTextView()->setNickAndChannelContextMenusEnabled(online);
@@ -533,7 +534,7 @@ void Query::serverOnline(bool online)
     }
 }
 
-void Query::emitUpdateInfo()
+void QueryWindow::emitUpdateInfo()
 {
 /*
     QString info;
@@ -549,7 +550,7 @@ void Query::emitUpdateInfo()
 }
 
 // show quit message of nick if we see it
-void Query::quitNick(const QString& reason)
+void QueryWindow::quitNick(const QString& reason)
 {
     QString displayReason = reason;
 
@@ -566,4 +567,14 @@ void Query::quitNick(const QString& reason)
     }
 }
 
-#include "query.moc"
+void QueryWindow::setQuery (Icecap::Query* query)
+{
+    m_query = query;
+    setMyPresence (query->mypresence());
+    setNickInfo (query->presence());
+}
+
+#include "querywindow.moc"
+
+// kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;
+// vim: set et sw=4 ts=4 cino=l1,cs,U1:

@@ -14,7 +14,7 @@ icekap_SOURCES = konviface.skel konviconfigdialog.cpp konversationstatusbar.cpp 
 	nicklistviewitem.cpp highlight.cpp \
 	highlightviewitem.cpp modebutton.cpp ignore_preferencesui.ui ignore_preferences.cpp \
 	ignore.cpp nicklistview.cpp ircinput.cpp ignorelistviewitem.cpp images.cpp quickbutton.cpp chatwindow.cpp \
-	query.cpp konversationapplication.cpp \
+	querywindow.cpp icecapquery.cpp konversationapplication.cpp \
 	icecapinputfilter.cpp \
 	channelwindow.cpp ircview.cpp icecapserver.cpp main.cpp \
 	log_preferences.ui tabs_preferencesui.ui tabs_preferences.cpp \

@@ -18,7 +18,7 @@
 #include <qstringlist.h>
 
 #include "ignore.h"
-#include "servergroupsettings.h"
+// #include "servergroupsettings.h"
 
 /*
   @author Dario Abatianni
@@ -26,7 +26,7 @@
 
 class IcecapServer;
 class QWidget;
-class Query;
+class QueryWindow;
 
 class IcecapInputFilter : public QObject
 {
@@ -56,25 +56,6 @@ class IcecapInputFilter : public QObject
         void parseModes(const QString &sourceNick, const QStringList &parameterList);
         void parseIcecapEvent (const QString &eventName, const QStringList &parameterList);
         void parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList);
-/*
-        void parseNetworkAdd  (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseNetworkList (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseNetworkDel  (const QString& status, QMap<QString, QString>& parameterMap);
-
-        void parseMyPresenceAdd  (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseMyPresenceList (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseMyPresenceDel  (const QString& status, QMap<QString, QString>& parameterMap);
-
-        void parseChannelAdd   (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseChannelList  (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseChannelDel   (const QString& status, QMap<QString, QString>& parameterMap);
-
-        void parsePresenceList (const QString& status, QMap<QString, QString>& parameterMap);
-
-        void parseGatewayAdd   (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseGatewayList  (const QString& status, QMap<QString, QString>& parameterMap);
-        void parseGatewayDel   (const QString& status, QMap<QString, QString>& parameterMap);
-*/
 
         bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);
@@ -85,7 +66,8 @@ class IcecapInputFilter : public QObject
         QStringList whoRequestList;
         int lagMeasuring;
 
-        Query* query;
+        // AllenJB 2007-07-07 TODO: Is this used?
+        QueryWindow* query;
 
         QStringList newNickList;
         int m_debugCount;

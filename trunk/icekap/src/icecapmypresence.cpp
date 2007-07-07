@@ -15,6 +15,7 @@
 #include "icecapmisc.h"
 #include "icecapserver.h"
 #include "icecappresence.h"
+#include "icecapquery.h"
 
 namespace Icecap
 {
@@ -192,14 +193,36 @@ namespace Icecap
             {
                 QString escapedMsg = ev.parameterList["msg"];
                 escapedMsg.replace ("\\.", ";");
-                if (ev.parameterList["presence"].length () < 1) {
+                if (ev.parameterList["presence"].length () < 1)
+                {
                     if (ev.parameterList["irc_target"] == "AUTH") {
                         appendStatusMessage (ev.parameterList["irc_target"], escapedMsg);
                     } else {
                         appendStatusMessage (i18n("Message"), escapedMsg);
                     }
-                } else if (ev.parameterList["irc_target"] == "$*") {
+                }
+                else if (ev.parameterList["irc_target"] == "$*")
+                {
                     appendStatusMessage (ev.parameterList["presence"], escapedMsg);
+                }
+                else if (ev.parameterList["irc_target"] == m_presence->name())
+                {
+                    // Can we ever get a message where this isn't true?
+                    if (ev.parameterList.contains ("presence"))
+                    {
+                        Query* q = query (ev.parameterList["presence"]);
+                        if (q == 0)
+                        {
+                            // Create new query
+                            q = queryAdd (ev.parameterList["presence"]);
+                        }
+                        if (ev.parameterList["type"] == "action")
+                        {
+                            q->appendAction (ev.parameterList["presence"], escapedMsg);
+                        } else {
+                            q->append (ev.parameterList["presence"], escapedMsg);
+                        }
+                    }
                 }
             }
             else if ( ev.command == "channel_init" ) {
@@ -238,6 +261,38 @@ namespace Icecap
             }
 
         } // end if (ev.tag == "*")
+    }
+
+    Query* MyPresence::query (const QString& presenceName)
+    {
+        Presence* presenceToFind = m_network->presence (presenceName);
+        QPtrListIterator<Query> it( queryList );
+        Query* current;
+        while ( (current = it.current()) != 0 ) {
+            ++it;
+            if (current->presence() == presenceToFind) {
+                return current;
+            }
+        }
+
+        return 0;
+    }
+
+    Query* MyPresence::queryAdd (const QString& presenceName)
+    {
+        Query* query = new Query (this, m_network->presence (presenceName));
+        queryList.append (query);
+        return query;
+    }
+
+    void MyPresence::queryRemove (const QString& presenceName)
+    {
+        queryList.remove (query (presenceName));
+    }
+
+    void MyPresence::queryRemove (Query* query)
+    {
+        queryList.remove (query);
     }
 
 }

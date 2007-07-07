@@ -42,8 +42,6 @@
 #include "icecapchannel.h"
 #include "icecapmypresence.h"
 
-#include "query.h"
-
 namespace Icecap
 {
     OutputFilter::OutputFilter(IcecapServer* server)
@@ -324,7 +322,11 @@ namespace Icecap
             {
                 QString escapedLine = parameter;
                 escapedLine.replace (";", "\\.");
-                result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";channel="+ channelName +";type=action;msg="+ escapedLine;
+                if (isAChannel (channelName)) {
+                    result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";channel="+ channelName +";type=action;msg="+ escapedLine;
+                } else {
+                    result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";presence="+ channelName +";type=action;msg="+ escapedLine;
+                }
                 result.output = parameter;
                 result.type = Action;
             }
@@ -344,7 +346,11 @@ namespace Icecap
             BYPASS_COMMAND_PARSING:
             QString escapedLine = inputLine;
             escapedLine.replace (";", "\\.");
-            result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";channel="+ channelName +";msg="+ escapedLine;
+            if (isAChannel (destination)) {
+                result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";channel="+ channelName +";msg="+ escapedLine;
+            } else {
+                result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";presence="+ channelName +";msg="+ escapedLine;
+            }
             result.output = inputLine;
             result.type = Message;
         }
@@ -846,6 +852,15 @@ namespace Icecap
         }
 
         return result;
+    }
+
+    // The following note comes from the Konversation code:
+    // # & + and ! are *often*, but not necessarily, channel identifiers. + and ! are non-RFC, so if a server doesn't offer 005 and
+    // supports + and ! channels, I think thats broken behaviour on their part - not ours.
+    bool OutputFilter::isAChannel (const QString& name)
+    {
+        QString channelPrefixes = "#&";
+        return (channelPrefixes.contains(name.at(0)) > 0);
     }
 
 }

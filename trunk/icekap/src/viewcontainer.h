@@ -43,6 +43,11 @@ namespace Konversation
     class InsertCharDialog;
 }
 
+namespace Icecap
+{
+    class Presence;
+}
+
 class ViewContainer : public QObject
 {
     Q_OBJECT
@@ -132,8 +137,7 @@ class ViewContainer : public QObject
         void openChannelSettings();
         void toggleChannelNicklists();
 
-// TODO: Rewrite - uses now non-existant NickInfoPtr
-//        Query* addQuery(IcecapServer* server,const NickInfoPtr & name, bool weinitiated=true);
+        QueryWindow* addQuery(Icecap::Query* iquery, bool weinitiated=true);
         void updateQueryChrome(ChatWindow* view, const QString& name);
         void closeQueries();
 
