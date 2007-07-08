@@ -17,9 +17,11 @@
 
 #include "icecapchannelpresence.h"
 #include "icecapmisc.h"
+#include "nicklist.h"
 
 class ChannelWindow;
 class ViewContainer;
+// class NickList;
 
 namespace Icecap
 {
@@ -61,6 +63,8 @@ namespace Icecap
             ChannelPresence* presence (const QString& userName);
             ChannelPresence* presenceByAddress (const QString& userAddress);
 
+            NickList& nickList () { return m_nickList; }
+
             bool containsNick (const QString nickname);
             ChannelPresence* getNickByName (const QString& name) { return presence (name); }
 
@@ -96,7 +100,10 @@ namespace Icecap
             QDateTime topicTimestamp;
             QString modes;
             bool connected;
+
             QPtrList<ChannelPresence> presenceList;
+            // This is used for completeNick in ChannelWindow. It's an extension of QPtrList<ChannelPresence>
+            NickList m_nickList;
 
             // number of ops of any type
             uint m_numberOfOps;

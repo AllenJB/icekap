@@ -857,6 +857,7 @@ namespace Icecap
     // The following note comes from the Konversation code:
     // # & + and ! are *often*, but not necessarily, channel identifiers. + and ! are non-RFC, so if a server doesn't offer 005 and
     // supports + and ! channels, I think thats broken behaviour on their part - not ours.
+    // TODO: Query list of known channels in relevent mypresence
     bool OutputFilter::isAChannel (const QString& name)
     {
         QString channelPrefixes = "#&";
