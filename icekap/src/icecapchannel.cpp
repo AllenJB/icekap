@@ -67,7 +67,7 @@ namespace Icecap
         // Initialise nick listView items
         // TODO: Is there a better may to do this? (A Haskell map analogue perhaps)
         NickListView* listView = window->getNickListView ();
-        QPtrListIterator<ChannelPresence> it( presenceList );
+        QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
@@ -124,13 +124,12 @@ namespace Icecap
             user->setListView (window->getNickListView ());
         }
 
-        presenceList.append (user);
         m_nickList.append (user);
     }
 
     ChannelPresence* Channel::presence (const QString& userName) {
         QString lookupName = userName.lower ();
-        QPtrListIterator<ChannelPresence> it( presenceList );
+        QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
@@ -143,7 +142,7 @@ namespace Icecap
     }
 
     ChannelPresence* Channel::presenceByAddress (const QString& userAddress) {
-        QPtrListIterator<ChannelPresence> it( presenceList );
+        QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
@@ -157,7 +156,6 @@ namespace Icecap
 
     void Channel::presenceRemove (const ChannelPresence* user)
     {
-        presenceList.remove (user);
         m_nickList.remove (user);
         delete user;
     }
@@ -368,7 +366,7 @@ namespace Icecap
             result.append (window->getTextView()->getContextNick());
         else
         {
-            QPtrListIterator<ChannelPresence> it( presenceList );
+            QPtrListIterator<ChannelPresence> it( m_nickList );
             ChannelPresence* current;
             while ( (current = it.current()) != 0 ) {
                 ++it;
@@ -382,7 +380,7 @@ namespace Icecap
     }
 
     bool Channel::containsNick (QString nickname) {
-        QPtrListIterator<ChannelPresence> it( presenceList );
+        QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
             ++it;
