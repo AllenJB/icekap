@@ -27,7 +27,9 @@ namespace Icecap
 
     class Channel;
 
-    // TODO: nickColor support
+    /**
+     * Represents a given presence on a given channel.
+     */
     class ChannelPresence : public QObject
     {
         Q_OBJECT
@@ -81,10 +83,6 @@ namespace Icecap
             uint getNickColor () { return m_presence->getNickColor (); }
 
         signals:
-            // TODO: Do we want to change this to be an indicator for each mode - ie: modeChanged (QString type, bool value) ?
-            // TODO: Do we actually want this at all?
-            void modeChanged (QString modes);
-
             void channelNickChanged ();
             void nickInfoChanged ();
 

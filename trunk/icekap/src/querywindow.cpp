@@ -160,7 +160,7 @@ void QueryWindow::queryTextEntered()
     }
     else if(line.lower()==Preferences::commandChar()+"part")
     {
-//        m_server->closeQuery(getName());
+        m_mypresence->queryRemove (m_query);
     }
     else if(line.length())
     {
@@ -420,7 +420,6 @@ void QueryWindow::setNickInfo(Icecap::Presence* nickInfo)
 
 void QueryWindow::nickInfoChanged()
 {
-/*
     if(m_nickInfo)
     {
 
@@ -429,8 +428,9 @@ void QueryWindow::nickInfoChanged()
         if(!m_nickInfo->getHostmask().isEmpty() && !text.isEmpty())
             text += " - ";
         text += m_nickInfo->getHostmask();
-        if(m_nickInfo->isAway() )
-            text += " (" + KStringHandler::rsqueeze(m_nickInfo->getAwayMessage(),100) + ") ";
+// TODO: AllenJB: Away mode
+//        if(m_nickInfo->isAway() )
+//            text += " (" + KStringHandler::rsqueeze(m_nickInfo->getAwayMessage(),100) + ") ";
         queryHostmask->setText(Konversation::removeIrcMarkup(text));
 
         addresseeimage->hide();
@@ -459,7 +459,6 @@ void QueryWindow::nickInfoChanged()
 
     emit updateQueryChrome(this,getName());
     emitUpdateInfo();
-*/
 }
 
 Icecap::Presence* QueryWindow::getNickInfo()
@@ -536,9 +535,8 @@ void QueryWindow::serverOnline(bool online)
 
 void QueryWindow::emitUpdateInfo()
 {
-/*
     QString info;
-    if(m_nickInfo->loweredNickname() == m_server->loweredNickname())
+    if(m_nickInfo->loweredNickname() == m_mypresence->presence()->loweredNickname())
         info = i18n("Talking to yourself");
     else if(m_nickInfo)
         info = m_nickInfo->getBestAddresseeName();
@@ -546,7 +544,6 @@ void QueryWindow::emitUpdateInfo()
         info = getName();
 
     emit updateInfo(info);
-*/
 }
 
 // show quit message of nick if we see it

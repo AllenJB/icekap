@@ -21,8 +21,10 @@
 namespace Icecap
 {
 
-    // Used for the event stream coming from InputFilter via Server
-    // TODO: Ensure no code uses sentParameters or parameters
+    /**
+     * Icecap command / response / event representation
+     * @todo AllenJB: Move all code that uses sentParameters and parameters to sentParameterList and parameterList
+     */
     typedef struct
     {
         QString tag;
@@ -44,8 +46,9 @@ namespace Icecap
         QString sentParameters;
     } Cmd;
 
-    // Used for the message stream coming from OutputFilter via Server
-    // Contains messages to be displayed in the client view (ie. local responses to commands)
+    /**
+     * Client message representation. Used for messages that will appear in the client
+     */
     typedef struct
     {
         QString network;

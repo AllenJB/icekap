@@ -13,7 +13,6 @@
 */
 #include "icecapchannelpresence.h"
 
-// #include "nicklistview.h"
 #include <klistview.h>
 
 #include "nicklistviewitem.h"
@@ -44,9 +43,13 @@ namespace Icecap
         delete m_listViewItem;
     }
 
-    // TODO: Warning for unrecognised modes
-    // TODO: Get rid of m_modes (still used for operator== )
-    // TODO: Convert remaining modes to icecap equivalents
+    /**
+     * Set a given mode for this user
+     * @param modes Mode to set
+     * @todo AllenJB: Warning for unrecognised modes
+     * @todo AllenJB: Get rid of m_modes (still used for operator== )
+     * @todo AllenJB: Convert remaining modes to icecap equivalents
+     */
     void ChannelPresence::setMode (const QString& modes)
     {
         m_modes = modes;
@@ -57,11 +60,15 @@ namespace Icecap
 //        m_halfop = modes.contains ("h");
         m_voice  = (modes == "voice");
 
-        emit modeChanged (modes);
         emit channelNickChanged ();
     }
 
-    // TODO: Add remaining icecap mode names
+    /**
+     * Change a given mode
+     * @param add New mode state
+     * @param mode Mode to change
+     * @todo AllenJB: Add remaining icecap mode names
+     */
     void ChannelPresence::modeChange (const bool add, const QString& mode)
     {
         if (mode == "voice") {
@@ -73,17 +80,30 @@ namespace Icecap
         emit channelNickChanged();
     }
 
+    /**
+     * Is the NickListView entry for this user currently selected?
+     * @return Selected?
+     */
     bool ChannelPresence::isSelected () const
     {
         return m_listViewItem->isSelected ();
     }
 
+    /**
+     * Comparison operator
+     * @param compareTo object to compare to
+     * @return Same object?
+     */
     bool ChannelPresence::operator== (ChannelPresence compareTo)
     {
         return ((m_channel == compareTo.m_channel) &&
             (m_presence == compareTo.m_presence));
     }
 
+    /**
+     * Set the ListView for this user and create a ListViewItem
+     * @param listView List view
+     */
     void ChannelPresence::setListView (KListView* listView) {
         if (m_listView != 0) {
             return;

@@ -17,8 +17,6 @@
 
 #include "icecapmypresence.h"
 
-// TODO: Handle GUI tab closing
-// TODO: Switch topic to a signal based system
 namespace Icecap
 {
 
@@ -30,6 +28,9 @@ namespace Icecap
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
         m_numberOfOps = 0;
+
+        // Delete every contained object when nickList is deleted
+        m_nickList.setAutoDelete (true);
 
         // Connect to server event stream (command results)
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
@@ -53,6 +54,9 @@ namespace Icecap
         if (connected) init ();
     }
 
+    /**
+     * Initialise GUI window, populate the NickListView, set the topic and request a list of users from the server.
+     */
     void Channel::init ()
     {
         if (windowIsActive) return;
@@ -65,7 +69,6 @@ namespace Icecap
         window = getViewContainer()->addChannel (this);
 
         // Initialise nick listView items
-        // TODO: Is there a better may to do this? (A Haskell map analogue perhaps)
         NickListView* listView = window->getNickListView ();
         QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
@@ -94,6 +97,12 @@ namespace Icecap
         m_mypresence->server()->queueCommand (listNames);
     }
 
+    /**
+     * Set the topic
+     * @param newTopic New topic
+     * @param setBy Name of user who set the topic
+     * @param timestampStr Time at which topic was set
+     */
     void Channel::setTopic (const QString& newTopic, const QString& setBy, const QString& timestampStr)
     {
         topic = newTopic;
@@ -106,6 +115,10 @@ namespace Icecap
         }
     }
 
+    /**
+     * Set the connected state
+     * @param newStatus New state
+     */
     void Channel::setConnected (bool newStatus)
     {
         if (newStatus == connected) return;
@@ -113,7 +126,10 @@ namespace Icecap
         if (connected) init ();
     }
 
-    // TODO: Add a debug message when we try to add users already in the channel
+    /**
+     * Add a channel presence
+     * @param user Presence to add
+     */
     void Channel::presenceAdd (ChannelPresence* user)
     {
         if (presence (user->name())) {
@@ -127,6 +143,11 @@ namespace Icecap
         m_nickList.append (user);
     }
 
+    /**
+     * Find a presence by username
+     * @param userName Username to search for
+     * @return Requested presence; 0 if no presence found
+     */
     ChannelPresence* Channel::presence (const QString& userName) {
         QString lookupName = userName.lower ();
         QPtrListIterator<ChannelPresence> it( m_nickList );
@@ -141,6 +162,11 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Find a presence by address (hostmask)
+     * @param userAddress Address to search for
+     * @return Requested presence; 0 if no presence found
+     */
     ChannelPresence* Channel::presenceByAddress (const QString& userAddress) {
         QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
@@ -154,47 +180,85 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Remove a channel presence
+     * @param user Presence to remove
+     */
     void Channel::presenceRemove (const ChannelPresence* user)
     {
         m_nickList.remove (user);
         delete user;
     }
 
+    /**
+     * Remove a channel presence by name
+     * @param userName Name of presence to remove
+     */
     void Channel::presenceRemoveByName (const QString& userName)
     {
         presenceRemove (presence (userName));
     }
 
+    /**
+     * Remove presence by address
+     * @param userAddress Address of user to remove
+     */
     void Channel::presenceRemoveByAddress (const QString& userAddress)
     {
         presenceRemove (presenceByAddress (userAddress));
     }
 
+    /**
+     * Return view container. Shortcut to m_mypresence->getViewContainer
+     * @return View container
+     */
     ViewContainer* Channel::getViewContainer () const
     {
         return m_mypresence->getViewContainer ();
     }
 
+    /**
+     * Append message to channel
+     * @param nickname User who posted the message
+     * @param message Message
+     */
     void Channel::append(const QString& nickname,const QString& message)
     {
         if (!windowIsActive) return;
         window->append (nickname, message);
     }
 
+    /**
+     * Append user action to channel
+     * @param nickname User who posted the action
+     * @param message Action message
+     * @param usenotifications Use notifications?
+     */
     void Channel::appendAction(const QString& nickname,const QString& message, bool usenotifications)
     {
         if (!windowIsActive) return;
         window->appendAction (nickname, message, usenotifications);
     }
 
-    void Channel::appendCommandMessage (const QString& command, const QString& message, bool important,
-        bool parseURL, bool self)
+    /**
+     * Append command message to channel
+     * @param command Source command
+     * @param message Message
+     * @param important Is this important?
+     * @param parseURL Parse URLs?
+     * @param self
+     */
+    void Channel::appendCommandMessage (const QString& command, const QString& message, bool important, bool parseURL, bool self)
     {
         if (!windowIsActive) return;
         window->appendCommandMessage(command, message, important, parseURL, self);
     }
 
-    // TODO: Get rid of irc modes in favour of pure icecap modes?
+    /**
+     * Parse events from the server
+     * @param ev Event
+     * @todo AllenJB: Get rid of irc modes in favour of pure icecap modes?
+     */
     void Channel::eventFilter (Cmd ev)
     {
         Network* network = m_mypresence->network();
@@ -256,7 +320,9 @@ namespace Icecap
             }
             else if (ev.command == "msg")
             {
-                // TODO: Do we need to escape the presence name too?
+                /**
+                 * @todo AllenJB: Do we need to escape the presence name too?
+                 */
                 QString escapedMsg = ev.parameterList["msg"];
                 escapedMsg.replace ("\\.", ";");
                 if ((ev.parameterList.contains ("type")) && (ev.parameterList["type"] == "action")) {
@@ -297,7 +363,7 @@ namespace Icecap
                 if (user->isAnyTypeOfOp ()) {
                     m_numberOfOps--;
                 }
-                // @TODO: Source presence for kicks
+                // TODO: Source presence for kicks
                 presenceRemoveByName (ev.parameterList["presence"]);
                 if (! ev.parameterList.contains ("deinit")) {
                     if (ev.parameterList["type"] == "quit") {
@@ -348,16 +414,29 @@ namespace Icecap
     }
 
 
+    /**
+     * Comparison operator
+     * @param compareTo Object to compare to
+     * @return Same object?
+     */
     bool Channel::operator== (Channel compareTo)
     {
         return (m_name == compareTo.m_name);
     }
 
+    /**
+     * Is this a null object?
+     * @return Null object?
+     */
     bool Channel::isNull ()
     {
         return m_name.isNull();
     }
 
+    /**
+     * Return list of nicknames that are currently selected in the NickListView
+     * @return Selected nicknames
+     */
     QStringList Channel::getSelectedNickList()
     {
         QStringList result;
@@ -379,6 +458,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Check if this channel contains a given nickname
+     * @param nickname Nick to check for
+     * @return Specified nick is in this channel?
+     */
     bool Channel::containsNick (QString nickname) {
         QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;

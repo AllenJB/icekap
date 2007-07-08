@@ -207,12 +207,13 @@ void NickListView::updateActions()
     int unignoreCounter = 0;
     int notifyCounter = 0;
 
-//    int serverGroupId = channel->getServer()->serverGroupSettings()->id();
     int serverGroupId = 0;
-
 /*
-    // TODO: Update to use Icecap::Channel
-    ChannelNickList nickList=channel->getSelectedChannelNicks();
+    // TODO: What does this code actually do?
+    // TODO: Need to remove serverGroupId
+    int serverGroupId = channel->getServer()->serverGroupSettings()->id();
+
+    ChannelNickList nickList=channel->channel()->getSelectedChannelNicks();
     ChannelNickList::ConstIterator it;
 
     for (it = nickList.begin(); it != nickList.end(); ++it)

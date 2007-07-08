@@ -22,16 +22,24 @@
 class ChannelWindow;
 class ViewContainer;
 
+/**
+ * All objects relating directly to the Icecap structure
+ */
 namespace Icecap
 {
     class MyPresence;
 
+    /**
+     * Represents a channel
+     * @todo AllenJB: Handle GUI tab closing
+     * @todo AllenJB: Switch topic to a signal based system
+     */
     class Channel : public QObject
     {
         Q_OBJECT
 
         public:
-            Channel (): m_name(0) {}
+//            Channel (): m_name(0) {}
             Channel (MyPresence* p_mypresence, const QString& name);
             Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap);
 //            ~Channel ();

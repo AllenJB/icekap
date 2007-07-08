@@ -69,6 +69,10 @@ namespace Icecap
         }
     }
 
+    /**
+     * Update this object from the parameters of a command/response/event
+     * @param parameterMap Parameters
+     */
     void MyPresence::update (const QMap<QString,QString>& parameterMap)
     {
         setConnected (parameterMap.contains ("connected"));
@@ -93,6 +97,9 @@ namespace Icecap
         emit nameChanged ();
     }
 
+    /**
+     * Initialise GUI window
+     */
     void MyPresence::init ()
     {
         if (statusViewActive) return;
@@ -102,6 +109,10 @@ namespace Icecap
         statusView->setServer (m_server);
     }
 
+    /**
+     * Set connection state
+     * @param newStatus New state
+     */
     void MyPresence::setConnected (bool newStatus)
     {
         m_connected = newStatus;
@@ -111,6 +122,11 @@ namespace Icecap
         }
     }
 
+    /**
+     * Find a channel by name
+     * @param channelName Channel name to search for
+     * @return Channel object; 0 if none found
+     */
     Channel* MyPresence::channel (const QString& channelName)
     {
         QPtrListIterator<Channel> it( channelList );
@@ -125,6 +141,10 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Add a channel
+     * @param ch Channel
+     */
     void MyPresence::channelAdd (const Channel* ch)
     {
         if (channel (ch->name()) != 0) {
@@ -133,6 +153,10 @@ namespace Icecap
         channelList.append (ch);
     }
 
+    /**
+     * Add a chanenl
+     * @param channelName Name of channel to add
+     */
     void MyPresence::channelAdd (const QString& channelName)
     {
         if (channel (channelName) != 0) {
@@ -141,6 +165,11 @@ namespace Icecap
         channelAdd (new Channel (this, channelName));
     }
 
+    /**
+     * Add a channel with a given set of parameters
+     * @param channelName Name of channel
+     * @param parameterMap Parameters
+     */
     void MyPresence::channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap)
     {
         if (channel (channelName) != 0) {
@@ -149,21 +178,38 @@ namespace Icecap
         channelAdd (new Channel (this, channelName, parameterMap));
     }
 
+    /**
+     * Remove a channel
+     * @param channel Channel to remove
+     */
     void MyPresence::channelRemove (const Channel* channel)
     {
         channelList.remove (channel);
     }
 
+    /**
+     * Remove a channel by name
+     * @param channelName Channel name
+     */
     void MyPresence::channelRemove (const QString& channelName)
     {
         channelList.remove (channel (channelName));
     }
 
+    /**
+     * Comparison operator
+     * @param compareTo Object to compare to
+     * @return Same object?
+     */
     bool MyPresence::operator== (MyPresence* compareTo)
     {
         return ( (m_name == compareTo->name()) && (m_network->name() == compareTo->network()->name()) );
     }
 
+    /**
+     * Set state
+     * @param state New state
+     */
     void MyPresence::setState (State state)
     {
         m_state = state;
@@ -172,6 +218,11 @@ namespace Icecap
         }
     }
 
+    /**
+     * Append a status message
+     * @param type Message type (shown in tab bar)
+     * @param message Message
+     */
     void MyPresence::appendStatusMessage(const QString& type, const QString& message)
     {
         if ( statusViewActive ) {
@@ -181,6 +232,10 @@ namespace Icecap
         }
     }
 
+    /**
+     * Filter events from the server
+     * @param ev Event
+     */
     void MyPresence::eventFilter (Icecap::Cmd ev)
     {
         if ((ev.mypresence != m_name) || (ev.network != m_network->name())) {
@@ -263,6 +318,11 @@ namespace Icecap
         } // end if (ev.tag == "*")
     }
 
+    /**
+     * Return a query with a given presence name
+     * @param presenceName Presence name
+     * @return Query
+     */
     Query* MyPresence::query (const QString& presenceName)
     {
         Presence* presenceToFind = m_network->presence (presenceName);
@@ -278,6 +338,11 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Create a query to a given presence
+     * @param presenceName Presence name
+     * @return New query
+     */
     Query* MyPresence::queryAdd (const QString& presenceName)
     {
         Query* query = new Query (this, m_network->presence (presenceName));
@@ -285,11 +350,19 @@ namespace Icecap
         return query;
     }
 
+    /**
+     * Remove a query to a given presence
+     * @param presenceName Presence name
+     */
     void MyPresence::queryRemove (const QString& presenceName)
     {
         queryList.remove (query (presenceName));
     }
 
+    /**
+     * Remove a query
+     * @param query Query object
+     */
     void MyPresence::queryRemove (Query* query)
     {
         queryList.remove (query);

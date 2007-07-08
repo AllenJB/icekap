@@ -12,8 +12,6 @@
 
 #include "icecapmisc.h"
 
-// #include "querywindow.h"
-
 class QueryWindow;
 class ViewContainer;
 
@@ -22,7 +20,10 @@ namespace Icecap
     class Presence;
     class MyPresence;
 
-    // TODO: I think this no longer needs to be a QObject
+    /**
+     * Representation of a query / PM with another presence
+     * @todo AllenJB: I think this no longer needs to be a QObject
+     */
     class Query : public QObject
     {
         Q_OBJECT

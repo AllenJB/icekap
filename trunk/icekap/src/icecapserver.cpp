@@ -43,15 +43,6 @@
 #include "blowfish.h"
 
 #include <config.h>
-// TODO: Remove unnecessary / unsupported crap from constructor
-// TODO: Remove anything pertaining to nickname
-// TODO: Remove anything pertaining to channels
-// TODO: Implement support for icecap authorisation (when it supports authorisation itself)
-// TODO: Implement support for SSL connections
-
-// TODO: (Re-)Implement adding and removing networks, gateways, presences and channels using the new event system
-// TODO: (Re-)Implement gateway lists using the new event system
-// TODO: (Re-)Implement ability to obtain a list of all known networks, gateways, presences and channels
 
 IcecapServer::IcecapServer(ViewContainer* viewContainer, const QString& name, const QString& hostName, const QString& port, const QString& password, const bool& useSSL)
 {
@@ -88,6 +79,11 @@ IcecapServer::~IcecapServer()
     emit deleted(this);
 }
 
+/**
+ * Initialise the server object, particularly GUI related items
+ * @param viewContainer GUI View Container
+ * @todo AllenJB: Reimplement toggle-able Raw Log window
+ */
 void IcecapServer::init(ViewContainer* viewContainer)
 {
     m_processingIncoming = false;
@@ -123,12 +119,18 @@ void IcecapServer::init(ViewContainer* viewContainer)
     emit connectionChangedState(this, SSDisconnected);
 }
 
+/**
+ * Initialise incoming and outgoing timers
+ */
 void IcecapServer::initTimers()
 {
     incomingTimer.setName("incoming_timer");
     outgoingTimer.setName("outgoing_timer");
 }
 
+/**
+ * Connect all signals
+ */
 void IcecapServer::connectSignals()
 {
 
@@ -164,6 +166,11 @@ void IcecapServer::connectSignals()
 
 }
 
+/**
+ * Is this server currently connected?
+ * @return Currently connected?
+ * @todo AllenJB: This may need re-implementing
+ */
 bool IcecapServer::isConnected() const
 {
     if (!m_socket)
@@ -172,6 +179,9 @@ bool IcecapServer::isConnected() const
     return (m_socket->state() == KNetwork::KClientSocketBase::Connected);
 }
 
+/**
+ * Initialise connection to the server
+ */
 void IcecapServer::connectToServer()
 {
     deliberateQuit = false;
@@ -226,11 +236,17 @@ void IcecapServer::connectToServer()
     }
 }
 
+/**
+ * Show SSL info dialog
+ */
 void IcecapServer::showSSLDialog()
 {
     static_cast<SSLSocket*>(m_socket)->showInfoDialog();
 }
 
+/**
+ * Server lookup finished - either not found or start connecting
+ */
 void IcecapServer::lookupFinished()
 {
     // error during lookup
@@ -253,6 +269,9 @@ void IcecapServer::lookupFinished()
     }
 }
 
+/**
+ * Successfully connected to server
+ */
 void IcecapServer::connectionSuccess()
 {
     reconnectCounter = 0;
@@ -267,6 +286,10 @@ void IcecapServer::connectionSuccess()
     connecting = false;
 }
 
+/**
+ * Server connection boken (for any reason, including a deliberate quit)
+ * @param state UNKNOWN
+ */
 void IcecapServer::broken(int state)
 {
     m_socket->enableRead(false);
@@ -344,6 +367,10 @@ void IcecapServer::broken(int state)
     }
 }
 
+/**
+ * SSL connection error occurred
+ * @param reason Reason for failure
+ */
 void IcecapServer::sslError(const QString& reason)
 {
     QString error = i18n("Could not connect to %1:%2 using SSL encryption.Maybe the server does not support SSL, or perhaps you have the wrong port? %3")
@@ -356,6 +383,12 @@ void IcecapServer::sslError(const QString& reason)
 }
 
 // Will be called from InputFilter as soon as the Welcome message was received
+/**
+ * Connection successfully established - set online status and request network, presence and channel lists (which triggers window creation)
+ * @param ownHost Own host
+ * @todo AllenJB: Do we still need to resolve our own hostname?
+ * @todo AllenJB: Need to be able to tell the difference between network / presence / channel lists started by the user (using raw) and our startup requests
+ */
 void IcecapServer::connectionEstablished(const QString& ownHost)
 {
     // Some servers don't include the userhost in RPL_WELCOME, so we
@@ -380,25 +413,37 @@ void IcecapServer::connectionEstablished(const QString& ownHost)
     queueCommand ("chlist",  "channel list");
 }
 
+/**
+ * Return a key mapped to a given recipient. I think this is used for blowfish support.
+ * @param recipient Recipient name
+ * @return Key for given recipient
+ */
 QCString IcecapServer::getKeyForRecipient(const QString& recipient) const
 {
     return keyMap[recipient];
 }
 
+/**
+ * Map a key to a given recipient. I think this is used for blowfish support.
+ * @param recipient Recipient name
+ * @param key Key
+ */
 void IcecapServer::setKeyForRecipient(const QString& recipient, const QCString& key)
 {
     keyMap[recipient] = key;
 }
 
-// TODO: This should be handled by OutputFilter
+/**
+ * Quit server
+ */
 void IcecapServer::quitServer()
 {
-    QString command(Preferences::commandChar()+"QUIT");
-//    Icecap::OutputFilterResult result = outputFilter->parse(getNickname(),command, QString::null);
-//    queue(result.toServer);
     if (m_socket) m_socket->enableRead(false);
 }
 
+/**
+ * Process incoming data from the buffer via InputFilter
+ */
 void IcecapServer::processIncomingData()
 {
     incomingTimer.stop();
@@ -423,6 +468,11 @@ void IcecapServer::processIncomingData()
     }
 }
 
+/**
+ * Put incoming data from the server into the buffer for processing
+ * @todo AllenJB: This method needs to be stripped of IRC protocol code
+ * @todo AllenJB: Do we still need non-utf8 -> utf8 conversion given that icecapd connections are always utf8?
+ */
 void IcecapServer::incoming()
 {
     if(m_server.SSLEnabled())
@@ -471,7 +521,6 @@ void IcecapServer::incoming()
         QString senderNick;
         bool isServerMessage = false;
         QString channelKey;
-//        QTextCodec* codec = getIdentity()->getCodec();
         QTextCodec* codec = QTextCodec::codecForName("utf8");
         QCString front = qcsBufferLines.front();
 
@@ -490,72 +539,13 @@ void IcecapServer::incoming()
             }
         }
 
-        // BEGIN pre-parse to know where the message belongs to
-        QString command = lineSplit[0].lower();
-        if( isServerMessage )
-        {
-            if( lineSplit.count() >= 3 )
-            {
-                if( command == "332" )            // RPL_TOPIC
-                    channelKey = lineSplit[2];
-                if( command == "372" )            // RPL_MOTD
-                    channelKey = ":server";
-            }
-        }
-        else                                      // NOT a global message
-        {
-            if( lineSplit.count() >= 2 )
-            {
-                // query
-/*
-                if( ( command == "privmsg" ||
-                    command == "notice"  ) &&
-                    lineSplit[1] == getNickname() )
-                {
-                    channelKey = senderNick;
-                }
-                // channel message
-                else if( command == "privmsg" ||
-                    command == "notice"  ||
-                    command == "join"    ||
-                    command == "kick"    ||
-                    command == "part"    ||
-                    command == "topic"   )
-                {
-                    channelKey = lineSplit[1];
-                }
-*/
-            }
-        }
-        // END pre-parse to know where the message belongs to
-
-        // Decrypt if necessary
-        if(command == "privmsg")
-            Konversation::decrypt(channelKey,front,this);
-        else if(command == "332")
-        {
-            Konversation::decryptTopic(channelKey,front,this);
-        }
-
         bool isUtf8 = Konversation::isUtf8(front);
 
         if( isUtf8 )
             inputBuffer << QString::fromUtf8(front);
         else
         {
-            // check setting
-            QString channelEncoding;
-            channelEncoding = "utf8";
-/*
-            if( !channelKey.isEmpty() )
-            {
-                channelEncoding = Preferences::channelEncoding(getServerGroup(), channelKey);
-            }
-*/
-            // END set channel encoding if specified
-
-            if( !channelEncoding.isEmpty() )
-                codec = Konversation::IRCCharsets::self()->codecForName(channelEncoding);
+            codec = Konversation::IRCCharsets::self()->codecForName("utf8");
 
             // if channel encoding is utf-8 and the string is definitely not utf-8
             // then try latin-1
@@ -575,6 +565,10 @@ void IcecapServer::incoming()
         incomingTimer.start(0);
 }
 
+/**
+ * Queue data for sending to the server. This method should be avoided in favour of queueCommand
+ * @param buffer Data to add to buffer
+ */
 void IcecapServer::queue(const QString& buffer)
 {
     // Only queue lines if we are connected
@@ -591,6 +585,11 @@ void IcecapServer::queue(const QString& buffer)
     }
 }
 
+/**
+ * Queue data at a specific position in the buffer (ie. Use if we want to jump a command to the front of the buffer)
+ * @param pos Position to place data
+ * @param buffer Data to place into buffer
+ */
 void IcecapServer::queueAt(uint pos,const QString& buffer)
 {
     if(buffer.isEmpty())
@@ -613,6 +612,10 @@ void IcecapServer::queueAt(uint pos,const QString& buffer)
     }
 }
 
+/**
+ * Queue several items of data for sending to the server. Avoid in favour of queueCommand
+ * @param buffer List of data to add to buffer
+ */
 void IcecapServer::queueList(const QStringList& buffer)
 {
     // Only queue lines if we are connected
@@ -631,6 +634,9 @@ void IcecapServer::queueList(const QStringList& buffer)
     }
 }
 
+/**
+ * Send data from the buffer to the server
+ */
 void IcecapServer::send()
 {
     // Check if we are still online
@@ -660,13 +666,7 @@ void IcecapServer::send()
 
         // init stream props
         serverStream.setEncoding(QTextStream::Locale);
-//        QTextCodec* codec = getIdentity()->getCodec();
         QTextCodec* codec = QTextCodec::codecForName("utf8");
-
-        if(!channelCodecName.isEmpty())
-        {
-            codec = Konversation::IRCCharsets::self()->codecForName(channelCodecName);
-        }
 
         // convert encoded data to IRC ascii only when we don't have the same codec locally
         if(QString(QTextCodec::codecForLocale()->name()).lower() != QString(codec->name()).lower())
@@ -705,11 +705,18 @@ void IcecapServer::send()
     }
 }
 
+/**
+ * Connection was closed for some reason
+ */
 void IcecapServer::closed()
 {
     broken(m_socket->error());
 }
 
+/**
+ * Process a raw command from dcop
+ * @param command Command
+ */
 void IcecapServer::dcopRaw(const QString& command)
 {
     if(command.startsWith(Preferences::commandChar()))
@@ -720,21 +727,42 @@ void IcecapServer::dcopRaw(const QString& command)
         queue(command);
 }
 
+/**
+ * Append DCOP info message to frontmose window
+ * @param string Message
+ * @todo AllenJB: Requires frontmost support
+ */
 void IcecapServer::dcopInfo(const QString& string)
 {
     appendMessageToFrontmost(i18n("DCOP"),string);
 }
 
+/**
+ * Append status message to server window
+ * @param type Message type
+ * @param message Message
+ */
 void IcecapServer::appendStatusMessage(const QString& type,const QString& message)
 {
     statusView->appendServerMessage(type,message);
 }
 
+/**
+ * Append message to frontmost window
+ * @param type Message type
+ * @param message Message
+ * @param parseURL Parse URLs?
+ * @todo AllenJB: Requires frontmost window support
+ */
 void IcecapServer::appendMessageToFrontmost(const QString& type,const QString& message, bool parseURL)
 {
     getViewContainer()->appendToFrontmost(type,message, statusView, parseURL);
 }
 
+/**
+ * Show or hide raw log window for this server
+ * @param show New state
+ */
 void IcecapServer::addRawLog(bool show)
 {
     if (!rawLog)
@@ -746,6 +774,9 @@ void IcecapServer::addRawLog(bool show)
     if (show) emit showView(rawLog);
 }
 
+/**
+ * Close and delete raw log window
+ */
 void IcecapServer::closeRawLog()
 {
     if(rawLog)
@@ -755,6 +786,11 @@ void IcecapServer::closeRawLog()
     }
 }
 
+/**
+ * Create a channel list panel for this server
+ * @return Channel List Panel
+ * @todo AllenJB: Needs re-implementing. May need icecapd support
+ */
 ChannelListPanel* IcecapServer::addChannelListPanel()
 {
     if(!channelListPanel)
@@ -766,6 +802,10 @@ ChannelListPanel* IcecapServer::addChannelListPanel()
     return channelListPanel;
 }
 
+/**
+ * Close channel list panel
+ * @todo AllenJB: Needs re-implementing. May need icecapd support
+ */
 void IcecapServer::closeChannelListPanel()
 {
     if(channelListPanel)
@@ -775,11 +815,18 @@ void IcecapServer::closeChannelListPanel()
     }
 }
 
+/**
+ * Get SSL connection information
+ * @return Info string
+ */
 QString IcecapServer::getSSLInfo() const
 {
     return static_cast<SSLSocket*>(m_socket)->details();
 }
 
+/**
+ * Disconnect and reconnect to the server
+ */
 void IcecapServer::reconnect()
 {
     if (isConnected() && !connecting)
@@ -796,6 +843,9 @@ void IcecapServer::reconnect()
     }
 }
 
+/**
+ * Disconnect from the server
+ */
 void IcecapServer::disconnect()
 {
     if (isConnected())
@@ -806,6 +856,10 @@ void IcecapServer::disconnect()
     }
 }
 
+/**
+ * Create a list of known networks for display in the client
+ * @return Formatted list of known clients
+ */
 QStringList IcecapServer::networkListDisplay ()
 {
     QStringList result;
@@ -820,6 +874,11 @@ QStringList IcecapServer::networkListDisplay ()
     return result;
 }
 
+/**
+ * Find a network by name
+ * @param name Network name
+ * @return Network
+ */
 Icecap::Network* IcecapServer::network (const QString& name)
 {
     QPtrListIterator<Icecap::Network> it( networkList );
@@ -834,11 +893,20 @@ Icecap::Network* IcecapServer::network (const QString& name)
     return current;
 }
 
+/**
+ * Add a network
+ * @param network Network to add
+ */
 void IcecapServer::networkAdd (Icecap::Network* network)
 {
     networkList.append (network);
 }
 
+/**
+ * Add a network
+ * @param protocol Network protocol
+ * @param name Network name
+ */
 void IcecapServer::networkAdd (const QString& protocol, const QString& name)
 {
     if (network (name) != 0) {
@@ -847,16 +915,30 @@ void IcecapServer::networkAdd (const QString& protocol, const QString& name)
     networkList.append (new Icecap::Network (this, protocol, name));
 }
 
+/**
+ * Remove a given network
+ * @param network Network to remove
+ */
 void IcecapServer::networkRemove (Icecap::Network* network)
 {
     networkList.remove (network);
 }
 
+/**
+ * Remove a given network by name
+ * @param name Name of network to remove
+ */
 void IcecapServer::networkRemove (const QString& name)
 {
     networkList.remove (network (name));
 }
 
+/**
+ * Find a mypresence by name and network
+ * @param name MyPresence name
+ * @param network Network
+ * @return MyPresence
+ */
 Icecap::MyPresence* IcecapServer::mypresence (const QString& name, Icecap::Network* network)
 {
     QPtrListIterator<Icecap::MyPresence> it( mypresenceList );
@@ -871,11 +953,21 @@ Icecap::MyPresence* IcecapServer::mypresence (const QString& name, Icecap::Netwo
     return 0;
 }
 
+/**
+ * Find a mypresence by name and network name
+ * @param name MyPresence name
+ * @param networkName Network name
+ * @return MyPresence
+ */
 Icecap::MyPresence* IcecapServer::mypresence (const QString& name, const QString& networkName)
 {
     return mypresence (name, network (networkName));
 }
 
+/**
+ * Add a mypresence
+ * @param myp mypresence to add
+ */
 void IcecapServer::mypresenceAdd (Icecap::MyPresence* myp)
 {
     if (mypresence (myp->name(), myp->network()) != 0) {
@@ -884,6 +976,11 @@ void IcecapServer::mypresenceAdd (Icecap::MyPresence* myp)
     mypresenceList.append (myp);
 }
 
+/**
+ * Add a mypresence by name and network name
+ * @param name MyPresence name
+ * @param networkName Network name
+ */
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName)
 {
     if (mypresence (name, network(networkName)) != 0) {
@@ -894,6 +991,12 @@ void IcecapServer::mypresenceAdd (const QString& name, const QString& networkNam
 }
 
 
+/**
+ * Add a mypresence by name and network name, passing a parameter map
+ * @param name MyPresence name
+ * @param networkName Network name
+ * @param parameterMap Parameters
+ */
 void IcecapServer::mypresenceAdd (const QString& name, const QString& networkName, QMap<QString, QString>& parameterMap)
 {
     if (mypresence (name, network(networkName)) != 0) {
@@ -904,21 +1007,39 @@ void IcecapServer::mypresenceAdd (const QString& name, const QString& networkNam
 }
 
 
+/**
+ * Remove a given mypresence
+ * @param mypresence mypresence to remove
+ */
 void IcecapServer::mypresenceRemove (Icecap::MyPresence* mypresence)
 {
     mypresenceList.remove (mypresence);
 }
 
+/**
+ * Remove a given mypresence by name and network
+ * @param name MyPresence name
+ * @param network Network
+ */
 void IcecapServer::mypresenceRemove (const QString& name, Icecap::Network* network)
 {
     mypresenceList.remove (mypresence (name, network));
 }
 
+/**
+ * Remove a mypresence by name and network name
+ * @param name MyPresence name
+ * @param networkName Network name
+ */
 void IcecapServer::mypresenceRemove (const QString& name, const QString& networkName)
 {
     mypresenceRemove (name, network (networkName));
 }
 
+/**
+ * Create a list of mypresences for display in the client
+ * @return Formatted list of mypresences
+ */
 QStringList IcecapServer::presenceListDisplay ()
 {
     QStringList result;
@@ -934,7 +1055,10 @@ QStringList IcecapServer::presenceListDisplay ()
     return result;
 }
 
-// TODO: Replace parameters with parameterList
+/**
+ * Queue a command for sending to the server. This method also records the command information so it can be linked to the response.
+ * @param command Command
+ */
 void IcecapServer::queueCommand (Icecap::Cmd command)
 {
     QString parameters;
@@ -953,7 +1077,11 @@ void IcecapServer::queueCommand (Icecap::Cmd command)
     queue (QString ("%1."+command.tag +";"+ command.command +";"+ parameters).arg (next));
 }
 
-// TODO: Replace parameters with parameterList
+
+/**
+ * Queue a raw command string for sending to the server. This method also records the command information so it can be linked to the response.
+ * @param command Raw command
+ */
 void IcecapServer::queueCommand (QString command)
 {
     Icecap::Cmd cmd;
@@ -967,6 +1095,11 @@ void IcecapServer::queueCommand (QString command)
     queueCommand (cmd);
 }
 
+/**
+ * Queue a raw command with a specific tag (part) for sending to the server. This method also records the command information so it can be linked to the response.
+ * @param tag Command tag
+ * @param command Raw command
+ */
 void IcecapServer::queueCommand (QString tag, QString command) {
     Icecap::Cmd cmd;
     cmd.tag = tag;
@@ -974,6 +1107,12 @@ void IcecapServer::queueCommand (QString tag, QString command) {
     queueCommand (cmd);
 }
 
+/**
+ * Queue a command with a specific tag (part) and parameter map for sending to the server. This method also records the command information so it can be linked to the response.
+ * @param tag Command tag
+ * @param command Command
+ * @param parameterMap Parameters
+ */
 void IcecapServer::queueCommand (QString tag, QString command, QMap<QString, QString> parameterMap) {
     Icecap::Cmd cmd;
     cmd.tag = tag;
@@ -982,7 +1121,10 @@ void IcecapServer::queueCommand (QString tag, QString command, QMap<QString, QSt
     queueCommand (cmd);
 }
 
-// TODO: Handling for error events
+/**
+ * Emit a server event (or command response)
+ * @param result Event
+ */
 void IcecapServer::emitEvent (Icecap::Cmd result)
 {
     // Events don't have a send command, so skip all the processing
@@ -1002,18 +1144,6 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
         return;
     }
 
-    // Skip the last+1 response for lists
-    // TODO: Improve this, since there may be some commands which are expected to return no parameters
-    // We always get id and time parameters, so discount 2 on parameterList (parameters should never be used anyway)
-/*
-    if ((result.parameters.length() < 1) && (result.parameterList.size() < 3)) {
-        if (result.status == "+") {
-            commandsPending.remove (id);
-        }
-        return;
-    }
-*/
-
     Icecap::Cmd sendCmd = commandsPending.find (id).data();
     result.sentCommand = sendCmd.command;
     // If the returned message has not command, set it to be the sent command
@@ -1021,7 +1151,7 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
         result.command = sendCmd.command;
     }
     result.sentParameterList = sendCmd.parameterList;
-    // TODO: Get rid of sentParameters
+    // TODO AllenJB: Get rid of sentParameters
     result.sentParameters = sendCmd.parameters;
 
     // Set the network, mypresence and channel parameters, if set in the sent command
@@ -1049,7 +1179,11 @@ void IcecapServer::emitEvent (Icecap::Cmd result)
 
 }
 
-// TODO: Implement duplicate checking
+/**
+ * Filter and process events (or command responses)
+ * @param event Event
+ * @todo AllenJB: Implement duplicate checking for commands that add mypresences or networks
+ */
 void IcecapServer::eventFilter (Icecap::Cmd event) {
     if (event.sentCommand == "network list") {
         if (event.status == ">") {
@@ -1097,9 +1231,6 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
         }
     }
 
-    else if ((event.tag == "*") && (event.command == "preauth")) {
-        appendStatusMessage (i18n("Welcome"), "Successfully connected to Icecap server.");
-    }
     else if (event.command == "network remove") {
         if (event.status == "-") {
             if (event.error == "notfound") {
@@ -1113,7 +1244,10 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
     }
     else if (event.tag == "*")
     {
-        if (event.command == "network_init") {
+        if (event.command == "preauth") {
+            appendStatusMessage (i18n("Welcome"), "Successfully connected to Icecap server.");
+        }
+        else if (event.command == "network_init") {
             networkAdd (event.parameterList["protocol"], event.network);
             appendStatusMessage (i18n("Network"), i18n ("Network added: [%1] %2").arg (event.parameterList["protocol"]).arg (event.network));
         } else if (event.command == "network_deinit") {
@@ -1125,13 +1259,15 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
         } else if (event.command == "local_presence_deinit") {
             mypresenceRemove (event.mypresence, event.network);
             appendStatusMessage (i18n("Presence"), i18n ("Presence deleted: [%1] %2").arg (event.mypresence).arg (event.network));
-
         }
-
     }
-
 }
 
+/**
+ * Convert parameter map to a text string
+ * @param parameterList Parameters
+ * @return String of parameters
+ */
 QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
 {
     QString parameters;
@@ -1142,11 +1278,25 @@ QString IcecapServer::paramsToText (QMap<QString, QString> parameterList)
     return parameters;
 }
 
+/**
+ * Emit a client message (a command result to be displayed in the client)
+ * @param msg Message
+ */
 void IcecapServer::emitMessage (Icecap::ClientMsg msg)
 {
     emit message (msg);
 }
 
+/**
+ * Parse wildcards in a given string
+ * @param toParse String to parse
+ * @param sender Sender name
+ * @param channelName Channel name
+ * @param channelKey Channel key
+ * @param nick Space seperated list of nicks
+ * @param parameter Parameters
+ * @return Resulting string
+ */
 QString IcecapServer::parseWildcards(const QString& toParse,
 const QString& sender,
 const QString& channelName,
@@ -1154,15 +1304,25 @@ const QString& channelKey,
 const QString& nick,
 const QString& parameter)
 {
-    return parseWildcards(toParse,sender,channelName,channelKey,QStringList::split(' ',nick),parameter);
+    return parseWildcards(toParse,sender,channelName,channelKey,QStringList::split(' ',nick), parameter);
 }
 
+/**
+ * Parse wildcards in a given string
+ * @param toParse String to parse
+ * @param sender Sender name
+ * @param channelName Channel name
+ * @param channelKey Channel key
+ * @param nickList A list of nicks
+ * @param parameter Parameters
+ * @return
+ */
 QString IcecapServer::parseWildcards(const QString& toParse,
     const QString& sender,
     const QString& channelName,
     const QString& channelKey,
     const QStringList& nickList,
-    const QString& /*parameter*/)
+    const QString& parameter)
 {
     // TODO: parameter handling, since parameters are not functional yet
 
