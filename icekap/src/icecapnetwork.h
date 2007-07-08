@@ -21,12 +21,16 @@ class IcecapServer;
 namespace Icecap
 {
 
+    /**
+     * Representation of a network.
+     * Manages gateways and presences (users) for that network
+     */
     class Network : public QObject
     {
         Q_OBJECT
 
         public:
-            Network (): m_protocol(0), m_name(0), m_server(0) {}
+//            Network (): m_protocol(0), m_name(0), m_server(0) {}
             Network (IcecapServer* server, const QString& newProtocol, const QString& newName);
 
             QString protocol () const { return m_protocol; }
@@ -50,7 +54,9 @@ namespace Icecap
             bool isNull () { return m_name.isNull(); }
 
         public slots:
-            // TODO: What's this used for? Don't forget that networks are not mypresence specific
+            /**
+             * @todo AllenJB: Check what this is used for? Don't forget that networks are not mypresence specific
+             */
             void eventFilter (Icecap::Cmd result);
 
         private:

@@ -40,16 +40,18 @@ namespace Icecap
         SSConnected
     } State;
 
+    /**
+     * Representation of a connection to a specific network
+     * @todo Are all these constructors used?
+     */
     class MyPresence : public QObject
     {
         Q_OBJECT
 
         public:
-            // TODO: Do we really need all these constructors?
-            MyPresence (): m_name(0) {}
+//            MyPresence (): m_name(0) {}
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork);
             MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString, QString>& parameterMap);
-//            ~MyPresence ();
 
             void update (const QMap<QString,QString>& parameterMap);
 
@@ -72,7 +74,9 @@ namespace Icecap
             void channelAdd (const QString& channelName, const QMap<QString, QString>& parameterMap);
             void channelRemove (const Channel* channel);
             void channelRemove (const QString& channelName);
-            // TODO: Is this used?
+            /**
+             * @todo AllenJB: Is this used?
+             */
             void channelClear () { channelList.clear (); }
 
             Query* query (const QString& presenceName);

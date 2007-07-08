@@ -50,11 +50,11 @@ namespace Icecap
         m_server = server;
     }
 
-    OutputFilter::~OutputFilter()
-    {
-    }
-
-    // replace all aliases in the string and return true if anything got replaced at all
+    /**
+     * Replace all aliases in the string
+     * @param line Line to parse
+     * @return Replacements made?
+     */
     bool OutputFilter::replaceAliases(QString& line)
     {
         QStringList aliasList=Preferences::aliasList();
@@ -69,7 +69,7 @@ namespace Icecap
             QString lineStart=line.section(' ',0,0);
 
             // pattern found?
-            // TODO: cc may be a regexp character here ... we should escape it then
+            // FIXME: cc may be a regexp character here ... we should escape it then
             if (lineStart==cc+aliasPattern)
             {
                 QString aliasReplace;
@@ -193,6 +193,15 @@ namespace Icecap
         return finals;
     }
 
+    /**
+     * Parse a command from the client
+     * @param myNick (Unused)
+     * @param originalLine Original line entered by user
+     * @param networkName Name of network the source window belongs to
+     * @param mypresenceName Name of mypresence the source window belongs to
+     * @param channelName Name of channel / query the source window belongs to
+     * @return Object containing client output (and server commands)
+     */
     OutputFilterResult OutputFilter::parse (const QString& myNick, const QString& originalLine, const QString& networkName, const QString& mypresenceName, const QString& channelName)
     {
         setCommandChar();
@@ -366,10 +375,14 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse /presence command
+     * @param parameter Parameters
+     * @return Result object containing client output
+     */
     OutputFilterResult OutputFilter::parseMyPresence (QStringList& parameter)
     {
         QString command = "presence";
-//        QString usage = "Usage: /"+ command +" (list|add|remove|connect|disconnect) [name] [network]";
         QStringList usage;
         usage.append ("Usage: /"+ command +" [command] [parameters]");
         usage.append ("  list                           - List presences");
@@ -414,7 +427,12 @@ namespace Icecap
     }
 
 
-    // TODO: Make sure the functions recieving an OutputFilterResult can deal with empty ones
+    /**
+     * Parse /network command
+     * @param parameter Parameters
+     * @return Object containing client output
+     * @todo AllenJB: Make sure the functions recieving an OutputFilterResult can deal with empty ones
+     */
     OutputFilterResult OutputFilter::parseNetwork (QStringList& parameter)
     {
         QString command = "network";
@@ -456,6 +474,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse /channel command
+     * @param parameter Parameters
+     * @return Object containing client output
+     */
     OutputFilterResult OutputFilter::parseChannel (QStringList& parameter)
     {
         QString command = "channel";
@@ -496,8 +519,14 @@ namespace Icecap
     }
 
 
-    // TODO: Add support for host, password and priority parameters
-    // TODO: Checks / error messages for if gateway is in use
+    /**
+     * Parse /gateway command
+     * @param parameter Parameters
+     * @return Object containing client output
+     * @todo AllenJB: Add support for host, password and priority parameters
+     * @todo AllenJB: Checks / error messages for if gateway is in use
+     * @todo AllenJB: Gateway list
+     */
     OutputFilterResult OutputFilter::parseGateway (QStringList& parameter)
     {
         QString command = "gateway";
@@ -508,7 +537,6 @@ namespace Icecap
 
         if (parameter[0] == "list")
         {
-            // TODO: Gateway list
         }
         else if ((parameter[0] == "add") || (parameter[0] == "remove"))
         {
@@ -534,6 +562,11 @@ namespace Icecap
     }
 
 
+    /**
+     * Parse /exec command
+     * @param parameter Parameters
+     * @return Object containing client output and server commands
+     */
     OutputFilterResult OutputFilter::parseExec(const QString& parameter)
     {
         OutputFilterResult result;
@@ -559,6 +592,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse /raw command
+     * @param parameter Parameters
+     * @return Object containing client messages and server commands
+     */
     OutputFilterResult OutputFilter::parseRaw(const QString& parameter)
     {
         OutputFilterResult result;
@@ -579,6 +617,9 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse /konsole command
+     */
     void OutputFilter::parseKonsole()
     {
         emit openKonsolePanel();
@@ -586,6 +627,9 @@ namespace Icecap
 
     // Accessors
 
+    /**
+     * Set the commandChar property from the Preferences
+     */
     void OutputFilter::setCommandChar() { commandChar=Preferences::commandChar(); }
 
     OutputFilterResult OutputFilter::usage(const QString& string)
@@ -597,6 +641,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Set up an information result
+     * @param string Client output
+     * @return OutputFilterResult object
+     */
     OutputFilterResult OutputFilter::info(const QString& string)
     {
         OutputFilterResult result;
@@ -606,6 +655,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Set up an error result
+     * @param string Client message
+     * @return OutputFilterResult object
+     */
     OutputFilterResult OutputFilter::error(const QString& string)
     {
         OutputFilterResult result;
@@ -615,6 +669,12 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse the /server command
+     * @param parameter Parameters
+     * @todo AllenJB: This method needs to be re-implemented or removed (it should be an alias for a mypresence connect event)
+     * @todo AllenJB: What is serverGroup used for here? It needs to be re-implemented or removed
+     */
     void OutputFilter::parseServer(const QString& parameter)
     {
         if(parameter.isEmpty())
@@ -677,6 +737,12 @@ namespace Icecap
         }
     }
 
+
+    /**
+     * Parse /prefs command
+     * @param parameter Parameters
+     * @return Object containing client messages and server commands
+     */
     OutputFilterResult OutputFilter::parsePrefs(const QString& parameter)
     {
         OutputFilterResult result;
@@ -788,6 +854,11 @@ namespace Icecap
         return result;
     }
 
+    /**
+     * Parse /dns command
+     * @param parameter Parameters
+     * @return Object containing client messages and server commands
+     */
     OutputFilterResult OutputFilter::parseDNS(const QString& parameter)
     {
         OutputFilterResult result;
@@ -854,10 +925,15 @@ namespace Icecap
         return result;
     }
 
-    // The following note comes from the Konversation code:
-    // # & + and ! are *often*, but not necessarily, channel identifiers. + and ! are non-RFC, so if a server doesn't offer 005 and
-    // supports + and ! channels, I think thats broken behaviour on their part - not ours.
-    // TODO: Query list of known channels in relevent mypresence
+    /**
+     * Determine if a given string is (likely to be) a channel or a presence name
+     * The following note comes from the Konversation code:
+     * # & + and ! are *often*, but not necessarily, channel identifiers. + and ! are non-RFC, so if a server doesn't offer 005 and
+     * supports + and ! channels, I think thats broken behaviour on their part - not ours.
+     * @todo AllenJB: Query list of known channels in relevent mypresence
+     * @param name String to check
+     * @return Is a channel?
+     */
     bool OutputFilter::isAChannel (const QString& name)
     {
         QString channelPrefixes = "#&";
@@ -865,6 +941,7 @@ namespace Icecap
     }
 
 }
+
 #include "icecapoutputfilter.moc"
 
 // kate: space-indent on; tab-width 4; indent-width 4; mixed-indent off; replace-tabs on;

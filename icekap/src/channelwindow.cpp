@@ -280,9 +280,6 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
     if(nicknameCombobox->lineEdit())
         connect(nicknameCombobox->lineEdit(), SIGNAL (lostFocus()),this,SLOT(nicknameComboboxChanged()));
 
-    // TODO: To be removed
-//    nicknameList.setAutoDelete(true);
-
     setLog(Preferences::log());
 
     connect(&userhostTimer,SIGNAL (timeout()),this,SLOT (autoUserhost()));
@@ -369,7 +366,7 @@ void ChannelWindow::popupChannelCommand(int id)
 }
 
 // Will be connected to NickListView::popupCommand(int)
-// TODO: Move all this somewhere sensible (*Filter)
+// TODO: Move all this somewhere sensible (*Filter) or make command calls more generic
 void ChannelWindow::popupCommand(int id)
 {
     QString pattern;
@@ -564,7 +561,6 @@ void ChannelWindow::doubleClickCommand(QListViewItem* item)
     }
 }
 
-// TODO: Migrate to using Icecap::Channel instead
 void ChannelWindow::completeNick()
 {
     int pos, oldPos;
@@ -738,7 +734,6 @@ void ChannelWindow::completeNick()
     channelInput->setCursorPosition(0, pos);
 }
 
-// TODO: Migrate to using Icecap::Channel instead
 // make sure to step back one position when completion ends so the user starts
 // with the last complete they made
 void ChannelWindow::endCompleteNick()
@@ -896,7 +891,7 @@ void ChannelWindow::channelLimitChanged()
     modeButtonClicked(7,lim>0);
 }
 
-// TODO: Shift this somewhere sensible (*Filter)
+// TODO: Shift this somewhere sensible (*Filter) or provide a less protocol specific way of doing this
 void ChannelWindow::modeButtonClicked(int id,bool on)
 {
     char mode[]={'t','n','s','i','p','m','k','l'};
@@ -940,12 +935,10 @@ void ChannelWindow::modeButtonClicked(int id,bool on)
     m_server->queue(command.arg(getName()).arg((on) ? "+" : "-").arg(mode[id]).arg(args));
 }
 
-// TODO: Re-implement commented code
 void ChannelWindow::quickButtonClicked(const QString &buttonText)
 {
-    // parse wildcards (toParse,nickname,channelName,nickList,queryName,parameter)
-//    QString out=m_server->parseWildcards(buttonText,m_server->getNickname(),getName(),getKey(),m_channel->getSelectedNickList(),QString::null);
-    QString out = "";
+    QString out = m_server->parseWildcards (buttonText, m_mypresence->presence()->getNickname(), m_channel->name(), getKey(), m_channel->getSelectedNickList(), QString::null);
+//    QString out = "";
 
     // are there any newlines in the definition?
     if(out.find('\n')!=-1)
@@ -1901,13 +1894,14 @@ void ChannelWindow::refreshModeButtons()
 
 }
 
+// TODO: AllenJB: Reimplement this
 void ChannelWindow::cycleChannel()
 {
     closeYourself();
 //    m_server->sendJoinCommand(getName());
 }
 
-// TODO: Needs re-implementing
+// TODO: AllenJB: Needs re-implementing
 void ChannelWindow::autoUserhost()
 {
 /*
@@ -2016,6 +2010,7 @@ void ChannelWindow::appendInputText(const QString& s)
     channelInput->setText(channelInput->text() + s);
 }
 
+// TODO: AllenJB: Reimplement
 bool ChannelWindow::closeYourself()
 {
     int result=KMessageBox::warningContinueCancel(

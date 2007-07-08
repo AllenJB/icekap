@@ -47,6 +47,18 @@ class ViewContainer;
 
 using namespace KNetwork;
 
+/**
+ * Representation of an Icecap server
+ * @todo AllenJB: Test simultaneous connections to multiple servers
+ * @todo AllenJB: Remove unnecessary / unsupported crap from constructor
+ * @todo AllenJB: Remove anything pertaining to nickname
+ * @todo AllenJB: Remove anything pertaining to channels
+ * @todo AllenJB: Implement support for icecap authorisation (when it supports authorisation itself)
+ * @todo AllenJB: Implement support for SSL connections
+ * @todo AllenJB: (Re-)Implement adding and removing networks, gateways, presences and channels using the new event system
+ * @todo AllenJB: (Re-)Implement gateway lists using the new event system
+ * @todo AllenJB: (Re-)Implement ability to obtain a list of all known networks, gateways, presences and channels
+ */
 class IcecapServer : public QObject
 {
     Q_OBJECT
@@ -107,7 +119,7 @@ class IcecapServer : public QObject
 
         ChannelListPanel* addChannelListPanel();
 
-        // TODO: Do we really need all these different methods?
+        // TODO AllenJB: Do we really need all these different methods?
 
         void networkClear () { networkList.clear (); }
         void networkAdd (Icecap::Network* network);
@@ -123,7 +135,6 @@ class IcecapServer : public QObject
         void mypresenceRemove (Icecap::MyPresence* mypresence);
         void mypresenceRemove (const QString& name, const QString& networkName);
         void mypresenceRemove (const QString& name, Icecap::Network* network);
-        // TODO: These may need to return a pointer / reference
         Icecap::MyPresence* mypresence (const QString& name, Icecap::Network* network);
         Icecap::MyPresence* mypresence (const QString& name, const QString& networkName);
         QStringList presenceListDisplay ();
@@ -137,7 +148,7 @@ class IcecapServer : public QObject
         void emitEvent (Icecap::Cmd command);
 
         /// Called by OutputFilter. Emit a message down the messages channel so that individual windows can choose whether or not to display it. Only involved in local command results.
-        // TODO: Is there any reason to actually use this?
+        /// @todo AllenJB: Is there any reason to actually use this?
         void emitMessage (Icecap::ClientMsg msg);
 
         /// Queue a command to be sent to the server (and record the parameters in case we need them later)

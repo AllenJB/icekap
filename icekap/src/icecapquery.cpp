@@ -24,11 +24,22 @@ namespace Icecap
         m_window = m_mypresence->getViewContainer()->addQuery (this);
     }
 
+    /**
+     * Append a presence message
+     * @param nickname Source presence
+     * @param message Message
+     */
     void Query::append (const QString& nickname, const QString& message)
     {
         m_window->append (nickname, message);
     }
 
+    /**
+     * Append a presence action
+     * @param nickname Source presence
+     * @param message Message
+     * @param usenotifications Use notifications?
+     */
     void Query::appendAction (const QString& nickname,const QString& message, bool usenotifications)
     {
         m_window->appendAction (nickname, message, usenotifications);

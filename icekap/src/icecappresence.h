@@ -14,13 +14,16 @@
 
 // #include <ksharedptr.h>
 
-// TODO: Away status (message?)
-// TODO: idle time
-// TODO: How do we know when it's safe to delere a Presence?
-// TODO: If we don't have information like the address for a user, request it
 namespace Icecap
 {
 
+    /**
+     * Representation of a user on a network.
+     * @todo AllenJB: Away status (message?)
+     * @todo AllenJB: idle time
+     * @todo AllenJB: How do we know when it's safe to delere a Presence?
+     * @todo AllenJB: If we don't have information like the address for a user, request it
+     */
     class Presence : public QObject
     {
         Q_OBJECT
@@ -44,15 +47,20 @@ namespace Icecap
 
             bool isAway () const { return m_away; }
 
-            // TODO: Is this ever used directly?
+            /**
+             * @todo AllenJB: Is this ever used directly?
+             */
             void setName (const QString& name);
 
             void setConnected (bool status);
 
             bool operator== (Presence compareTo);
-            bool isNull ();
+//            bool isNull ();
 
             void update (QMap<QString, QString> parameterList);
+
+            QString getBestAddresseeName();
+            void tooltipTableData(QTextStream &tooltip) const;
 
         signals:
             void nickInfoChanged ();

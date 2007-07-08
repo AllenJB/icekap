@@ -23,16 +23,30 @@ namespace Icecap
         connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
     }
 
+    /**
+     * Set network name
+     * @param newName New name
+     */
     void Network::setName (const QString& newName)
     {
         m_name = newName;
     }
 
+    /**
+     * Set connection state
+     * @param newStatus New state
+     */
     void Network::setConnected (bool newStatus)
     {
         m_connected = newStatus;
     }
 
+    /**
+     * Return a gateway
+     * @param hostname Gateway hostname / IP
+     * @param port Gateway port
+     * @return Requested gateway; 0 if not found
+     */
     Gateway* Network::gateway (const QString& hostname, int port)
     {
         QPtrListIterator<Gateway> it( gatewayList );
@@ -46,21 +60,39 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Add a gateway
+     * @param gateway Gateway
+     */
     void Network::gatewayAdd (const Gateway* gateway)
     {
         gatewayList.append (gateway);
     }
 
+    /**
+     * Remove a gateway
+     * @param hostname Gateway hostname / IP
+     * @param port Gateway port
+     */
     void Network::gatewayRemove (const QString& hostname, int port)
     {
         gatewayList.remove (gateway (hostname, port));
     }
 
+    /**
+     * Remove a gateway object
+     * @param gateway Gateway object
+     */
     void Network::gatewayRemove (const Gateway* gateway)
     {
         gatewayList.remove (gateway);
     }
 
+    /**
+     * Return a given presence
+     * @param name Presence name
+     * @return Requested presence; 0 if not found
+     */
     Presence* Network::presence (const QString& name)
     {
         QPtrListIterator<Presence> it( presenceList );
@@ -74,6 +106,10 @@ namespace Icecap
         return 0;
     }
 
+    /**
+     * Add a network presence
+     * @param presence Presence object
+     */
     void Network::presenceAdd (const Presence* newPresence)
     {
         if (presence (newPresence->name()) != 0) {
@@ -82,37 +118,51 @@ namespace Icecap
         presenceList.append (newPresence);
     }
 
+    /**
+     * Remove a network presence
+     * @param presence Presence object
+     */
     void Network::presenceRemove (const Presence* presence)
     {
         presenceList.remove (presence);
     }
 
+    /**
+     * Remove a network presence by name
+     * @param name Presence name
+     */
     void Network::presenceRemove (const QString& name)
     {
         presenceList.remove (presence (name));
     }
 
-    // slot
+    /**
+     * Filter and act on relevent Icecap events
+     * @param ev Event
+     */
     void Network::eventFilter (Icecap::Cmd ev)
     {
         if (ev.network != m_name) {
             return;
         }
 
-        if ((ev.tag == "*") && (ev.command == "presence_init"))
+        if (ev.tag == "*")
         {
-            Presence* newPresence;
-            if (ev.parameterList.contains ("address")) {
-                newPresence = new Presence (ev.parameterList["presence"], ev.parameterList["address"]);
-            } else {
-                newPresence = new Presence (ev.parameterList["presence"]);
+            if (ev.command == "presence_init")
+            {
+                Presence* newPresence;
+                if (ev.parameterList.contains ("address")) {
+                    newPresence = new Presence (ev.parameterList["presence"], ev.parameterList["address"]);
+                } else {
+                    newPresence = new Presence (ev.parameterList["presence"]);
+                }
+                presenceAdd (newPresence);
+                return;
             }
-            presenceAdd (newPresence);
-            return;
-        }
-        else if ((ev.tag == "*") && (ev.command == "presence_changed"))
-        {
-            presence (ev.parameterList["presence"])->update (ev.parameterList);
+            else if (ev.command == "presence_changed")
+            {
+                presence (ev.parameterList["presence"])->update (ev.parameterList);
+            }
         }
     }
 

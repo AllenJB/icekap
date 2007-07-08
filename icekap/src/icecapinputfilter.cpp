@@ -39,18 +39,11 @@
 
 IcecapInputFilter::IcecapInputFilter()
 {
-    m_connecting = false;
-    netlistInProgress = false;
-    myplistInProgress = false;
-}
-
-IcecapInputFilter::~IcecapInputFilter()
-{
 }
 
 void IcecapInputFilter::setServer(IcecapServer* newServer)
 {
-    server=newServer;
+    server = newServer;
 }
 
 void IcecapInputFilter::parseLine(const QString& a_newLine)
@@ -101,16 +94,20 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
     }
 }
 
-// TODO: Re-implement all this stuff using the new signal based system
+/**
+ * Parse an Icecap Event. Sends it through the Icecap::Server event signal
+ * @param eventName Event name
+ * @param parameterList Event parameters
+ * @todo AllenJB: Should this be moved up to parseLine?
+ * @todo AllenJB: Handling for keys that appear multiple times
+ * @todo AllenJB: Get rid of welcome signal (can now be called directly from Server's eventFilter
+ */
 void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStringList &parameterList)
 {
     // I assume this ensures there's a valid server to communicate with
     Q_ASSERT(server); if(!server) return;
 
     // Split into key, value pairs around the first occurence of =
-    // TODO: Is there an easier way to do this?
-    // TODO: Should this be moved up to parseLine?
-    // TODO: Better handling for keys that appear multiple times
     QMap<QString, QString> parameterMap;
     QStringList::const_iterator end = parameterList.end();
     for ( QStringList::const_iterator it = parameterList.begin(); it != end; ++it ) {
@@ -127,14 +124,11 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
         // eventually icecap will implement authentication so we'll need to add support for that
 
         // Send the welcome signal, so the server class knows we are connected properly
-        // TODO: Can we get rid of this welcome signal now that we have the event signal?
         emit welcome("");
-        m_connecting = true;
         // Don't return or anything - we want this to go through the event system
     }
 
     // Send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
-    // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
     Icecap::Cmd result;
     result.tag = "*";
     result.command = eventName;
@@ -145,15 +139,20 @@ void IcecapInputFilter::parseIcecapEvent (const QString &eventName, const QStrin
     server->emitEvent (result);
 }
 
+/**
+ * Parse an icecap command response
+ * @param tag Command tag
+ * @param status Command status
+ * @param parameterList Response parameters
+ * @todo AllenJB: Should this be moved up to parseLine?
+ * @todo AllenJB: Better handling for keys that appear multiple times
+ */
 void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList)
 {
     // I assume this ensures there's a valid server to communicate with
     Q_ASSERT(server); if(!server) return;
 
     // Split into key, value pairs around the first occurence of =
-    // TODO: Is there an easier way to do this?
-    // TODO: Should this be moved up to parseLine?
-    // TODO: Better handling for keys that appear multiple times
     QString error;
     if (status == "-") {
         error = parameterList[0];
@@ -173,7 +172,6 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
         parameterMap.insert (key, value, TRUE);
     }
 
-    // TODO: Move specific coding for as much as possible directly to the relevent classes and use this.
     Icecap::Cmd result;
     result.tag = tag;
     result.status = status;
@@ -185,18 +183,13 @@ void IcecapInputFilter::parseIcecapCommand (const QString &tag, const QString &s
 }
 
 
-// # & + and ! are *often*, but not necessarily, Channel identifiers. + and ! are non-RFC,
-// so if a server doesn't offer 005 and supports + and ! channels, I think thats broken behaviour
-// on their part - not ours. --Argonel
-bool IcecapInputFilter::isAChannel(const QString &check)
-{
-    Q_ASSERT(server);
-    // if we ever see the assert, we need the ternary
-//    return server? server->isAChannel(check) : QString("#&").contains(check.at(0));
-    return true;
-}
 
-// TODO: What's this used for? Possible "is this sender on the ignore list"?
+/**
+ * Is this sender on the ignore list?
+ * @param sender Sender to check
+ * @param type Ignore type to check for
+ * @return Match found?
+ */
 bool IcecapInputFilter::isIgnore(const QString &sender, Ignore::Type type)
 {
     bool doIgnore = false;
@@ -216,26 +209,12 @@ bool IcecapInputFilter::isIgnore(const QString &sender, Ignore::Type type)
     return doIgnore;
 }
 
+/**
+ * Reset who request list
+ */
 void IcecapInputFilter::reset()
 {
-    automaticRequest.clear();
     whoRequestList.clear();
-}
-
-void IcecapInputFilter::setAutomaticRequest(const QString& command, bool yes)
-{
-    automaticRequest[command] += (yes) ? 1 : -1;
-    if(automaticRequest[command]<0)
-    {
-        kdDebug()   << "IcecapInputFilter::automaticRequest( " << command << " ) was negative! Resetting!"
-            << endl;
-        automaticRequest[command]=0;
-    }
-}
-
-int IcecapInputFilter::getAutomaticRequest(const QString& command)
-{
-    return automaticRequest[command];
 }
 
 #include "icecapinputfilter.moc"

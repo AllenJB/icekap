@@ -34,6 +34,9 @@ namespace Icecap
 {
     class Channel;
 
+    /**
+     * Client message (Konversation style)
+     */
     typedef enum MessageType
     {
         Message,
@@ -43,6 +46,9 @@ namespace Icecap
         PrivateMessage
     };
 
+    /**
+     * Result of output filter parsing
+     */
     struct OutputFilterResult
     {
         /// What will be seen in the IRCView
@@ -61,14 +67,16 @@ namespace Icecap
         MessageType type;
     };
 
-
+    /**
+     * Filter output events from the client. This includes local-only events that only affect the client.
+     * @todo Remove all use of OutputFilterResult toServer(List) in favour of the new command system.
+     */
     class OutputFilter : public QObject
     {
         Q_OBJECT
 
         public:
             explicit OutputFilter(IcecapServer* server);
-            ~OutputFilter();
 
             QStringList splitForEncoding(const QString& inputLine, int MAX);
             OutputFilterResult parse (const QString& myNick, const QString& line, const QString& networkName = "", const QString& mypresenceName = "", const QString& channelName = "");

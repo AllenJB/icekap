@@ -18,7 +18,6 @@
 #include <qstringlist.h>
 
 #include "ignore.h"
-// #include "servergroupsettings.h"
 
 /*
   @author Dario Abatianni
@@ -28,23 +27,21 @@ class IcecapServer;
 class QWidget;
 class QueryWindow;
 
+/**
+ * Filter input from the server
+ */
 class IcecapInputFilter : public QObject
 {
     Q_OBJECT
 
     public:
         IcecapInputFilter();
-        ~IcecapInputFilter();
 
         void setServer(IcecapServer* newServer);
         void parseLine(const QString &line);
 
-        // reset AutomaticRequest, WhoRequestList
+        // reset WhoRequestList
         void reset();
-
-        // use this when the client does automatics, like userhost for finding hostmasks
-        void setAutomaticRequest(const QString& command, bool yes);
-        int getAutomaticRequest(const QString& command);
 
         void setLagMeasuring(bool yes);
         bool getLagMeasuring();
@@ -57,28 +54,11 @@ class IcecapInputFilter : public QObject
         void parseIcecapEvent (const QString &eventName, const QStringList &parameterList);
         void parseIcecapCommand (const QString &tag, const QString &status, QStringList &parameterList);
 
-        bool isAChannel(const QString &check);
         bool isIgnore(const QString &pattern, Ignore::Type type);
 
         IcecapServer* server;
-            // automaticRequest[command]=count
-        QMap< QString, int > automaticRequest;
         QStringList whoRequestList;
         int lagMeasuring;
-
-        // AllenJB 2007-07-07 TODO: Is this used?
-        QueryWindow* query;
-
-        QStringList newNickList;
-        int m_debugCount;
-
-        /// Used when handling MOTD
-        bool m_connecting;
-
-        bool netlistInProgress;
-        bool myplistInProgress;
-        bool chlistInProgress;
-
 };
 #endif
 
