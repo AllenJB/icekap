@@ -21,7 +21,6 @@
 
 class ChannelWindow;
 class ViewContainer;
-// class NickList;
 
 namespace Icecap
 {
@@ -79,7 +78,7 @@ namespace Icecap
             void appendCommandMessage (const QString& command, const QString& message, bool important = true,
             bool parseURL = true, bool self = false);
 
-            uint numberOfNicks () { return presenceList.count (); }
+            uint numberOfNicks () { return m_nickList.count (); }
             uint numberOfOps () { return m_numberOfOps; }
 
             bool operator== (Channel compareTo);
@@ -101,8 +100,7 @@ namespace Icecap
             QString modes;
             bool connected;
 
-            QPtrList<ChannelPresence> presenceList;
-            // This is used for completeNick in ChannelWindow. It's an extension of QPtrList<ChannelPresence>
+            // This is used for completeNick in ChannelWindow and storing ChanelPresence's. It's an extension of QPtrList<ChannelPresence>
             NickList m_nickList;
 
             // number of ops of any type
