@@ -25,7 +25,6 @@
 #include <kactioncollection.h>
 #include <kaction.h>
 
-// #include "channel.h"
 #include "chatwindow.h"
 #include "ircview.h"
 #include "icecapserver.h"

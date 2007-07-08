@@ -66,6 +66,9 @@ namespace Icecap
 
             bool isSelected () const;
 
+            uint timeStamp() const { return m_timestamp; }
+            void setTimeStamp (uint stamp) { m_timestamp = stamp; }
+
             void setListView (KListView *listView);
             KListView* listView () { return m_listView; }
 
@@ -98,6 +101,9 @@ namespace Icecap
             bool m_owner;
             bool m_halfop;
             bool m_voice;
+
+            // Used for nick completion by last action
+            uint m_timestamp;
 
             KListView* m_listView;
             NickListViewItem* m_listViewItem;

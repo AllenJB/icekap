@@ -61,6 +61,7 @@
 #include "notificationhandler.h"
 #include "icecapchannel.h"
 #include "icecapchannelpresence.h"
+#include "nicklist.h"
 
 ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
   : ChatWindow(parent), key(" ")
@@ -261,9 +262,8 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
 
     connect(channelInput,SIGNAL (submit()),this,SLOT (channelTextEntered()) );
     connect(channelInput,SIGNAL (envelopeCommand()),this,SLOT (channelPassthroughCommand()) );
-// TODO: Needs to be re-implemented
-//    connect(channelInput,SIGNAL (nickCompletion()),this,SLOT (completeNick()) );
-//    connect(channelInput,SIGNAL (endCompletion()),this,SLOT (endCompleteNick()) );
+    connect(channelInput,SIGNAL (nickCompletion()),this,SLOT (completeNick()) );
+    connect(channelInput,SIGNAL (endCompletion()),this,SLOT (endCompleteNick()) );
     connect(channelInput,SIGNAL (textPasted(const QString&)),this,SLOT (textPasted(const QString&)) );
 
     connect(getTextView(), SIGNAL(textPasted(bool)), channelInput, SLOT(paste(bool)));
@@ -565,10 +565,10 @@ void ChannelWindow::doubleClickCommand(QListViewItem* item)
 }
 
 // TODO: Migrate to using Icecap::Channel instead
-/*
 void ChannelWindow::completeNick()
 {
     int pos, oldPos;
+    NickList nicknameList = m_channel->nickList ();
 
     channelInput->getCursorPosition(&oldPos,&pos);// oldPos is a dummy here, taking the paragraph parameter
     oldPos = channelInput->getOldCursorPosition();
@@ -576,7 +576,9 @@ void ChannelWindow::completeNick()
     QString line=channelInput->text();
     QString newLine;
     // Check if completion position is out of range
-    if(completionPosition >= nicknameList.count()) completionPosition = 0;
+    // completionPosition is the current position in the list
+    if (completionPosition >= nicknameList.count ())
+        completionPosition = 0;
 
     // Check, which completion mode is active
     char mode = channelInput->getCompletionMode();
@@ -622,8 +624,7 @@ void ChannelWindow::completeNick()
             { // Shell like completion
                 QStringList found;
                 foundNick = nicknameList.completeNick(pattern, complete, found,
-                                                      (Preferences::nickCompletionMode() == 2),
-                                                      Preferences::nickCompletionCaseSensitive());
+                    (Preferences::nickCompletionMode() == 2), Preferences::nickCompletionCaseSensitive());
 
                 if(!complete && !found.isEmpty())
                 {
@@ -651,9 +652,9 @@ void ChannelWindow::completeNick()
                         nick = it.current();
 
                         if(nick->getNickname().startsWith(pattern, Preferences::nickCompletionCaseSensitive()) &&
-                          (nick->getChannelNick()->timeStamp() > timeStamp))
+                          (nick->timeStamp() > timeStamp))
                         {
-                            timeStamp = nick->getChannelNick()->timeStamp();
+                            timeStamp = nick->timeStamp();
                             completionPosition = listPosition;
                         }
 
@@ -742,10 +743,10 @@ void ChannelWindow::completeNick()
 // with the last complete they made
 void ChannelWindow::endCompleteNick()
 {
+    NickList nicknameList = m_channel->nickList ();
     if(completionPosition) completionPosition--;
     else completionPosition=nicknameList.count()-1;
 }
-*/
 
 void ChannelWindow::setName(const QString& newName)
 {

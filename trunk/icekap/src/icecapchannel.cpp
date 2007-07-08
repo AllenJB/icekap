@@ -13,6 +13,7 @@
 #include "viewcontainer.h"
 #include "nicklistview.h"
 #include "ircview.h"
+#include "nicklist.h"
 
 #include "icecapmypresence.h"
 
@@ -124,6 +125,7 @@ namespace Icecap
         }
 
         presenceList.append (user);
+        m_nickList.append (user);
     }
 
     ChannelPresence* Channel::presence (const QString& userName) {
@@ -156,6 +158,7 @@ namespace Icecap
     void Channel::presenceRemove (const ChannelPresence* user)
     {
         presenceList.remove (user);
+        m_nickList.remove (user);
         delete user;
     }
 
@@ -263,6 +266,7 @@ namespace Icecap
                 } else {
                     append (ev.parameterList["presence"], escapedMsg);
                 }
+                presence (ev.parameterList["presence"])->setTimeStamp (ev.parameterList["timestamp"].toUInt());
             }
             else if (ev.command == "channel_presence_added")
             {

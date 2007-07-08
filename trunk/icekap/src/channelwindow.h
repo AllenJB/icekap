@@ -214,8 +214,8 @@ class ChannelWindow : public ChatWindow
         void setAllowNotifications(bool allow) { m_allowNotifications = allow; }
 
     protected slots:
-//        void completeNick(); ///< I guess this is a GUI function, might be nice to have at DCOP level though --argonel
-//        void endCompleteNick();
+        void completeNick(); ///< I guess this is a GUI function, might be nice to have at DCOP level though --argonel
+        void endCompleteNick();
         void quickButtonClicked(const QString& definition);
         void modeButtonClicked(int id,bool on);
         void channelLimitChanged();
