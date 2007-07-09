@@ -408,3 +408,9 @@ TODO:
 11:27:28  -!- mode/#allenjb [-mt] by AllenJB
 [11:27] >> *;channel_changed;id=23676;time=1183285645.1;network=freenode;mypresence=ajbi;channel=#allenjb;irc_mode=
 
+--- Interesting msg response
+--- Possible lag indicator
+[10:42] << m;msg;network=freenode;mypresence=ajbi;channel=#allenjb;msg=test
+[10:42] >> *;presence_status_changed;id=40570;time=1183801321.1;network=freenode;mypresence=ajbi;presence=ajbi2;idle_started=1183801321
+[10:42] >> m;>;time=1183801321.1;id=40569
+[10:42] >> m;+;id=40572;time=1183801332.1;
