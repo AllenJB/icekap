@@ -388,10 +388,10 @@ namespace Icecap
                 }
                 if (ev.parameterList.contains ("add")) {
                     user->modeChange (true, ev.parameterList["add"]);
-                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
+                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (sourceNick));
                 } else if (ev.parameterList.contains ("remove")) {
                     user->modeChange (false, ev.parameterList["remove"]);
-                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: -%1 %2 by %3").arg (ev.parameterList["remove"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));
+                    appendCommandMessage (i18n ("Modes"), i18n ("Mode change: -%1 %2 by %3").arg (ev.parameterList["remove"]).arg (ev.parameterList["presence"]).arg (sourceNick));
                 }
                 if (user->isAnyTypeOfOp () != beforeVal) {
                     if (beforeVal) {
