@@ -380,6 +380,12 @@ namespace Icecap
             {
                 ChannelPresence* user = presence (ev.parameterList["presence"]);
                 bool beforeVal = user->isAnyTypeOfOp ();
+                QString sourceNick;
+                if (ev.parameterList.contains ("source_presence")) {
+                    sourceNick = ev.parameterList["source_presence"];
+                } else {
+                    sourceNick = ev.parameterList["irc_source_nick"];
+                }
                 if (ev.parameterList.contains ("add")) {
                     user->modeChange (true, ev.parameterList["add"]);
                     appendCommandMessage (i18n ("Modes"), i18n ("Mode change: +%1 %2 by %3").arg (ev.parameterList["add"]).arg (ev.parameterList["presence"]).arg (ev.parameterList["source_presence"]));

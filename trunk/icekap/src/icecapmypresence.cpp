@@ -19,6 +19,7 @@
 
 namespace Icecap
 {
+
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork)
     {
         m_server = server;
@@ -30,10 +31,22 @@ namespace Icecap
         setState (SSDisconnected);
         m_viewContainerPtr = viewContainer;
 
+        // We must have a valid presence, so let's create one with the same name as our presence name
+        // This could potentially cause problems if we immediately join a channel with a real presence with the name name in
+        QString presenceName = newName;
+        if (m_network->presence (presenceName)) {
+            m_presence = m_network->presence (presenceName);
+        } else {
+            m_presence = new Presence (presenceName);
+            m_network->presenceAdd (m_presence);
+        }
+
+
         // Connect to server event stream (command results)
         connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
     }
 
+    // This needs to be looked at. This code creates a new presence every time our presence name changes
     MyPresence::MyPresence (ViewContainer* viewContainer, IcecapServer* server, const QString& newName, Network* newNetwork, const QMap<QString,QString>& parameterMap)
     {
         m_server = server;
@@ -43,9 +56,6 @@ namespace Icecap
         m_autoconnect = parameterMap.contains ("autoconnect");
         statusViewActive = false;
         setState (SSDisconnected);
-
-        // Connect to server event stream (command results)
-        connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
 
         QString presenceName;
         if (parameterMap.contains ("name")) {
@@ -57,12 +67,15 @@ namespace Icecap
         if (m_network->presence (presenceName)) {
             m_presence = m_network->presence (presenceName);
         } else {
-            Presence* presence = new Presence (presenceName);
-            m_network->presenceAdd (presence);
-            m_presence = presence;
+            m_presence = new Presence (presenceName);
+            m_network->presenceAdd (m_presence);
         }
 
         m_viewContainerPtr = viewContainer;
+
+        // Connect to server event stream (command results)
+        connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
+
         if (m_connected) {
             setState (SSConnected);
             init ();
@@ -89,9 +102,8 @@ namespace Icecap
             if (m_network->presence (presenceName)) {
                 m_presence = m_network->presence (presenceName);
             } else {
-                Presence* presence = new Presence (presenceName);
-                m_network->presenceAdd (presence);
-                m_presence = presence;
+                m_presence = new Presence (presenceName);
+                m_network->presenceAdd (m_presence);
             }
         }
         emit nameChanged ();
@@ -314,7 +326,10 @@ namespace Icecap
                     emit nameChanged ();
                 }
             }
-
+            else if (ev.command == "irc_event_error")
+            {
+                appendStatusMessage(i18n ("Error"), ev.parameterList["data"]);
+            }
         } // end if (ev.tag == "*")
     }
 
