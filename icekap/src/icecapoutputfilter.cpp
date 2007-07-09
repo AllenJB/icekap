@@ -340,6 +340,20 @@ namespace Icecap
                 result.type = Action;
             }
 
+            else if (command == "msg")
+            {
+                QString escapedLine = parameter;
+                escapedLine.replace (";", "\\.");
+                destination = parameters[0];
+                if (isAChannel(destination)) {
+                    result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";channel="+ destination +";msg="+ escapedLine;
+                } else {
+                    result.toServer = "m;msg;network="+ networkName +";mypresence="+ mypresenceName +";presence="+ destination +";msg="+ escapedLine;
+                }
+                result.output = parameter;
+                result.type = Message;
+            }
+
             // Forward unknown commands to server
             else
             {
