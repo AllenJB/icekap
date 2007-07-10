@@ -49,7 +49,7 @@ namespace Icecap
             QString getTopicSetBy () { return topicSetBy; }
             QDateTime getTopicTimestamp () { return topicTimestamp; }
             QString getModes () { return modes; }
-            bool getConnected () { return connected; }
+            bool getConnected () { return m_connected; }
             MyPresence* mypresence () { return m_mypresence; }
 
             void setName (const QString& name) { m_name = name; }
@@ -106,7 +106,7 @@ namespace Icecap
             QString topicSetBy;
             QDateTime topicTimestamp;
             QString modes;
-            bool connected;
+            bool m_connected;
 
             // This is used for completeNick in ChannelWindow and storing ChanelPresence's. It's an extension of QPtrList<ChannelPresence>
             NickList m_nickList;
@@ -116,7 +116,7 @@ namespace Icecap
 
             MyPresence* m_mypresence;
             ViewContainer* m_viewContainerPtr;
-            ChannelWindow* window;
+            ChannelWindow* m_window;
             bool windowIsActive;
     };
 

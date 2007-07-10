@@ -72,9 +72,6 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
     m_delayedSortTimer = 0;
     m_optionsDialog = NULL;
     m_currentIndex = 0;
-    m_opsToAdd = 0;
-    nicks = 0;
-    ops = 0;
     completionPosition = 0;
     nickChangeDialog = 0;
     channelCommand = false;
@@ -282,16 +279,6 @@ ChannelWindow::ChannelWindow(QWidget* parent, Icecap::Channel* channel)
 
     setLog(Preferences::log());
 
-    connect(&userhostTimer,SIGNAL (timeout()),this,SLOT (autoUserhost()));
-
-    // every few seconds try to get more userhosts
-    userhostTimer.start(10000);
-
-    m_firstAutoWhoDone = false;
-    connect(&m_whoTimer,SIGNAL (timeout()),this,SLOT (autoWho()));
-    // re-schedule when the settings were changed
-    connect(Preferences::self(), SIGNAL (autoContinuousWhoChanged()),this,SLOT (scheduleAutoWho()));
-
     m_allowNotifications = true;
     m_channel = channel;
     setName (channel->name());
@@ -323,7 +310,7 @@ ChannelWindow::~ChannelWindow()
     kdDebug() << "ChannelWindow::~ChannelWindow(" << getName() << ")" << endl;
 
     // Unlink this channel from channel list
-//    m_server->removeChannel(this);
+    delete m_channel;
 }
 
 void ChannelWindow::nicknameChanged ()
@@ -946,94 +933,6 @@ void ChannelWindow::quickButtonClicked(const QString &buttonText)
     // single line without newline needs to be copied into input line
     else
         channelInput->setText(out);
-}
-
-// TODO: Re-implement commented code
-void ChannelWindow::kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason)
-{
-/*
-    QString displayReason = reason;
-
-    if(!displayReason.isEmpty())
-    {
-        // if the reason contains text markup characters, play it safe and reset all
-        if(displayReason.find(QRegExp("[\\0000-\\0037]")) != -1)
-            displayReason += "\017";
-    }
-
-    if(channelNick->getNickname() == m_server->getNickname())
-    {
-        if(kicker.getNickname() == m_server->getNickname())
-        {
-            if (displayReason.isEmpty())
-                m_server->appendStatusMessage(i18n("Kick"), i18n("You have kicked yourself from channel %1.").arg(getName()));
-            else
-                m_server->appendStatusMessage(i18n("Kick"), i18n("%1 adds the channel and %2 the reason",
-                                              "You have kicked yourself from channel %1 (%2).").arg(getName()).arg(displayReason));
-        }
-        else
-        {
-            if (displayReason.isEmpty())
-            {
-                m_server->appendStatusMessage(i18n("Kick"), i18n("%1 adds the channel, %2 adds the kicker",
-                                              "You have been kicked from channel %1 by %2.")
-                                              .arg(getName()).arg(kicker.getNickname()));
-            }
-            else
-            {
-                m_server->appendStatusMessage(i18n("Kick"), i18n("%1 adds the channel, %2 the kicker and %3 the reason",
-                                              "You have been kicked from channel %1 by %2 (%3).")
-                                              .arg(getName()).arg(kicker.getNickname()).arg(displayReason));
-            }
-
-            KonversationApplication* konv_app = static_cast<KonversationApplication*>(KApplication::kApplication());
-            konv_app->notificationHandler()->kick(this,getName(), kicker.getNickname());
-        }
-
-        delete this;
-    }
-    else
-    {
-        if(kicker.getNickname() == m_server->getNickname())
-        {
-            if (displayReason.isEmpty())
-                appendCommandMessage(i18n("Kick"), i18n("You have kicked %1 from the channel.").arg(channelNick->getNickname()));
-            else
-                appendCommandMessage(i18n("Kick"), i18n("%1 adds the kicked nick and %2 the reason",
-                                     "You have kicked %1 from the channel (%2).").arg(channelNick->getNickname()).arg(displayReason));
-        }
-        else
-        {
-            if (displayReason.isEmpty())
-            {
-                appendCommandMessage(i18n("Kick"), i18n("%1 adds the kicked nick, %2 adds the kicker",
-                                     "%1 has been kicked from the channel by %2.")
-                                     .arg(channelNick->getNickname()).arg(kicker.getNickname()));
-            }
-            else
-            {
-                appendCommandMessage(i18n("Kick"), i18n("%1 adds the kicked nick, %2 the kicker and %3 the reason",
-                                     "%1 has been kicked from the channel by %2 (%3).")
-                                     .arg(channelNick->getNickname()).arg(kicker.getNickname()).arg(displayReason));
-            }
-        }
-
-        if(channelNick->isAnyTypeOfOp())
-            adjustOps(-1);
-
-        adjustNicks(-1);
-        Icecap::ChannelPresence* nick = m_channel->getNickByName(channelNick->getNickname());
-
-        if(nick == 0)
-        {
-            kdWarning() << "ChannelWindow::kickNick(): Nickname " << channelNick->getNickname() << " not found!"<< endl;
-        }
-        else
-        {
-            nicknameList.removeRef(nick);
-        }
-    }
-*/
 }
 
 void ChannelWindow::emitUpdateInfo()
@@ -1818,7 +1717,6 @@ void ChannelWindow::updateAppearance()
     showNicknameList(Preferences::showNickList());
     showNicknameBox(Preferences::showNicknameBox());
     showTopic(Preferences::showTopic());
-    setAutoUserhost(Preferences::autoUserhost());
 
     updateQuickButtons(Preferences::quickButtonList());
 
@@ -1830,24 +1728,21 @@ void ChannelWindow::updateStyleSheet()
     getTextView()->updateStyleSheet();
 }
 
+/**
+ * Called when the nickname combo box is changed
+ * @todo AllenJB: Move nick combo up to ChatWindow and also use for MyPresence status windows?
+ */
 void ChannelWindow::nicknameComboboxChanged()
 {
     QString newNick=nicknameCombobox->currentText();
-//    oldNick=m_server->getNickname();
+    oldNick = m_mypresence->presence()->getNickname();
     if(oldNick!=newNick)
     {
       nicknameCombobox->setCurrentText(oldNick);
-      changeNickname(newNick);
+      m_server->getOutputFilter()->changeNickname (newNick, m_mypresence->name(), m_mypresence->network()->name());
       // return focus to input line
       channelInput->setFocus();
     }
-}
-
-// TODO: Move IRC commands to somewhere sensible
-void ChannelWindow::changeNickname(const QString& newNickname)
-{
-    if (!newNickname.isEmpty())
-        m_server->queue("NICK "+newNickname);
 }
 
 void ChannelWindow::childAdjustFocus()
@@ -1897,97 +1792,12 @@ void ChannelWindow::refreshModeButtons()
 // TODO: AllenJB: Reimplement this
 void ChannelWindow::cycleChannel()
 {
-    closeYourself();
+//    closeYourself();
+    // Tell channel we're going to cycle - this will help avoid unneccessary window closing, etc.
+    // m_channel->setCycle (true);
+    m_server->getOutputFilter()->channelPart (m_channel->name(), m_mypresence->name(), m_mypresence->network()->name());
+    m_server->getOutputFilter()->channelJoin (m_channel->name(), m_mypresence->name(), m_mypresence->network()->name());
 //    m_server->sendJoinCommand(getName());
-}
-
-// TODO: AllenJB: Needs re-implementing
-void ChannelWindow::autoUserhost()
-{
-/*
-    if(Preferences::autoUserhost() && !Preferences::autoWhoContinuousEnabled())
-    {
-        int limit = 5;
-
-        QString nickString;
-        QPtrList<Icecap::ChannelPresence> nickList = getNickList();
-        QPtrListIterator<Icecap::ChannelPresence> it(nickList);
-        Icecap::ChannelPresence* nick;
-
-        while((nick = it.current()) != 0)
-        {
-            if(nick->getHostmask().isEmpty())
-            {
-                if(limit--) nickString = nickString + nick->getNickname() + ' ';
-                else break;
-            }
-
-            ++it;
-        }
-
-//        if(!nickString.isEmpty()) m_server->requestUserhost(nickString);
-    }
-*/
-}
-
-void ChannelWindow::setAutoUserhost(bool state)
-{
-    if(state)
-    {
-        // we can't have automatic resizing with three columns; the hostname column is too wide
-        nicknameListView->setHScrollBarMode(QScrollView::Auto);
-
-        // restart userhost timer
-        userhostTimer.start(10000);
-        // if the column was actually gone (just to be sure) ...
-        if(nicknameListView->columns()==2)
-        {
-            // re-add the hostmask column
-            nicknameListView->addColumn(QString::null);
-            nicknameListView->setColumnWidthMode(2,KListView::Maximum);
-            nicknameListView->setResizeMode(QListView::NoColumn);
-
-            // re-add already known hostmasks
-            QListViewItem* item=nicknameListView->itemAtIndex(0);
-            while(item)
-            {
-                Icecap::ChannelPresence* lookNick = m_channel->getNickByName (item->text(1));
-                if(lookNick) item->setText(2,lookNick->getHostmask());
-                item=item->itemBelow();
-            }
-        }
-    }
-    else
-    {
-        userhostTimer.stop();
-        if(nicknameListView->columns()==3) nicknameListView->removeColumn(2);
-        nicknameListView->setHScrollBarMode(QScrollView::AlwaysOff);
-        // make the nick column resize itself automatically to prevent horizontal scrollbar
-        nicknameListView->setResizeMode(QListView::LastColumn);
-    }
-}
-
-void ChannelWindow::scheduleAutoWho() // slot
-{
-    if(!m_firstAutoWhoDone) // abort if initialization hasn't done yet
-        return;
-    if(m_whoTimer.isActive())
-        m_whoTimer.stop();
-    if(Preferences::autoWhoContinuousEnabled())
-        m_whoTimer.start(Preferences::autoWhoContinuousInterval()*1000, true);
-}
-
-void ChannelWindow::autoWho()
-{
-    // don't use auto /WHO when the number of nicks is too large, or get banned.
-    if(nicks > Preferences::autoWhoNicksLimit())
-    {
-        scheduleAutoWho();
-        return;
-    }
-//    if(m_server->getInputFilter()->isWhoRequestUnderProcess(getName()))
-//        return;
-//    m_server->requestWho(getName());
 }
 
 QString ChannelWindow::getTextInLine()
@@ -2010,7 +1820,6 @@ void ChannelWindow::appendInputText(const QString& s)
     channelInput->setText(channelInput->text() + s);
 }
 
-// TODO: AllenJB: Reimplement
 bool ChannelWindow::closeYourself()
 {
     int result=KMessageBox::warningContinueCancel(
@@ -2022,33 +1831,33 @@ bool ChannelWindow::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
-//        m_server->closeChannel(getName());
-//        m_server->removeChannel(this);
-	Preferences::setSpellChecking(channelInput->checkSpellingEnabled());
+        Preferences::setSpellChecking(channelInput->checkSpellingEnabled());
         delete this;
         return true;
     }
     return false;
 }
 
-/*
-//Used to disable functions when not connected
+/**
+ * Set online status. Used to disable functions when not connected
+ * @param online New state
+ */
 void ChannelWindow::serverOnline(bool online)
 {
     if (online)
     {
-        //channelInput->setEnabled(true);
+        channelInput->setEnabled(true);
         getTextView()->setNickAndChannelContextMenusEnabled(true);
         nicknameCombobox->setEnabled(true);
     }
     else
     {
-        //channelInput->setEnabled(false);
+        channelInput->setEnabled(false);
         getTextView()->setNickAndChannelContextMenusEnabled(false);
         nicknameCombobox->setEnabled(false);
     }
 }
-*/
+
 
 void ChannelWindow::showTopic(bool show)
 {
@@ -2070,23 +1879,6 @@ void ChannelWindow::showTopic(bool show)
             topicLine->parentWidget()->hide();
         }
     }
-}
-
-void ChannelWindow::setChannelEncoding(const QString& encoding) // virtual
-{
-//    Preferences::setChannelEncoding(m_server->getServerGroup(), getName(), encoding);
-}
-
-QString ChannelWindow::getChannelEncoding() // virtual
-{
-//    return Preferences::channelEncoding(m_server->getServerGroup(), getName());
-    return "utf8";
-}
-
-QString ChannelWindow::getChannelEncodingDefaultDesc()  // virtual
-{
-//    return i18n("Identity Default ( %1 )").arg(getServer()->getIdentity()->getCodecName());
-    return "Unimplemented (utf8)";
 }
 
 void ChannelWindow::showNicknameBox(bool show)
@@ -2159,44 +1951,6 @@ bool ChannelWindow::eventFilter(QObject* watched, QEvent* e)
     }
 
     return ChatWindow::eventFilter(watched, e);
-}
-
-void ChannelWindow::addBan(const QString& ban)
-{
-  for ( QStringList::Iterator it = m_BanList.begin(); it != m_BanList.end(); ++it )
-  {
-    if ((*it).section(' ', 0, 0) == ban.section(' ', 0, 0))
-    {
-			// Ban is already in list.
-      it = m_BanList.remove(it);
-
-      emit banRemoved(ban.section(' ', 0, 0));
-    }
-  }
-
-  m_BanList.prepend(ban);
-
-  emit banAdded(ban);
-}
-
-void ChannelWindow::removeBan(const QString& ban)
-{
-  for ( QStringList::Iterator it = m_BanList.begin(); it != m_BanList.end(); ++it )
-  {
-    if ((*it).section(' ', 0, 0) == ban)
-    {
-      it = m_BanList.remove(it);
-
-      emit banRemoved(ban);
-    }
-  }
-}
-
-void ChannelWindow::clearBanList()
-{
-  m_BanList.clear();
-
-  emit banListCleared();
 }
 
 #include "channelwindow.moc"

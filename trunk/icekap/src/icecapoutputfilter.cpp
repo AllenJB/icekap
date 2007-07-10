@@ -256,30 +256,16 @@ namespace Icecap
         if (line.startsWith (commandChar +"join"))
             // TODO: Error handling
         {
-            Icecap::Cmd command;
-            command.tag = "join";
-            command.command = "channel join";
-            command.parameterList.insert ("channel", parameters[0]);
-            command.parameterList.insert ("network", networkName);
-            command.parameterList.insert ("mypresence", mypresenceName);
-
-            m_server->queueCommand (command);
+            channelJoin (parameters[0], mypresenceName, networkName);
         }
         else if (line.startsWith (commandChar +"part"))
             // TODO: Error handling
         {
-            Icecap::Cmd command;
-            command.tag = "part";
-            command.command = "channel part";
             if (parameters[0].length () < 1) {
-                command.parameterList.insert ("channel", channelName);
+                channelPart (channelName, mypresenceName, networkName);
             } else {
-                command.parameterList.insert ("channel", parameters[0]);
+                channelPart (parameters[0], mypresenceName, networkName);
             }
-            command.parameterList.insert ("network", networkName);
-            command.parameterList.insert ("mypresence", mypresenceName);
-
-            m_server->queueCommand (command);
         }
         else if (line.startsWith (commandChar +"topic"))
         {
@@ -295,14 +281,7 @@ namespace Icecap
         }
         else if (line.startsWith (commandChar +"nick"))
         {
-            Icecap::Cmd command;
-            command.tag = "nick";
-            command.command = "presence change";
-            command.parameterList.insert ("network", networkName);
-            command.parameterList.insert ("mypresence", mypresenceName);
-            command.parameterList.insert ("name", parameters[0]);
-
-            m_server->queueCommand (command);
+            changeNickname (parameters[0], mypresenceName, networkName);
         }
         else
 
@@ -952,6 +931,68 @@ namespace Icecap
     {
         QString channelPrefixes = "#&";
         return (channelPrefixes.contains(name.at(0)) > 0);
+    }
+
+
+    /**
+     * Change mypresence nickname
+     * @param newNickname New nickname
+     */
+    void OutputFilter::changeNickname (const QString& newNickname, const QString& mypresenceName, const QString& networkName)
+    {
+        if (newNickname.isEmpty())
+            return;
+
+        Icecap::Cmd command;
+        command.tag = "nick";
+        command.command = "presence change";
+        command.parameterList.insert ("network", networkName);
+        command.parameterList.insert ("mypresence", mypresenceName);
+        command.parameterList.insert ("name", newNickname);
+
+        m_server->queueCommand (command);
+    }
+
+    /**
+     * Join a channel
+     * @param channelName Name of channel to join
+     * @param mypresenceName MyPresence name
+     * @param networkName Network name
+     */
+    void OutputFilter::channelJoin (const QString& channelName, const QString& mypresenceName, const QString& networkName)
+    {
+        if (channelName.isEmpty())
+            return;
+
+        Icecap::Cmd command;
+        command.tag = "join";
+        command.command = "channel join";
+        command.parameterList.insert ("channel", channelName);
+        command.parameterList.insert ("network", networkName);
+        command.parameterList.insert ("mypresence", mypresenceName);
+
+        m_server->queueCommand (command);
+    }
+
+    /**
+     * Part a channel
+     * @param channelName Name of channel to part
+     * @param mypresenceName MyPresence name
+     * @param networkName Network name
+     */
+    void OutputFilter::channelPart (const QString& channelName, const QString& mypresenceName, const QString& networkName)
+    {
+        if (channelName.isEmpty())
+            return;
+
+        Icecap::Cmd command;
+        command.tag = "part";
+        command.command = "channel part";
+        command.parameterList.insert ("channel", channelName);
+        command.parameterList.insert ("network", networkName);
+        command.parameterList.insert ("mypresence", mypresenceName);
+
+        m_server->queueCommand (command);
     }
 
 }
