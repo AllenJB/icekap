@@ -82,6 +82,10 @@ namespace Icecap
             OutputFilterResult parse (const QString& myNick, const QString& line, const QString& networkName = "", const QString& mypresenceName = "", const QString& channelName = "");
             bool replaceAliases(QString& line);
 
+            void changeNickname (const QString& newNickname, const QString& mypresenceName, const QString& networkName);
+            void channelJoin (const QString& channelName, const QString& mypresenceName, const QString& networkName);
+            void channelPart (const QString& channelName, const QString& mypresenceName, const QString& networkName);
+
         signals:
             void openRawLog(bool show);
             void closeRawLog();
@@ -98,7 +102,6 @@ namespace Icecap
             void connectToServer(const QString& server, const QString& port, const QString& password);
 
             void showView(ChatWindow* view);
-
 
         public slots:
             void setCommandChar();

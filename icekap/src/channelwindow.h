@@ -71,6 +71,8 @@ class ChannelWindow : public ChatWindow
         virtual bool canBeFrontView();
         virtual bool searchView();
 
+        void serverOnline(bool online);
+
 //General administrative stuff
     public:
         void setName(const QString& newName);
@@ -80,27 +82,13 @@ class ChannelWindow : public ChatWindow
         virtual void setMyPresence (Icecap::MyPresence* p_mypresence);
         virtual void setServer(IcecapServer* newServer);
 
-//Unsure of future placement and/or continued existence of these members
-        virtual void setChannelEncoding(const QString& encoding);
-        virtual QString getChannelEncoding();
-        virtual QString getChannelEncodingDefaultDesc();
-        virtual bool isInsertSupported() { return true; }
-
     public slots:
         void setNickname(const QString& newNickname);
-        void scheduleAutoWho();
-        void setAutoUserhost(bool state);
         void userListUpdated ();
         void nicknameChanged ();
 
-    protected slots:
-        void autoUserhost();
-        void autoWho();
-
 //Nicklist
     public:
-        void kickNick(Icecap::ChannelPresence channelNick, const Icecap::ChannelPresence &kicker, const QString &reason);
-
         virtual void emitUpdateInfo();
 
 //Topic
@@ -151,20 +139,6 @@ class ChannelWindow : public ChatWindow
 
     signals:
         void modesChanged();
-
-//Bans
-    public:
-
-        void addBan(const QString& ban);
-        void removeBan(const QString& ban);
-
-        void clearBanList();
-        QStringList getBanList() const { return m_BanList; }
-
-    signals:
-        void banAdded(const QString& newban);
-        void banRemoved(const QString& newban);
-        void banListCleared();
 
 //Generic GUI
     public:
@@ -224,7 +198,7 @@ class ChannelWindow : public ChatWindow
         void popupCommand(int id);                ///< Connected to NickListView::popupCommand()
         void doubleClickCommand(QListViewItem*);  ///< Connected to NickListView::doubleClicked()
         // Dialogs
-        void changeNickname(const QString& newNickname);
+//        void changeNickname(const QString& newNickname);
 
         void textPasted(const QString& text); ///< connected to IRCInput::textPasted() - used to handle large/multiline pastings
 
@@ -295,28 +269,17 @@ class ChannelWindow : public ChatWindow
         QPtrList<QuickButton> buttonList;
 
 //Members from here to end are not GUI
-        QTimer userhostTimer;
-
         QStringList m_topicHistory;
-        QStringList m_BanList;
         bool topicAuthorUnknown; ///< Stores whether the "<author>" bit is there or not.
 
         QString key;
 
-        bool m_firstAutoWhoDone;
-        QTimer m_whoTimer; ///< For continuous auto /WHO
-
-        int m_opsToAdd;
         uint m_currentIndex;
 
         QTimer* m_processingTimer;
         QTimer* m_delayedSortTimer;
 
         QStringList m_modeList;
-
-        bool pendingNicks; ///< are there still nicks to be added by /names reply?
-        int nicks; ///< How many nicks on the channel
-        int ops; ///< How many ops on the channel
 
         bool m_allowNotifications; ///<TODO: remove this, its been implemented on the chatwindow object
 

@@ -24,7 +24,7 @@ namespace Icecap
     {
         m_mypresence = p_mypresence;
         m_name = name;
-        connected = false;
+        m_connected = false;
         windowIsActive = false;
         QObject::setName (QString ("channel"+name).ascii());
         m_numberOfOps = 0;
@@ -40,7 +40,7 @@ namespace Icecap
     {
         m_mypresence = p_mypresence;
         m_name = name;
-        connected = parameterMap.contains ("joined");
+        m_connected = parameterMap.contains ("joined");
         if (parameterMap.contains ("topic")) {
             topic = parameterMap["topic"];
         }
@@ -51,7 +51,7 @@ namespace Icecap
         // Connect to server event stream (command results)
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
 
-        if (connected) init ();
+        if (m_connected) init ();
     }
 
     /**
@@ -66,10 +66,10 @@ namespace Icecap
         }
 
         windowIsActive = true;
-        window = getViewContainer()->addChannel (this);
+        m_window = getViewContainer()->addChannel (this);
 
         // Initialise nick listView items
-        NickListView* listView = window->getNickListView ();
+        NickListView* listView = m_window->getNickListView ();
         QPtrListIterator<ChannelPresence> it( m_nickList );
         ChannelPresence* current;
         while ( (current = it.current()) != 0 ) {
@@ -81,9 +81,9 @@ namespace Icecap
         // TODO: This could be done with signals instead
         if (topic.length () > 0) {
             if (topicSetBy.length () > 0) {
-                window->setTopic (topic);
+                m_window->setTopic (topic);
             } else {
-                window->setTopic (topicSetBy, topic);
+                m_window->setTopic (topicSetBy, topic);
             }
         }
 
@@ -111,7 +111,7 @@ namespace Icecap
         topicTimestamp.setTime_t (timestampStr.toUInt ());
         // TODO: This could be done with signals instead
         if (windowIsActive) {
-            window->setTopic (topicSetBy, topic);
+            m_window->setTopic (topicSetBy, topic);
         }
     }
 
@@ -121,9 +121,14 @@ namespace Icecap
      */
     void Channel::setConnected (bool newStatus)
     {
-        if (newStatus == connected) return;
-        connected = newStatus;
-        if (connected) init ();
+        if (newStatus == m_connected) return;
+        m_connected = newStatus;
+        if (windowIsActive) {
+            m_window->serverOnline (m_connected);
+        }
+        if (m_connected) {
+            init ();
+        }
     }
 
     /**
@@ -137,7 +142,7 @@ namespace Icecap
         }
 
         if (windowIsActive) {
-            user->setListView (window->getNickListView ());
+            user->setListView (m_window->getNickListView ());
         }
 
         m_nickList.append (user);
@@ -196,7 +201,10 @@ namespace Icecap
      */
     void Channel::presenceRemoveByName (const QString& userName)
     {
-        presenceRemove (presence (userName));
+        ChannelPresence* user = presence (userName);
+        if (0 == user)
+            return;
+        presenceRemove (user);
     }
 
     /**
@@ -225,7 +233,7 @@ namespace Icecap
     void Channel::append(const QString& nickname,const QString& message)
     {
         if (!windowIsActive) return;
-        window->append (nickname, message);
+        m_window->append (nickname, message);
     }
 
     /**
@@ -237,7 +245,7 @@ namespace Icecap
     void Channel::appendAction(const QString& nickname,const QString& message, bool usenotifications)
     {
         if (!windowIsActive) return;
-        window->appendAction (nickname, message, usenotifications);
+        m_window->appendAction (nickname, message, usenotifications);
     }
 
     /**
@@ -251,7 +259,7 @@ namespace Icecap
     void Channel::appendCommandMessage (const QString& command, const QString& message, bool important, bool parseURL, bool self)
     {
         if (!windowIsActive) return;
-        window->appendCommandMessage(command, message, important, parseURL, self);
+        m_window->appendCommandMessage (command, message, important, parseURL, self);
     }
 
     /**
@@ -271,6 +279,9 @@ namespace Icecap
         if (ev.sentCommand == "channel names") {
             if (ev.status == "-") {
                 // TODO: Error handling
+                if (ev.error == "notfound") {
+                    appendCommandMessage("Join", "Unable to retrieve channel names list: Channel not found.");
+                }
                 return;
             } else if (ev.status == "+") {
                 // Ignore - successful completion
@@ -295,7 +306,7 @@ namespace Icecap
 
             presenceAdd (channelUser);
             emit userListUpdated ();
-            window->getNickListView ()->startResortTimer ();
+            m_window->getNickListView ()->startResortTimer ();
         }
         else if (ev.sentCommand == "channel change")
         {
@@ -315,7 +326,7 @@ namespace Icecap
                 }
                 else if (ev.parameterList.contains ("initial_presences_added"))
                 {
-                    window->getNickListView ()->startResortTimer ();
+                    m_window->getNickListView ()->startResortTimer ();
                 }
             }
             else if (ev.command == "msg")
@@ -447,8 +458,8 @@ namespace Icecap
     {
         QStringList result;
 
-        if (window->getChannelCommand ())
-            result.append (window->getTextView()->getContextNick());
+        if (m_window->getChannelCommand ())
+            result.append (m_window->getTextView()->getContextNick());
         else
         {
             QPtrListIterator<ChannelPresence> it( m_nickList );

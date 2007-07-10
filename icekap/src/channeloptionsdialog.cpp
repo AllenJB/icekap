@@ -64,7 +64,7 @@ namespace Konversation
 
         connect(this, SIGNAL(cancelClicked()), this, SLOT(hide()));
         connect(this, SIGNAL(okClicked()), this, SLOT(changeOptions()));
-
+/*
         connect(m_channel, SIGNAL(banAdded(const QString&)), this, SLOT(addBan(const QString&)));
         connect(m_channel, SIGNAL(banRemoved(const QString&)), this, SLOT(removeBan(const QString&)));
         connect(m_channel, SIGNAL(banListCleared()), m_widget->banList, SLOT(clear()));
@@ -73,9 +73,9 @@ namespace Konversation
         connect(m_widget->removeBan, SIGNAL(clicked()), this, SLOT(removeBanClicked()));
         connect(m_widget->banList, SIGNAL(itemRenamed (QListViewItem*)), this, SLOT(banEdited(QListViewItem*)));
         connect(m_widget->banList, SIGNAL(itemRenamed (QListViewItem*, int, const QString&)), this, SLOT(banEdited(QListViewItem*)));
-
+*/
         refreshTopicHistory();
-        refreshBanList();
+//        refreshBanList();
         refreshAllowedChannelModes();
         refreshModes();
     }
@@ -369,7 +369,7 @@ namespace Konversation
     }
 
     // Ban List tab related functions
-
+/*
     void ChannelOptionsDialog::refreshBanList()
     {
         QStringList banlist = m_channel->getBanList();
@@ -475,7 +475,7 @@ namespace Konversation
     {
         m_isNewBan = isNew;
     }
-
+*/
     void BanListViewItem::startRename( int col )
     {
         m_oldValue = text(col);

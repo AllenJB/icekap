@@ -39,12 +39,14 @@ namespace Konversation
             void refreshEnableModes();
             void toggleAdvancedModes();
 
+/*
             void refreshBanList();
             void addBan(const QString& newban);
             void addBanClicked();
             void removeBan(const QString& ban);
             void removeBanClicked();
             void banEdited(QListViewItem *edited);
+*/
 
             void changeOptions();
 
