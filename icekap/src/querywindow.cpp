@@ -514,7 +514,7 @@ bool QueryWindow::closeYourself()
 
 void QueryWindow::serverOnline(bool online)
 {
-    //queryInput->setEnabled(online);
+    queryInput->setEnabled (online);
     getTextView()->setNickAndChannelContextMenusEnabled(online);
 
     QPopupMenu* popup = getTextView()->getPopup();
@@ -567,6 +567,7 @@ void QueryWindow::quitNick(const QString& reason)
 void QueryWindow::setQuery (Icecap::Query* query)
 {
     m_query = query;
+    connect (m_query, SIGNAL(online(bool)), this, SLOT(serverOnline(bool)));
     setMyPresence (query->mypresence());
     setNickInfo (query->presence());
 }

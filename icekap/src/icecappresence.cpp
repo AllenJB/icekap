@@ -9,6 +9,8 @@
 
 #include "klocale.h"
 
+#include "icecapquery.h"
+
 namespace Icecap
 {
 

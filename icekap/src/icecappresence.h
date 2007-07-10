@@ -16,6 +16,7 @@
 
 namespace Icecap
 {
+    class Query;
 
     /**
      * Representation of a user on a network.

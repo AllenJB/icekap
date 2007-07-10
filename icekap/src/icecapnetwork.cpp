@@ -139,6 +139,7 @@ namespace Icecap
     /**
      * Filter and act on relevent Icecap events
      * @param ev Event
+     * @todo AllenJB: Delete presences a given amount of time after they're last seen online.
      */
     void Network::eventFilter (Icecap::Cmd ev)
     {
@@ -150,18 +151,26 @@ namespace Icecap
         {
             if (ev.command == "presence_init")
             {
-                Presence* newPresence;
-                if (ev.parameterList.contains ("address")) {
-                    newPresence = new Presence (ev.parameterList["presence"], ev.parameterList["address"]);
+                Presence* newPresence = presence (ev.parameterList["presence"]);
+                if (0 == newPresence) {
+                    if (ev.parameterList.contains ("address")) {
+                        newPresence = new Presence (ev.parameterList["presence"], ev.parameterList["address"]);
+                    } else {
+                        newPresence = new Presence (ev.parameterList["presence"]);
+                    }
+                    presenceAdd (newPresence);
                 } else {
-                    newPresence = new Presence (ev.parameterList["presence"]);
+                    newPresence->setConnected (true);
                 }
-                presenceAdd (newPresence);
                 return;
             }
             else if (ev.command == "presence_changed")
             {
                 presence (ev.parameterList["presence"])->update (ev.parameterList);
+            }
+            else if (ev.command == "presence_deinit")
+            {
+                presence (ev.parameterList["presence"])->setConnected (false);
             }
         }
     }
