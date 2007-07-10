@@ -37,11 +37,18 @@ namespace Icecap
             void append (const QString& nickname, const QString& message);
             void appendAction (const QString& nickname,const QString& message, bool usenotifications = false);
 
+        public slots:
+            void presenceChanged ();
+
+        signals:
+            void online (bool newState);
+
         private:
             Presence* m_presence;
             MyPresence* m_mypresence;
             ViewContainer* m_viewContainerPtr;
             QueryWindow* m_window;
+            bool m_connected;
     };
 
 }

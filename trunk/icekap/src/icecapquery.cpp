@@ -20,8 +20,11 @@ namespace Icecap
     {
         m_mypresence = mypresence;
         m_presence = presence;
+        m_connected = m_presence->connected ();
 
         m_window = m_mypresence->getViewContainer()->addQuery (this);
+
+        connect (m_presence, SIGNAL(nickInfoChanged()), this, SLOT(presenceChanged()));
     }
 
     /**
@@ -43,6 +46,15 @@ namespace Icecap
     void Query::appendAction (const QString& nickname,const QString& message, bool usenotifications)
     {
         m_window->appendAction (nickname, message, usenotifications);
+    }
+
+    void Query::presenceChanged ()
+    {
+        bool newState = m_presence->connected();
+        if (newState != m_connected) {
+            emit online (newState);
+            m_connected = newState;
+        }
     }
 }
 
