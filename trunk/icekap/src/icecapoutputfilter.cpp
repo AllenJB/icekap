@@ -254,13 +254,25 @@ namespace Icecap
         else
 
         if (line.startsWith (commandChar +"join"))
-            // TODO: Error handling
         {
+            if (parameters.size () != 1) {
+                result.output = "Usage: /whois [username]";
+                result.type = Program;
+                result.typeString = "Whois";
+                return result;
+            }
+
             channelJoin (parameters[0], mypresenceName, networkName);
         }
         else if (line.startsWith (commandChar +"part"))
-            // TODO: Error handling
         {
+            if (parameters.size () != 1) {
+                result.output = "Usage: /whois [username]";
+                result.type = Program;
+                result.typeString = "Whois";
+                return result;
+            }
+
             if (parameters[0].length () < 1) {
                 channelPart (channelName, mypresenceName, networkName);
             } else {
@@ -331,6 +343,26 @@ namespace Icecap
                 }
                 result.output = parameter;
                 result.type = Message;
+            }
+
+            else if (command == "whois")
+            {
+                if (parameters.size () < 1) {
+                    result.output = "Usage: /whois [username]";
+                    result.type = Program;
+                    result.typeString = "Whois";
+                    return result;
+                }
+
+                Icecap::Cmd command;
+                command.tag = "whois";
+                command.command = "presence status";
+                command.parameterList.insert ("network", networkName);
+                command.parameterList.insert ("mypresence", mypresenceName);
+                command.parameterList.insert ("presence", parameters[0]);
+
+                m_server->queueCommand (command);
+                return result;
             }
 
             // Forward unknown commands to server

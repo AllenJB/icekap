@@ -92,7 +92,9 @@ namespace Icecap
             ViewContainer* viewContainer () { return m_viewContainerPtr; }
             ViewContainer* getViewContainer() const { return m_viewContainerPtr; }
 
-            void appendStatusMessage(const QString& type,const QString& message);
+            void appendStatusMessage (const QString& type,const QString& message);
+            void appendCommandMessage (const QString& command, const QString& message, bool important = true,
+                bool parseURL = true, bool self = false);
 
             uint getNickColor ();
 

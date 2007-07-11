@@ -37,7 +37,7 @@ namespace Icecap
             QString getNickname () const { return m_name; }
             QString loweredNickname () const { return m_name.lower (); }
 
-            QString getRealName () const { return m_realName; }
+            QString getRealName () const { return m_real_name; }
 
             QString address () const { return m_address; }
             QString getHostmask () const { return m_address; }
@@ -69,10 +69,17 @@ namespace Icecap
         private:
             QString m_name;
             QString m_address;
+            QString m_real_name;
+            QString m_away_reason;
+            uint m_irc_signon_time;
+            uint m_login_time;
+            uint m_idle_started;
+
             QString m_modes;
-            QString m_realName;
+
             bool m_connected;
             bool m_away;
+            bool m_identified;
             uint m_nickColor;
     };
 
