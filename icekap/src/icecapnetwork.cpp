@@ -164,7 +164,7 @@ namespace Icecap
                 }
                 return;
             }
-            else if (ev.command == "presence_changed")
+            else if ((ev.command == "presence_changed") || (ev.command == "presence_status_changed"))
             {
                 presence (ev.parameterList["presence"])->update (ev.parameterList);
             }

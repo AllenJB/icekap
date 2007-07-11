@@ -269,12 +269,10 @@ void StatusPanel::sendStatusText(const QString& sendLine)
     // create a work copy
     QString outputAll(sendLine);
     // replace aliases and wildcards
-    m_mypresence->appendStatusMessage ("DEBUG", "outputAll before: "+ outputAll);
     if(m_server->getOutputFilter()->replaceAliases(outputAll))
     {
         outputAll = m_server->parseWildcards (outputAll, m_mypresence->name(), QString::null, QString::null, QString::null, QString::null);
     }
-    m_mypresence->appendStatusMessage ("DEBUG", "outputAll after: "+ outputAll);
 
     Icecap::OutputFilter* outputFilter = m_server->getOutputFilter ();
 

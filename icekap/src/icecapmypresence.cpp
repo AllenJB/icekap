@@ -245,6 +245,21 @@ namespace Icecap
     }
 
     /**
+     * Append a command message
+     * @param command Command (shown in tab bar)
+     * @param message Message
+     * @param important Important? (highlighting, notification)
+     * @param parseURL Parse URLs?
+     * @param self Did we issue this line? (highlighting, notification)
+     */
+    void MyPresence::appendCommandMessage(const QString& command, const QString& message, bool important, bool parseURL, bool self)
+    {
+        if (statusViewActive) {
+            statusView->appendCommandMessage (command, message, important, parseURL, self);
+        }
+    }
+
+    /**
      * Filter events from the server
      * @param ev Event
      */
@@ -331,6 +346,36 @@ namespace Icecap
                 appendStatusMessage(i18n ("Error"), ev.parameterList["data"]);
             }
         } // end if (ev.tag == "*")
+        else if (ev.command == "presence status")
+        {
+            if (ev.status == "-") {
+                if (ev.error == "notfound") {
+                    appendStatusMessage (i18n("Whois"), i18n ("Presence not found: %1").arg (ev.sentParameterList["presence"]));
+                } else {
+                    appendStatusMessage (i18n("Whois"), i18n ("Unhandled error: %1: %2").arg (ev.sentParameterList["presence"]).arg (ev.error));
+                }
+                return;
+            }
+
+            if (ev.parameterList.contains ("real_name")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Real Name: %2").arg (ev.parameterList["presence"]).arg (ev.parameterList["real_name"]));
+            }
+            if (ev.parameterList.contains ("address")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Address: %2").arg (ev.parameterList["presence"]).arg (ev.parameterList["address"]));
+            }
+            if (ev.parameterList.contains ("server_address")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Server: %2 (%3)").arg (ev.parameterList["presence"]).arg (ev.parameterList["server_address"]).arg (ev.parameterList["server_name"]));
+            }
+            if (ev.parameterList.contains ("extra")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Extra: %2").arg (ev.parameterList["presence"]).arg (ev.parameterList["extra"]));
+            }
+            if (ev.parameterList.contains ("idle")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Idle: %2 seconds").arg (ev.parameterList["presence"]).arg (ev.parameterList["idle"]));
+            }
+            if (ev.parameterList.contains ("login_time")) {
+                appendStatusMessage (i18n("Whois"), i18n ("%1: Login Time: %2").arg (ev.parameterList["presence"]).arg (ev.parameterList["login_time"]));
+            }
+        }
     }
 
     /**

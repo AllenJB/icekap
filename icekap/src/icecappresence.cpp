@@ -16,11 +16,18 @@ namespace Icecap
 
     Presence::Presence (const QString& name)
     {
-        m_name = name;
         m_connected = false;
-        m_away = false;
-        m_realName = "Unimplemented";
         m_nickColor = 0;
+
+        m_name = name;
+        m_address = QString ();
+        m_real_name = "Unimplemented";
+//        m_irc_server = QString ();
+        m_away = false;
+        m_away_reason = QString ();
+        m_identified = false;
+        m_login_time = 0;
+        m_idle_started = 0;
     }
 
     Presence::Presence (const QString& name, const QString& address)
@@ -29,7 +36,7 @@ namespace Icecap
         m_address = address;
         m_connected = false;
         m_away = false;
-        m_realName = "Unimplemented";
+        m_real_name = "Unimplemented";
         m_nickColor = 0;
     }
 
@@ -78,11 +85,44 @@ namespace Icecap
      */
     void Presence::update (QMap<QString, QString> parameterList)
     {
+        // Address (Hostmask)
         if (parameterList.contains ("address")) {
             m_address = parameterList["address"];
         }
+
+        // Nickname
         if (parameterList.contains ("name")) {
             setName (parameterList["name"]);
+        }
+
+        // Real name
+        if (parameterList.contains ("real_name")) {
+            m_real_name = parameterList["real_name"];
+        }
+
+        // Away, with reason
+        if (parameterList.contains ("reason")) {
+            m_away = true;
+            m_away_reason = parameterList["reason"];
+        }
+        else if ((parameterList.contains ("type")) && (parameterList["type"] == "away")) {
+            m_away = true;
+            m_away_reason = QString ();
+        }
+
+        // Last seen active
+        if (parameterList.contains ("idle_started")) {
+            m_idle_started = parameterList["idle_started"].toUInt();
+        }
+
+        // Identified with services, when
+        if (parameterList.contains("login_time")) {
+            m_identified = true;
+            m_login_time = parameterList["login_time"].toUInt();
+        }
+        else if (parameterList.contains("irc_signon_time")) {
+            m_identified = true;
+            m_login_time = parameterList["irc_signon_time"].toUInt();
         }
     }
 
