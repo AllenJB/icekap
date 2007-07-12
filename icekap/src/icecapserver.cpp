@@ -1208,10 +1208,8 @@ void IcecapServer::eventFilter (Icecap::Cmd event) {
     else if (event.sentCommand == "presence list") {
         if (event.status == ">") {
             if (mypresence (event.parameterList["mypresence"], event.parameterList["network"]) != 0) {
-                appendStatusMessage ("DEBUG", i18n ("Called update on presence: %1 %2").arg (event.parameterList["network"]).arg (event.parameterList["mypresence"]));
                 mypresence (event.parameterList["mypresence"], event.parameterList["network"])->update (event.parameterList);
             } else {
-                appendStatusMessage ("DEBUG", i18n ("Called add on presence: %1 %2").arg (event.parameterList["network"]).arg (event.parameterList["mypresence"]));
                 mypresenceAdd (event.parameterList["mypresence"], event.parameterList["network"], event.parameterList);
             }
         }

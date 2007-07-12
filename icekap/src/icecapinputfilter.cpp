@@ -75,6 +75,13 @@ void IcecapInputFilter::parseLine(const QString& a_newLine)
         param.pop_front();
 
         parseIcecapEvent (eventName, param);
+    } else if ((newLine.startsWith ("Warning:")) || (newLine.startsWith ("Panic:")) || (newLine.startsWith ("Error:"))) {
+        // Send it through the generic IcecapServer::event slot (via IcecapServer::emitEvent)
+        Icecap::Cmd result;
+        result.tag = "**";
+        result.command = "icecapd_deinit";
+        result.error = newLine;
+        server->emitEvent (result);
     } else {
         // This is a command reply
         // Format: <tag>;<status>;<params>
