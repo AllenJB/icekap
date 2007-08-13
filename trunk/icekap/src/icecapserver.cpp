@@ -102,6 +102,7 @@ void IcecapServer::init(ViewContainer* viewContainer)
     setViewContainer(viewContainer);
     statusView = getViewContainer()->addStatusView(this);
 
+    // TODO AllenJB: Re-enable raw log toggle
 //    if(Preferences::rawLog())
 //        addRawLog(false);
     addRawLog(true);

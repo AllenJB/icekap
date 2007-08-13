@@ -11,7 +11,9 @@
       <keyword>KDE</keyword>
     </keywords>
     <projectname>icekap</projectname>
-    <ignoreparts/>
+    <ignoreparts>
+      <part>kdevkonsoleview</part>
+    </ignoreparts>
     <projectdirectory>./</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
@@ -31,7 +33,7 @@
     <tree>
       <showvcsfields>false</showvcsfields>
       <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
+      <hidepatterns>*.o,*.lo,CVS,*.moc,icekap</hidepatterns>
     </tree>
   </kdevfileview>
   <kdevdoctreeview>
@@ -104,7 +106,7 @@
       <version>3</version>
       <includestyle>3</includestyle>
       <root>/usr/qt/3</root>
-      <designerintegration>EmbeddedKDevDesigner</designerintegration>
+      <designerintegration>ExternalKDevDesigner</designerintegration>
       <qmake>/usr/qt/3/bin/qmake</qmake>
       <designer>/usr/qt/3/bin/designer</designer>
       <designerpluginpaths/>

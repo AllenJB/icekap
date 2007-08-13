@@ -34,6 +34,8 @@ namespace Icecap
 
         // Connect to server event stream (command results)
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
+        // Watch for server / network state changes
+        connect (m_mypresence, SIGNAL (serverOnline(bool)), this, SLOT (serverStateChanged(bool)));
     }
 
     Channel::Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap)
@@ -52,6 +54,11 @@ namespace Icecap
         connect (m_mypresence->server(), SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
 
         if (m_connected) init ();
+    }
+
+    Channel::~Channel ()
+    {
+        delete m_window;
     }
 
     /**
@@ -490,6 +497,22 @@ namespace Icecap
             }
         }
         return false;
+    }
+
+    // TODO AllenJB: Disable window if left open
+    // TODO AllenJB: Output channel closed message if left open
+    void Channel::serverStateChanged (bool state)
+    {
+        setConnected (state);
+        if (Preferences::closeInactiveTabs()) {
+            if (state) {
+                init();
+            } else {
+                windowIsActive = false;
+                getViewContainer()->closeView (m_window);
+                delete m_window;
+            }
+        }
     }
 
 }

@@ -21,7 +21,6 @@
 
 #include "icecapserver.h"
 #include "chatwindow.h"
-// #include "nicklist.h"
 
 /*
   @author Dario Abatianni

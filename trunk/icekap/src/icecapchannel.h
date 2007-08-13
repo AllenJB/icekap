@@ -42,7 +42,7 @@ namespace Icecap
 //            Channel (): m_name(0) {}
             Channel (MyPresence* p_mypresence, const QString& name);
             Channel (MyPresence* p_mypresence, const QString& name, const QMap<QString, QString>& parameterMap);
-//            ~Channel ();
+            ~Channel ();
 
             QString name () const { return m_name; }
             QString getTopic () { return topic; }
@@ -97,6 +97,7 @@ namespace Icecap
 
         public slots:
             void eventFilter (Icecap::Cmd result);
+            void serverStateChanged (bool state);
 
         private:
             void init ();

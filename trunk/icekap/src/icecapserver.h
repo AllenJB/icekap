@@ -119,7 +119,7 @@ class IcecapServer : public QObject
 
         ChannelListPanel* addChannelListPanel();
 
-        // TODO AllenJB: Do we really need all these different methods?
+        // TODO AllenJB: Do we really need all these different network* methods?
 
         void networkClear () { networkList.clear (); }
         void networkAdd (Icecap::Network* network);

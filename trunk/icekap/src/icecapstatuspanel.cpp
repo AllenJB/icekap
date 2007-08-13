@@ -221,7 +221,7 @@ bool IcecapStatusPanel::closeYourself()
     //FIXME: Show "Do you really want to close ..." warnings in
     // disconnected state instead of closing directly. Can't do
     // that due to string freeze at the moment.
-    if (!m_server->isConnected())
+    if (!m_mypresence->connected())
     {
         result = KMessageBox::Continue;
     }

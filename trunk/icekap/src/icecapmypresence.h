@@ -104,8 +104,12 @@ namespace Icecap
         signals:
             void nameChanged ();
 
+            /// Emitted whenever the MyPresence goes online or offline
+            void serverOnline (bool state);
+
         private:
             void init ();
+            void serverStateChanged (bool state);
 
             IcecapServer* m_server;
 
