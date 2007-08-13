@@ -39,6 +39,7 @@ namespace Icecap
 
         public slots:
             void presenceChanged ();
+            void serverStateChanged (bool state);
 
         signals:
             void online (bool newState);

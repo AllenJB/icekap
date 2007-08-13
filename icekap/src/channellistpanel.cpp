@@ -478,7 +478,7 @@ void ChannelListPanel::updateUsersChannels()
     emit updateNumUsers(i18n("Non-unique users: %1 (%2 shown)").arg(getNumUsers()).arg(getVisibleUsers()));
 }
 
-// TODO: Fix (by re-implementing closeChannelListPanel) or remove this
+// TODO AllenJB: closeYourself: Fix (by re-implementing closeChannelListPanel) or remove this
 bool ChannelListPanel::closeYourself()
 {
     // make the server delete us so server can reset the pointer to us

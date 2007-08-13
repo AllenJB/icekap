@@ -221,6 +221,11 @@
       <label></label>
       <whatsthis></whatsthis>
     </entry>
+    <entry key="CloseInactiveTabs" type="Bool">
+      <default>false</default>
+      <label></label>
+      <whatsthis></whatsthis>
+    </entry>
   </group>
   <group name="General Options">
     <entry key="SpellChecking" type="Bool">

@@ -56,6 +56,22 @@ namespace Icecap
             m_connected = newState;
         }
     }
+
+    // TODO AllenJB: Disable window if left open
+    // TODO AllenJB: Output channel closed message if left open
+    void Query::serverStateChanged (bool state)
+    {
+        m_connected = state;
+        if (Preferences::closeInactiveTabs()) {
+            if (state) {
+                m_window = m_mypresence->getViewContainer()->addQuery (this);
+            } else {
+                m_mypresence->getViewContainer()->closeView (m_window);
+                delete m_window;
+            }
+        }
+    }
+
 }
 
 #include "icecapquery.moc"

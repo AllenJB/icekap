@@ -44,6 +44,8 @@ namespace Icecap
 
         // Connect to server event stream (command results)
         connect (m_server, SIGNAL (event(Icecap::Cmd)), this, SLOT (eventFilter(Icecap::Cmd)));
+        // Watch for online state changes
+        connect (m_server, SIGNAL (serverOnline(bool)), this, SLOT (serverStateChanged(bool)));
     }
 
     // This needs to be looked at. This code creates a new presence every time our presence name changes
@@ -130,7 +132,11 @@ namespace Icecap
         m_connected = newStatus;
         if (m_connected) {
             setState (SSConnected);
-            init ();
+            if (Preferences::closeInactiveTabs()) {
+                init ();
+            }
+        } else {
+            setState (SSDisconnected);
         }
     }
 
@@ -426,6 +432,23 @@ namespace Icecap
     void MyPresence::queryRemove (Query* query)
     {
         queryList.remove (query);
+    }
+
+    // TODO AllenJB: Disable window if left open
+    // TODO AllenJB: Output channel closed message if left open
+    void MyPresence::serverStateChanged (bool state)
+    {
+        setConnected(state);
+        emit serverOnline (state);
+        if (Preferences::closeInactiveTabs()) {
+            if (state) {
+                init();
+            } else {
+                statusViewActive = false;
+                getViewContainer()->closeView (statusView);
+                delete statusView;
+            }
+        }
     }
 
 }

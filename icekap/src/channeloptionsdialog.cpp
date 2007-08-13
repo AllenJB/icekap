@@ -59,7 +59,7 @@ namespace Konversation
         connect(m_channel, SIGNAL(topicHistoryChanged()), this, SLOT(refreshTopicHistory()));
 
         connect(m_channel, SIGNAL(modesChanged()), this, SLOT(refreshModes()));
-// TODO: Reimplement
+// TODO AllenJB: Reimplement nick.channelNickChanged / this.refreshEnabledModes
 //        connect(m_channel->getOwnChannelNick(), SIGNAL(channelNickChanged()), this, SLOT(refreshEnableModes()));
 
         connect(this, SIGNAL(cancelClicked()), this, SLOT(hide()));
@@ -186,7 +186,7 @@ namespace Konversation
             m_widget->topicPreview->clear();
     }
 
-    // TODO: Reimplement
+    // TODO AllenJB: Reimplement refreshEnableModes
     void ChannelOptionsDialog::refreshEnableModes()
     {
 /*

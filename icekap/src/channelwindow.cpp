@@ -353,7 +353,7 @@ void ChannelWindow::popupChannelCommand(int id)
 }
 
 // Will be connected to NickListView::popupCommand(int)
-// TODO: Move all this somewhere sensible (*Filter) or make command calls more generic
+// TODO AllenJB: popupCommand: Move all this somewhere sensible (*Filter) or make command calls more generic
 void ChannelWindow::popupCommand(int id)
 {
     QString pattern;
@@ -543,7 +543,7 @@ void ChannelWindow::doubleClickCommand(QListViewItem* item)
     {
         nicknameListView->clearSelection();
         nicknameListView->setSelected(item, true);
-        // TODO: put the quick button code in another function to make reusal more legitimate
+        // TODO AllenJB: doubleClickCommand: put the quick button code in another function to make reusal more legitimate
         quickButtonClicked(Preferences::channelDoubleClickAction());
     }
 }
@@ -811,7 +811,7 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
         // Is there something we need to display for ourselves?
         if(!result.output.isEmpty())
         {
-            // TODO: Are all of these used?
+            // TODO AllenJB: sendChannelText: Are all of these output types used?
             if(result.type == Icecap::Action) appendAction(m_mypresence->name(), result.output);
             else if(result.type == Icecap::Command) appendCommandMessage(result.typeString, result.output);
             else if(result.type == Icecap::Program) appendServerMessage(result.typeString, result.output);
@@ -827,7 +827,7 @@ void ChannelWindow::sendChannelText(const QString& sendLine)
             }
         }
 
-        // TODO: Can we get rid of this now we have IcecapServer->queueCommand()?
+        // TODO AllenJB: sendChannelText: Can we get rid of this result.toServer processing now we have IcecapServer->queueCommand()?
         // Send anything else to the server
         if (!result.toServer.isEmpty()) {
             m_server->queue(result.toServer);
@@ -1831,8 +1831,9 @@ bool ChannelWindow::closeYourself()
 
     if(result==KMessageBox::Continue)
     {
+        m_server->getOutputFilter()->channelPart (m_channel->name(), m_mypresence->name(), m_mypresence->network()->name());
         Preferences::setSpellChecking(channelInput->checkSpellingEnabled());
-        delete this;
+        m_mypresence->channelRemove (m_channel);
         return true;
     }
     return false;
